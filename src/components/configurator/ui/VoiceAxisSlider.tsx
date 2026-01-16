@@ -1,0 +1,237 @@
+import { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
+import { motion, useSpring, useTransform } from 'framer-motion';
+import { cn } from '@/lib/utils';
+
+interface VoiceAxisSliderProps {
+  zones: readonly string[];
+  value: string | undefined;
+  onChange: (value: string) => void;
+  leftLabel: string;
+  rightLabel: string;
+}
+
+export const VoiceAxisSlider = forwardRef<HTMLDivElement, VoiceAxisSliderProps>(
+  function VoiceAxisSlider({ zones, value, onChange, leftLabel, rightLabel }, ref) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const isDraggingRef = useRef(false); // Synchronous drag state for pointer events
+  
+  // Calculate index from value
+  const currentIndex = value ? zones.indexOf(value) : Math.floor(zones.length / 2);
+  const normalizedPosition = currentIndex / (zones.length - 1);
+  
+  // Track zone changes for haptic animations
+  const [prevIndex, setPrevIndex] = useState(currentIndex);
+  const [snapTrigger, setSnapTrigger] = useState(0);
+  
+  // Smooth spring animation for thumb position
+  const springPosition = useSpring(normalizedPosition * 100, {
+    stiffness: 300,
+    damping: 30,
+  });
+  
+  // Haptic effect springs
+  const scaleSpring = useSpring(1, { stiffness: 500, damping: 15 });
+  const shakeSpring = useSpring(0, { stiffness: 600, damping: 10 });
+  
+  // Padded thumb transform - accounts for 10px gutter on each side
+  // Maps v (0-100) to track range: at v=0 → 10px, at v=100 → calc(100% - 10px)
+  const thumbLeft = useTransform(springPosition, v => {
+    const paddingOffset = v * 0.2; // Scales from 0px at v=0 to 20px at v=100
+    return `calc(${v}% - ${paddingOffset - 10}px)`;
+  });
+
+  useEffect(() => {
+    springPosition.set(normalizedPosition * 100);
+  }, [normalizedPosition, springPosition]);
+  
+  // Detect zone changes and trigger haptic animations
+  useEffect(() => {
+    if (currentIndex !== prevIndex && prevIndex !== -1) {
+      setSnapTrigger(prev => prev + 1);
+      setPrevIndex(currentIndex);
+    } else if (prevIndex === -1) {
+      setPrevIndex(currentIndex);
+    }
+  }, [currentIndex, prevIndex]);
+  
+  // Trigger haptic animations on snap
+  useEffect(() => {
+    if (snapTrigger > 0) {
+      // Real haptic feedback on mobile devices
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+      
+      // Scale pulse - quick pop
+      scaleSpring.set(1.35);
+      const scaleTimeout = setTimeout(() => scaleSpring.set(1), 50);
+      
+      // Subtle shake - horizontal oscillation
+      shakeSpring.set(3);
+      const shake1 = setTimeout(() => shakeSpring.set(-2), 40);
+      const shake2 = setTimeout(() => shakeSpring.set(1), 80);
+      const shake3 = setTimeout(() => shakeSpring.set(0), 120);
+      
+      return () => {
+        clearTimeout(scaleTimeout);
+        clearTimeout(shake1);
+        clearTimeout(shake2);
+        clearTimeout(shake3);
+      };
+    }
+  }, [snapTrigger, scaleSpring, shakeSpring]);
+
+  const handleTrackClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!trackRef.current) return;
+    
+    const rect = trackRef.current.getBoundingClientRect();
+    const padding = 10; // 2.5 tailwind units = 10px
+    const trackWidth = rect.width - padding * 2;
+    const x = e.clientX - rect.left - padding;
+    const percentage = Math.max(0, Math.min(1, x / trackWidth));
+    const index = Math.round(percentage * (zones.length - 1));
+    onChange(zones[index]);
+  }, [zones, onChange]);
+
+  const handleDrag = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!trackRef.current || !isDraggingRef.current) return;
+    
+    const rect = trackRef.current.getBoundingClientRect();
+    const padding = 10; // 2.5 tailwind units = 10px
+    const trackWidth = rect.width - padding * 2;
+    const x = e.clientX - rect.left - padding;
+    const percentage = Math.max(0, Math.min(1, x / trackWidth));
+    const index = Math.round(percentage * (zones.length - 1));
+    onChange(zones[index]);
+  }, [zones, onChange]);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    trackRef.current?.setPointerCapture(e.pointerId);
+    handleTrackClick(e as unknown as React.MouseEvent<HTMLDivElement>);
+  }, [handleTrackClick]);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    trackRef.current?.releasePointerCapture(e.pointerId);
+  }, []);
+
+  return (
+    <div ref={ref} className="space-y-4">
+      {/* Axis Labels */}
+      <div className="flex justify-between items-center px-1">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
+          {leftLabel}
+        </span>
+        <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
+          {rightLabel}
+        </span>
+      </div>
+
+      {/* Track Container */}
+      <div 
+        ref={trackRef}
+        className="relative h-12 cursor-pointer touch-none"
+        onClick={handleTrackClick}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handleDrag}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        {/* Track Background */}
+        <div className="absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 h-[2px] bg-border/30 rounded-full" />
+        
+        {/* Zone Markers with bounce animation */}
+        <div className="absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 flex justify-between pointer-events-none">
+          {zones.map((_, i) => (
+            <motion.div
+              key={i}
+              className={cn(
+                "w-1 h-1 rounded-full transition-colors duration-300",
+                i === currentIndex
+                  ? "bg-accent"
+                  : "bg-muted-foreground/30"
+              )}
+              animate={{
+                scale: i === currentIndex ? [1, 1.8, 1.4] : 1,
+              }}
+              transition={{
+                duration: 0.3,
+                times: [0, 0.4, 1],
+                ease: "easeOut"
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Ripple effect on snap */}
+        {snapTrigger > 0 && (
+          <motion.div
+            key={snapTrigger}
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-accent/30 pointer-events-none"
+            style={{ left: thumbLeft }}
+            initial={{ scale: 1, opacity: 0.6 }}
+            animate={{ scale: 2.5, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
+        )}
+
+        {/* Animated Thumb with haptic effects */}
+        <motion.div
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full transition-shadow duration-200 pointer-events-none",
+            isDragging
+              ? "bg-accent shadow-[0_0_20px_hsl(var(--accent)/0.6)]"
+              : "bg-accent/80 shadow-[0_0_12px_hsl(var(--accent)/0.4)]"
+          )}
+          style={{ 
+            left: thumbLeft,
+            scale: scaleSpring,
+            x: shakeSpring,
+          }}
+        >
+          {/* Inner glow */}
+          <div className="absolute inset-1 rounded-full bg-accent-foreground/20" />
+        </motion.div>
+      </div>
+
+      {/* Zone Labels */}
+      <div className="flex justify-between items-start">
+        {zones.map((zone, i) => {
+          const isActive = zone === value || (value === undefined && i === Math.floor(zones.length / 2));
+          return (
+            <button
+              key={zone}
+              type="button"
+              onClick={() => onChange(zone)}
+              className={cn(
+                "flex-1 text-center transition-all duration-300 min-h-[44px] py-3 -mx-0.5 rounded-md",
+                "active:bg-accent/10",
+                isActive
+                  ? "text-foreground"
+                  : "text-muted-foreground/50 hover:text-muted-foreground"
+              )}
+            >
+              <motion.span
+                className={cn(
+                  "text-xs font-medium block",
+                  isActive && "text-accent"
+                )}
+                animate={{
+                  scale: isActive ? 1.1 : 1,
+                  opacity: isActive ? 1 : 0.5,
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {zone}
+              </motion.span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
