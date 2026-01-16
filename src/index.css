@@ -1,0 +1,1168 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Syne:wght@400;500;600&display=swap');
+
+/* ========================================
+   Raela Pro — Full Weight Stack
+   ======================================== */
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Thin-Italic.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Extra-Light.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-ExtLt-Ita.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Cleland Studio - Cinematic Design System */
+
+@layer base {
+  :root {
+    /* Core palette - Deep cinematic darks */
+    --background: 220 15% 4%;
+    --foreground: 45 10% 92%;
+
+    /* Surface layers */
+    --card: 220 12% 7%;
+    --card-foreground: 45 10% 92%;
+    --popover: 220 12% 6%;
+    --popover-foreground: 45 10% 92%;
+
+    /* Primary - Warm ivory/cream */
+    --primary: 45 20% 90%;
+    --primary-foreground: 220 15% 6%;
+
+    /* Secondary - Mid-gray */
+    --secondary: 220 8% 14%;
+    --secondary-foreground: 45 10% 80%;
+
+    /* Muted - Soft grays */
+    --muted: 220 10% 12%;
+    --muted-foreground: 220 8% 55%;
+
+    /* Accent - Warm amber/gold for CTAs */
+    --accent: 38 85% 55%;
+    --accent-foreground: 220 15% 6%;
+
+    /* Ghost text for depth */
+    --ghost: 220 8% 25%;
+    --ghost-foreground: 220 8% 40%;
+
+    /* Atmosphere layer */
+    --atmosphere: 220 12% 8%;
+    --atmosphere-foreground: 220 8% 30%;
+
+    /* Utility */
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 45 10% 92%;
+    --border: 220 10% 15%;
+    --input: 220 10% 12%;
+    --ring: 38 85% 55%;
+    --radius: 0.375rem;
+
+    /* Sidebar (if needed) */
+    --sidebar-background: 220 15% 5%;
+    --sidebar-foreground: 45 10% 85%;
+    --sidebar-primary: 38 85% 55%;
+    --sidebar-primary-foreground: 220 15% 6%;
+    --sidebar-accent: 220 10% 12%;
+    --sidebar-accent-foreground: 45 10% 85%;
+    --sidebar-border: 220 10% 15%;
+    --sidebar-ring: 38 85% 55%;
+
+    /* Typography */
+    --font-display: 'Syne', sans-serif;
+    --font-editorial: 'Cormorant Garamond', Georgia, serif;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Raela Pro', system-ui, sans-serif;
+    --font-raela: 'Raela Pro', system-ui, sans-serif;
+
+    /* Motion tokens */
+    --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-slow: 0.8s;
+    --duration-medium: 0.5s;
+    --duration-fast: 0.3s;
+
+    /* Depth layer z-indices */
+    --z-atmosphere: 0;
+    --z-background: 10;
+    --z-structural: 20;
+    --z-typography: 30;
+    --z-foreground: 40;
+    --z-overlay: 50;
+
+    /* Parallax ranges */
+    --parallax-subtle: 12px;
+    --parallax-medium: 24px;
+    --parallax-strong: 36px;
+
+    /* Chamber Gate */
+    --bg-chamber: 210 20% 6%;
+
+    /* Gradient overlays */
+    --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 100%);
+    --gradient-fade-up: linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%);
+    --gradient-fade-down: linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%);
+  }
+
+  .dark {
+    /* Dark mode is the default - same values */
+  }
+
+  .light {
+    /* Light mode - Clean, warm daytime palette */
+    --background: 45 20% 96%;
+    --foreground: 220 15% 15%;
+
+    /* Surface layers */
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    /* Primary - Deep charcoal */
+    --primary: 220 15% 15%;
+    --primary-foreground: 45 20% 96%;
+
+    /* Secondary - Light gray */
+    --secondary: 220 8% 92%;
+    --secondary-foreground: 220 15% 25%;
+
+    /* Muted - Soft warm grays */
+    --muted: 45 10% 92%;
+    --muted-foreground: 220 8% 45%;
+
+    /* Accent - Keep warm amber/gold */
+    --accent: 38 85% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Ghost text */
+    --ghost: 220 8% 85%;
+    --ghost-foreground: 220 8% 60%;
+
+    /* Atmosphere layer */
+    --atmosphere: 45 15% 94%;
+    --atmosphere-foreground: 220 8% 70%;
+
+    /* Utility */
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 10% 88%;
+    --input: 45 10% 94%;
+    --ring: 38 85% 50%;
+
+    /* Sidebar */
+    --sidebar-background: 45 15% 98%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 38 85% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 8% 94%;
+    --sidebar-accent-foreground: 220 15% 20%;
+    --sidebar-border: 220 10% 90%;
+    --sidebar-ring: 38 85% 50%;
+
+    /* Chamber Gate */
+    --bg-chamber: 45 15% 95%;
+
+    /* Gradient overlays */
+    --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 100%);
+    --gradient-fade-up: linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%);
+    --gradient-fade-down: linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%);
+  }
+
+  /* Portal Dark Theme - Matches main site brand */
+  .portal-theme {
+    /* Use same dark base as main site */
+    --background: 220 15% 4%;
+    --foreground: 45 10% 92%;
+
+    --card: 220 12% 8%;
+    --card-foreground: 45 10% 92%;
+    --popover: 220 12% 6%;
+    --popover-foreground: 45 10% 92%;
+
+    --primary: 45 20% 90%;
+    --primary-foreground: 220 15% 6%;
+
+    --secondary: 220 8% 14%;
+    --secondary-foreground: 45 10% 80%;
+
+    --muted: 220 10% 12%;
+    --muted-foreground: 220 8% 55%;
+
+    --accent: 38 85% 55%;
+    --accent-foreground: 220 15% 6%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 45 10% 92%;
+
+    --border: 220 10% 18%;
+    --input: 220 10% 12%;
+    --ring: 38 85% 55%;
+
+    /* Portal-specific tokens */
+    --portal-gold: 38 85% 55%;
+  }
+}
+
+/* ========================================
+   Theme Transition Helper
+   ======================================== */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.5s var(--ease-smooth),
+    color 0.5s var(--ease-smooth),
+    border-color 0.5s var(--ease-smooth),
+    fill 0.5s var(--ease-smooth),
+    stroke 0.5s var(--ease-smooth) !important;
+}
+
+/* ========================================
+   Animated Gradient Background
+   ======================================== */
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-gradient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+  transition: background 0.5s var(--ease-smooth);
+
+  /* Dark mode gradients */
+  background:
+    radial-gradient(ellipse at 20% 30%, hsl(220 40% 12% / 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(260 30% 15% / 0.6) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 80%, hsl(38 50% 15% / 0.5) 0%, transparent 40%),
+    radial-gradient(ellipse at 30% 70%, hsl(220 30% 10% / 0.7) 0%, transparent 50%);
+}
+
+.light .animated-gradient-bg {
+  opacity: 0.35;
+  background:
+    radial-gradient(ellipse at 20% 30%, hsl(45 40% 92% / 0.9) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(200 30% 88% / 0.7) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 80%, hsl(38 60% 85% / 0.6) 0%, transparent 40%),
+    radial-gradient(ellipse at 30% 70%, hsl(45 25% 90% / 0.8) 0%, transparent 50%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    /* Native smooth scroll disabled - Lenis handles this with momentum physics */
+  }
+
+  /* Lenis Smooth Scroll Base Styles */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  /* Typography scale */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-editorial {
+    font-family: var(--font-editorial);
+  }
+
+  /* ========================================
+     Typography Hierarchy System
+     ======================================== */
+
+  /* SYNE — Structural / Orientation */
+  .type-structural {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .type-structural-bold {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Large stage numbers */
+  .type-stage-number {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  /* CORMORANT — Editorial / Narrative */
+  .type-editorial {
+    font-family: var(--font-editorial);
+    font-weight: 400;
+    line-height: 1.35;
+  }
+
+  .type-editorial-medium {
+    font-family: var(--font-editorial);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .type-editorial-heading {
+    font-family: var(--font-editorial);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  /* RAELA PRO — Functional / System */
+  .type-functional {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .type-functional-light {
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .type-label {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+
+  /* TypeRig - Signature typography animation wrapper */
+  .type-rig {
+    @apply relative;
+  }
+
+  .type-rig-mask {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path var(--duration-slow) var(--ease-cinematic);
+  }
+
+  .type-rig-ghost {
+    @apply absolute inset-0 pointer-events-none select-none;
+    color: hsl(var(--ghost));
+    transform: scale(1.05) translateY(-2px);
+    opacity: 0.15;
+    z-index: -1;
+  }
+
+  /* Depth layer base styles */
+  .layer-atmosphere {
+    z-index: var(--z-atmosphere);
+    @apply absolute inset-0;
+  }
+
+  .layer-background {
+    z-index: var(--z-background);
+    @apply absolute inset-0;
+  }
+
+  .layer-structural {
+    z-index: var(--z-structural);
+    @apply relative;
+  }
+
+  .layer-typography {
+    z-index: var(--z-typography);
+    @apply relative;
+  }
+
+  .layer-foreground {
+    z-index: var(--z-foreground);
+    @apply relative;
+  }
+
+  /* Grain texture overlay */
+  .grain-overlay {
+    @apply absolute inset-0 pointer-events-none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+  }
+
+  /* Cinematic chamber */
+  .cinematic-chamber {
+    @apply relative w-full;
+  }
+
+  .cinematic-sticky {
+    @apply sticky top-0 h-screen w-full overflow-hidden;
+  }
+
+  /* Editorial typography */
+  .heading-hero {
+    @apply font-display font-bold uppercase tracking-tight leading-none;
+    font-size: clamp(4rem, 15vw, 14rem);
+  }
+
+  .heading-display {
+    @apply font-display font-bold uppercase tracking-tight leading-none;
+    font-size: clamp(2.5rem, 8vw, 7rem);
+  }
+
+  .heading-section {
+    @apply font-display font-semibold uppercase tracking-wide;
+    font-size: clamp(0.75rem, 1vw, 0.875rem);
+    letter-spacing: 0.15em;
+  }
+
+  .body-large {
+    @apply font-serif text-xl md:text-2xl leading-relaxed;
+  }
+
+  .body-regular {
+    @apply text-base leading-relaxed;
+  }
+
+  /* Hero Editorial Typography - Cormorant Garamond */
+  .heading-editorial {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 0.9;
+  }
+
+  .heading-editorial-primary {
+    font-weight: 500;
+  }
+
+  .heading-editorial-secondary {
+    font-weight: 400;
+    opacity: 0.65;
+  }
+
+  /* Ghost text for depth */
+  .text-ghost {
+    color: hsl(var(--ghost));
+  }
+
+  .text-ghost-light {
+    color: hsl(var(--ghost-foreground));
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    @apply fixed left-12 top-1/2 -translate-y-1/2 h-24 w-px;
+    background: linear-gradient(to bottom,
+        transparent 0%,
+        hsl(var(--muted-foreground) / 0.3) 20%,
+        hsl(var(--muted-foreground) / 0.3) 80%,
+        transparent 100%);
+  }
+
+  .scroll-indicator-progress {
+    @apply absolute top-0 left-0 w-full bg-accent origin-top;
+    transition: transform 0.1s linear;
+  }
+
+  /* Card styles */
+  .profile-card {
+    @apply bg-card border border-border/50 backdrop-blur-sm;
+  }
+
+  /* CTA button variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3;
+    @apply bg-accent text-accent-foreground font-display font-semibold text-sm uppercase tracking-wider;
+    @apply transition-all duration-300;
+    @apply hover:bg-accent/90 hover:shadow-lg hover:shadow-accent/20;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3;
+    @apply bg-transparent text-foreground border border-border font-display font-medium text-sm uppercase tracking-wider;
+    @apply transition-all duration-300;
+    @apply hover:bg-secondary hover:border-secondary-foreground/20;
+  }
+
+  /* Logo band */
+  .logo-band {
+    @apply flex items-center gap-16 py-8;
+    animation: drift 40s linear infinite;
+  }
+
+  .marquee-container {
+    width: 100%;
+  }
+
+  .marquee-track {
+    animation: marquee 12s linear infinite;
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  .carousel-paused {
+    animation-play-state: paused !important;
+  }
+
+  .marquee-track-reverse {
+    animation: marquee-reverse 30s linear infinite;
+  }
+
+  .marquee-track-reverse:hover {
+    animation-play-state: paused;
+  }
+
+  /* Work grid card */
+  .work-card {
+    @apply relative overflow-hidden bg-card;
+    @apply transition-transform duration-500;
+  }
+
+  .work-card:hover {
+    @apply scale-[1.02];
+  }
+
+  .work-card-overlay {
+    @apply absolute inset-0;
+    background: linear-gradient(to top, hsl(var(--background) / 0.9) 0%, transparent 50%);
+  }
+}
+
+/* ========================================
+   Services Section Premium Styles
+   ======================================== */
+
+/* Service positioning tagline */
+.service-positioning {
+  font-size: 0.8125rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: hsl(var(--accent) / 0.65);
+  font-weight: 400;
+}
+
+/* Signal line with subtle gradient background */
+.service-signal {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: hsl(var(--muted-foreground) / 0.75);
+  padding: 1rem 1.25rem;
+  border-left: 2px solid hsl(var(--accent) / 0.4);
+  background: linear-gradient(90deg, hsl(var(--accent) / 0.05), transparent 70%);
+}
+
+@media (min-width: 1024px) {
+  .service-signal {
+    font-size: 1.25rem;
+  }
+}
+
+/* Collapsible container styling */
+.service-details-container {
+  border: 1px solid hsl(var(--border) / 0.3);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: hsl(var(--muted) / 0.3);
+  will-change: transform, box-shadow;
+  transform-origin: center top;
+}
+
+/* Two-column grid with editorial divider */
+.service-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+}
+
+@media (max-width: 640px) {
+  .service-details-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Vertical editorial divider between columns */
+.service-details-grid::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom,
+      transparent,
+      hsl(var(--border) / 0.4) 20%,
+      hsl(var(--border) / 0.4) 80%,
+      transparent);
+}
+
+@media (max-width: 640px) {
+  .service-details-grid::before {
+    display: none;
+  }
+}
+
+/* Section headers for Capabilities / Deliverables */
+.service-section-header {
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground) / 0.5);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+/* Capabilities list with bullet points */
+.capabilities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.capabilities-list li {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground) / 0.7);
+  padding: 0.375rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+  transition: color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: default;
+}
+
+.capabilities-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: hsl(var(--accent) / 0.5);
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gold accent bar - scales in on hover */
+.capabilities-list li::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 2px;
+  height: 55%;
+  background: hsl(var(--accent) / 0.6);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center;
+}
+
+/* Hover: text shifts right, bullet fades, gold bar appears */
+.capabilities-list li:hover {
+  color: hsl(var(--foreground));
+  transform: translateX(8px);
+}
+
+.capabilities-list li:hover::before {
+  opacity: 0;
+  transform: translateX(-6px);
+}
+
+.capabilities-list li:hover::after {
+  transform: translateY(-50%) scaleY(1);
+}
+
+/* Deliverables list with em-dash bullets */
+.deliverables-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.deliverables-list li {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground) / 0.7);
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.5;
+  transition: color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: default;
+}
+
+.deliverables-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: hsl(var(--accent) / 0.5);
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gold accent bar - scales in on hover */
+.deliverables-list li::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 2px;
+  height: 55%;
+  background: hsl(var(--accent) / 0.6);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center;
+}
+
+/* Hover: text shifts right, em-dash fades, gold bar appears */
+.deliverables-list li:hover {
+  color: hsl(var(--foreground));
+  transform: translateX(8px);
+}
+
+.deliverables-list li:hover::before {
+  opacity: 0;
+  transform: translateX(-6px);
+}
+
+.deliverables-list li:hover::after {
+  transform: translateY(-50%) scaleY(1);
+}
+
+@layer utilities {
+
+  /* Animation delay utilities */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  /* Parallax helper */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  /* Text shadow for depth */
+  .text-shadow-hero {
+    text-shadow: 0 4px 40px hsl(var(--background) / 0.8);
+  }
+
+  /* ========================================
+     Chamber Gate Parallax Blur Animations
+     ======================================== */
+
+  /* Closing: Content recedes (clear → blurred) */
+  @keyframes blur-parallax-in {
+    0% {
+      filter: blur(0);
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    100% {
+      filter: blur(20px);
+      transform: scale(1.03) translateY(-12px);
+      opacity: 0.6;
+    }
+  }
+
+  /* Opening: Content emerges (blurred → clear) */
+  @keyframes blur-parallax-out {
+    0% {
+      filter: blur(20px);
+      transform: scale(1.03) translateY(-12px);
+      opacity: 0.6;
+    }
+
+    100% {
+      filter: blur(0);
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .blur-parallax-closing {
+    animation: blur-parallax-in 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .blur-parallax-opening {
+    animation: blur-parallax-out 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .blur-parallax-held {
+    filter: blur(20px);
+    transform: scale(1.03) translateY(-12px);
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   Dual Carousel Animations
+   ============================================ */
+
+@keyframes carousel-marquee-right {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes carousel-marquee-left {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.carousel-marquee-right {
+  animation: carousel-marquee-right var(--carousel-duration, 45s) linear infinite;
+}
+
+.carousel-marquee-left {
+  animation: carousel-marquee-left var(--carousel-duration, 55s) linear infinite;
+}
+
+.carousel-paused {
+  animation-play-state: paused;
+}
+
+/* Edge fade masks for seamless carousel */
+.carousel-edge-mask {
+  mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  .carousel-marquee-right,
+  .carousel-marquee-left {
+    animation: none;
+  }
+
+  /* Disable all CSS animations in reduced motion mode */
+  .animate-light-ray-corner,
+  .animate-light-ray-edge,
+  .animate-crt-sweep,
+  .animate-scanline-flicker {
+    animation: none !important;
+  }
+}
+
+/* ============================================
+   Performance Utilities
+   ============================================ */
+
+/* GPU acceleration hint for static elements */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Containment for isolated rendering */
+.contain-strict {
+  contain: strict;
+}
+
+.contain-layout {
+  contain: layout style paint;
+}
+
+/* Pause animations when offscreen */
+.offscreen-paused {
+  animation-play-state: paused !important;
+}
+
+/* Scrollbar hide utility for reduced motion fallback */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   Dashboard Header Slab
+   ======================================== */
+.dashboard-header-slab {
+  @apply relative w-full;
+  min-height: 200px;
+}
+
+@screen md {
+  .dashboard-header-slab {
+    min-height: 240px;
+  }
+}
+
+@screen lg {
+  .dashboard-header-slab {
+    min-height: 280px;
+  }
+}
+
+/* Status Ring */
+.status-ring {
+  @apply w-12 h-12 rounded-full border-2 border-green-500/50;
+  @apply flex items-center justify-center flex-shrink-0;
+  @apply bg-green-500/10;
+}
+
+/* ========================================
+   Configurator Card Surface System
+   Apple Studio "Cinematic Lift" Effect
+   ======================================== */
+
+/* Base configurator surface - default lift */
+.cfg-surface {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.03);
+}
+
+.cfg-surface:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 6px 16px rgba(0, 0, 0, 0.07),
+    0 16px 40px rgba(0, 0, 0, 0.04);
+}
+
+.cfg-surface:active {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode - inset highlight rim + softer shadows */
+.dark .cfg-surface {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dark .cfg-surface:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .cfg-surface:active {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.02),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* Elevated variant - more pronounced lift */
+.cfg-surface-elevated {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.07),
+    0 20px 48px rgba(0, 0, 0, 0.05);
+}
+
+.cfg-surface-elevated:hover {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.09),
+    0 24px 56px rgba(0, 0, 0, 0.06);
+}
+
+.dark .cfg-surface-elevated {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.25),
+    0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .cfg-surface-elevated:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Subtle variant - minimal lift */
+.cfg-surface-subtle {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.cfg-surface-subtle:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dark .cfg-surface-subtle {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.02),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.dark .cfg-surface-subtle:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Selected state - adds accent glow over lift */
+.cfg-surface-selected {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.03),
+    0 0 20px hsl(var(--accent) / 0.15);
+}
+
+.dark .cfg-surface-selected {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 0 20px hsl(var(--accent) / 0.15);
+}
+
+/* Reduced motion - disable shadow transitions */
+@media (prefers-reduced-motion: reduce) {
+
+  .cfg-surface,
+  .cfg-surface-elevated,
+  .cfg-surface-subtle,
+  .cfg-surface-selected {
+    transition: none !important;
+  }
+}

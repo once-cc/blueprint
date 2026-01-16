@@ -1,0 +1,354 @@
+import { forwardRef, useState, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { BlueprintDeliver, ServiceBucketSelection, PAGE_OPTIONS, FEATURE_OPTIONS } from '@/types/blueprint';
+import { StepLayout } from '../StepLayout';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { cn } from '@/lib/utils';
+import { 
+  Home, User, Briefcase, FolderOpen, FileText, 
+  Mail, ShoppingCart, Users, MessageSquare, HelpCircle,
+  Calendar, Store, UserCircle, Newspaper, Send,
+  Bot, BarChart, Globe, Languages, FormInput, Rocket, CheckCircle2
+} from 'lucide-react';
+import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation } from '../ui/animationConfig';
+import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
+import { SERVICE_BUCKETS } from '../data/serviceBucketsData';
+import { ServiceBucketCard } from '../ui/ServiceBucketCard';
+
+interface FunctionalityStepProps {
+  deliver: BlueprintDeliver;
+  onUpdate: (data: Partial<BlueprintDeliver>) => void;
+  onBack: () => void;
+  onNext: () => void;
+}
+
+const pageIcons: Record<string, React.ElementType> = {
+  'Home': Home,
+  'About': User,
+  'Services': Briefcase,
+  'Portfolio': FolderOpen,
+  'Blog': FileText,
+  'Contact': Mail,
+  'Shop': ShoppingCart,
+  'Team': Users,
+  'Testimonials': MessageSquare,
+  'FAQ': HelpCircle,
+};
+
+const featureIcons: Record<string, React.ElementType> = {
+  'Booking System': Calendar,
+  'E-commerce': Store,
+  'Client Portal': UserCircle,
+  'CMS / Blog': Newspaper,
+  'Email Marketing': Send,
+  'Chat-bot': Bot,
+  'Analytics Dashboard': BarChart,
+  'SEO Tools': Globe,
+  'Multi-language': Languages,
+  'Custom Forms': FormInput,
+  'Lead or Sales Funnel': Rocket,
+  'Other': HelpCircle,
+};
+
+const timelineOptions = [
+  { id: 'urgent', label: 'Urgent', description: '<7 days' },
+  { id: '4_6_weeks', label: 'Standard', description: '2-4 weeks' },
+  { id: '6_10_weeks', label: 'Extended', description: '6-10 weeks' },
+  { id: 'flexible', label: 'Flexible', description: 'No rush' },
+];
+
+const budgetOptions = [
+  { id: 'under_5k', label: 'Under $5K', description: 'Essential build' },
+  { id: '5_10k', label: '$5K - $10K', description: 'Full website' },
+  { id: '10_25k', label: '$10K - $25K', description: 'Premium experience' },
+  { id: 'flexible', label: 'Flexible', description: 'For the right outcome, let\'s discuss' },
+];
+
+// Map FEATURE_OPTIONS to dropdown items
+const featureItems: DropdownItem[] = FEATURE_OPTIONS.map((feature) => {
+  const Icon = featureIcons[feature] || HelpCircle;
+  return {
+    value: feature,
+    label: feature,
+    icon: <Icon className="w-4 h-4" />,
+  };
+});
+
+export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepProps>(
+  function FunctionalityStep({ deliver, onUpdate, onBack, onNext }, ref) {
+    const selectedPages = deliver.pages || [];
+    const selectedFeatures = deliver.features || [];
+    
+    // Local expansion state (not persisted to blueprint)
+    const [expandedBuckets, setExpandedBuckets] = useState<Set<string>>(new Set());
+
+    // Initialize service buckets from deliver data or defaults
+    const getServiceBuckets = useCallback((): ServiceBucketSelection[] => {
+      if (deliver.serviceBuckets && deliver.serviceBuckets.length > 0) {
+        return deliver.serviceBuckets;
+      }
+      return SERVICE_BUCKETS.map(bucket => ({
+        id: bucket.id,
+        label: bucket.label,
+        selected: false,
+        selectedSubs: [],
+      }));
+    }, [deliver.serviceBuckets]);
+
+    const serviceBuckets = useMemo(() => getServiceBuckets(), [getServiceBuckets]);
+
+    const togglePage = (page: string) => {
+      const newPages = selectedPages.includes(page)
+        ? selectedPages.filter(p => p !== page)
+        : [...selectedPages, page];
+      onUpdate({ pages: newPages });
+    };
+
+    const handleFeaturesChange = (value: string | string[]) => {
+      const features = Array.isArray(value) ? value : [value];
+      onUpdate({ features });
+    };
+
+    // Service Bucket Handlers
+    const handleBucketToggle = useCallback((bucketId: string) => {
+      const currentBuckets = getServiceBuckets();
+      const bucket = currentBuckets.find(b => b.id === bucketId);
+      
+      // Find the bucket definition to get all sub-bucket IDs
+      const bucketDefinition = SERVICE_BUCKETS.find(b => b.id === bucketId);
+      const allSubIds = bucketDefinition?.subBuckets.map(sub => sub.id) || [];
+      
+      if (bucket?.selected) {
+        // Toggling OFF: clear selected subs but keep expanded unchanged
+        onUpdate({
+          serviceBuckets: currentBuckets.map(b =>
+            b.id === bucketId ? { ...b, selected: false, selectedSubs: [] } : b
+          ),
+        });
+      } else {
+        // Toggling ON: auto-select ALL sub-services
+        onUpdate({
+          serviceBuckets: currentBuckets.map(b =>
+            b.id === bucketId ? { ...b, selected: true, selectedSubs: allSubIds } : b
+          ),
+        });
+      }
+    }, [getServiceBuckets, onUpdate]);
+
+    const handleBucketExpand = useCallback((bucketId: string) => {
+      setExpandedBuckets(prev => {
+        const next = new Set(prev);
+        if (next.has(bucketId)) {
+          next.delete(bucketId);
+        } else {
+          next.add(bucketId);
+        }
+        return next;
+      });
+    }, []);
+
+    const handleSubToggle = useCallback((bucketId: string, subId: string) => {
+      const currentBuckets = getServiceBuckets();
+      const bucket = currentBuckets.find(b => b.id === bucketId);
+      
+      // Only allow sub-selection if bucket is selected
+      if (!bucket?.selected) return;
+      
+      const newSelectedSubs = bucket.selectedSubs.includes(subId)
+        ? bucket.selectedSubs.filter(s => s !== subId)
+        : [...bucket.selectedSubs, subId];
+      
+      onUpdate({
+        serviceBuckets: currentBuckets.map(b =>
+          b.id === bucketId ? { ...b, selectedSubs: newSelectedSubs } : b
+        ),
+      });
+    }, [getServiceBuckets, onUpdate]);
+
+    // Validation
+    const isValid = selectedPages.length > 0;
+
+    return (
+      <StepLayout
+        ref={ref}
+        act="deliver"
+        stepNumber={7}
+        title="Functionality & Scope"
+        framing="What does your website need to do?"
+        helperText={!isValid ? "Select at least one page to continue" : "Select pages, features, and tell us about your timeline."}
+        onBack={onBack}
+        onNext={onNext}
+        canGoNext={isValid}
+      >
+        <div className="space-y-10">
+          {/* Pages Grid */}
+          <div>
+            <Label className={cn(
+              "text-sm font-medium mb-4 block flex items-center gap-2",
+              selectedPages.length > 0 ? 'text-foreground' : 'text-muted-foreground'
+            )}>
+              Pages Required <span className="text-destructive">*</span>
+              {selectedPages.length > 0 && <CheckCircle2 className="w-4 h-4 text-accent" />}
+            </Label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {PAGE_OPTIONS.map((page, index) => {
+                const Icon = pageIcons[page] || Home;
+                const isSelected = selectedPages.includes(page);
+                return (
+                  <motion.button
+                    key={page}
+                    type="button"
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ ...springConfig, delay: index * 0.03 }}
+                    whileHover={{ ...cardHover, transition: springConfig }}
+                    whileTap={{ ...cardTap, transition: springConfig }}
+                    onClick={() => togglePage(page)}
+                    className={cn(
+                      'flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all duration-200',
+                      isSelected
+                        ? 'border-accent bg-accent/10 text-accent shadow-[0_0_20px_hsl(var(--accent)/0.15)]'
+                        : 'border-border/50 bg-card/50 hover:border-accent/50 text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    <motion.div
+                      animate={getIconAnimation(isSelected)}
+                      transition={springConfig}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </motion.div>
+                    <motion.span 
+                      animate={getContentShift(isSelected)}
+                      transition={springConfig}
+                      className="text-xs font-medium"
+                    >
+                      {page}
+                    </motion.span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Features & Integrations Dropdown */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <ConfiguratorDropdown
+              label="Features & Integrations"
+              value={selectedFeatures}
+              onChange={handleFeaturesChange}
+              items={featureItems}
+              placeholder="Select features..."
+              maxHeight={360}
+              multiSelect
+            />
+          </motion.div>
+
+          {/* Additional Services - Service Buckets */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Label className="text-sm font-medium text-foreground mb-4 block">
+              Additional Services
+            </Label>
+            <div className="space-y-3">
+              {SERVICE_BUCKETS.map((bucket, index) => {
+                const bucketState = serviceBuckets.find(b => b.id === bucket.id);
+                
+                return (
+                  <ServiceBucketCard
+                    key={bucket.id}
+                    bucket={bucket}
+                    selected={bucketState?.selected ?? false}
+                    expanded={expandedBuckets.has(bucket.id)}
+                    selectedSubs={bucketState?.selectedSubs ?? []}
+                    onToggleSelected={() => handleBucketToggle(bucket.id)}
+                    onToggleExpanded={() => handleBucketExpand(bucket.id)}
+                    onToggleSub={(subId) => handleSubToggle(bucket.id, subId)}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* Timeline & Budget */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            {/* Timeline */}
+            <div>
+              <Label className="text-sm font-medium text-foreground mb-4 block">
+                Timeline
+              </Label>
+              <RadioGroup
+                value={deliver.timeline || ''}
+                onValueChange={(value) => onUpdate({ timeline: value as BlueprintDeliver['timeline'] })}
+                className="space-y-2"
+              >
+                {timelineOptions.map((option) => (
+                  <div
+                    key={option.id}
+                    className={cn(
+                      'flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer',
+                      deliver.timeline === option.id
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border/50 hover:border-accent/50'
+                    )}
+                    onClick={() => onUpdate({ timeline: option.id as BlueprintDeliver['timeline'] })}
+                  >
+                    <RadioGroupItem value={option.id} id={`timeline-${option.id}`} />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-foreground">{option.label}</span>
+                      <span className="text-xs text-muted-foreground ml-2">({option.description})</span>
+                    </div>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            {/* Budget */}
+            <div>
+              <Label className="text-sm font-medium text-foreground mb-4 block">
+                Budget Range
+              </Label>
+              <RadioGroup
+                value={deliver.budget || ''}
+                onValueChange={(value) => onUpdate({ budget: value as BlueprintDeliver['budget'] })}
+                className="space-y-2"
+              >
+                {budgetOptions.map((option) => (
+                  <div
+                    key={option.id}
+                    className={cn(
+                      'flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer',
+                      deliver.budget === option.id
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border/50 hover:border-accent/50'
+                    )}
+                    onClick={() => onUpdate({ budget: option.id as BlueprintDeliver['budget'] })}
+                  >
+                    <RadioGroupItem value={option.id} id={`budget-${option.id}`} />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-foreground">{option.label}</span>
+                      <span className="text-xs text-muted-foreground ml-2">({option.description})</span>
+                    </div>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </motion.div>
+        </div>
+      </StepLayout>
+    );
+  }
+);

@@ -1,0 +1,22 @@
+project_id = "nvbjevpuyxizqpqfftpy"
+
+[functions.generate-and-send-blueprint]
+verify_jwt = false
+
+[functions.get-blueprint-preview]
+verify_jwt = false
+
+[functions.get-blueprint-pdf]
+verify_jwt = false
+
+[functions.validate-blueprint-session]
+verify_jwt = false
+
+[functions.upload-blueprint-reference]
+verify_jwt = false
+
+[functions.delete-blueprint-reference]
+verify_jwt = false
+
+[functions.update-blueprint]
+verify_jwt = false

@@ -1,0 +1,738 @@
+/**
+ * Blueprint Document Design Tokens
+ * 
+ * Print-safe, editorial design system for PDF generation.
+ * These tokens are isolated from the main site to ensure
+ * deterministic PDF rendering.
+ */
+
+/* ========================================
+   Document Container
+   ======================================== */
+
+.blueprint-document {
+  --bp-bg: #0a0a0f;
+  --bp-fg: #f5f3ee;
+  --bp-muted: #6b6b75;
+  --bp-accent-blue: #2150de;
+  --bp-accent-gold: #d4a853;
+  --bp-border: #1a1a1f;
+  --bp-surface: #12121a;
+  
+  /* Typography */
+  --bp-font-display: 'Syne', sans-serif;
+  --bp-font-editorial: 'Cormorant Garamond', Georgia, serif;
+  --bp-font-body: 'Raela Pro', system-ui, sans-serif;
+  
+  /* Spacing */
+  --bp-page-margin: 40px;
+  --bp-section-gap: 60px;
+  --bp-element-gap: 24px;
+  
+  background-color: var(--bp-bg);
+  color: var(--bp-fg);
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ========================================
+   Page Structure
+   ======================================== */
+
+.bp-page {
+  min-height: 100vh;
+  padding: var(--bp-page-margin);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.bp-page--cover {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.bp-page--content {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+/* Grid watermark overlay */
+.bp-grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: 
+    linear-gradient(to right, var(--bp-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bp-border) 1px, transparent 1px);
+  background-size: calc(100% / 12) 40px;
+}
+
+/* ========================================
+   Typography Hierarchy
+   ======================================== */
+
+/* ACT Titles - Syne 500, small-caps */
+.bp-act-title {
+  font-family: var(--bp-font-display);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bp-accent-blue);
+  margin-bottom: 8px;
+}
+
+/* Section Headers - Syne 500 */
+.bp-section-title {
+  font-family: var(--bp-font-display);
+  font-weight: 500;
+  font-size: 32px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+/* Step Titles - Raela Pro Light */
+.bp-step-title {
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  font-size: 18px;
+  color: var(--bp-fg);
+  margin-bottom: 12px;
+}
+
+/* Labels - Raela Pro 400, uppercase */
+.bp-label {
+  font-family: var(--bp-font-body);
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bp-muted);
+  margin-bottom: 4px;
+}
+
+/* Body Text */
+.bp-body {
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--bp-fg);
+}
+
+/* Muted/Metadata */
+.bp-meta {
+  font-family: var(--bp-font-body);
+  font-weight: 200;
+  font-size: 12px;
+  color: var(--bp-muted);
+}
+
+/* Not Provided State */
+.bp-not-provided {
+  font-style: italic;
+  color: var(--bp-muted);
+  opacity: 0.7;
+}
+
+/* ========================================
+   Cover Page Specifics
+   ======================================== */
+
+.bp-cover-title {
+  font-family: var(--bp-font-display);
+  font-weight: 500;
+  font-size: 48px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.bp-cover-subtitle {
+  font-family: var(--bp-font-body);
+  font-weight: 200;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  color: var(--bp-muted);
+  margin-bottom: 48px;
+}
+
+.bp-cover-client {
+  font-family: var(--bp-font-editorial);
+  font-weight: 400;
+  font-size: 28px;
+  font-style: italic;
+  color: var(--bp-fg);
+  margin-bottom: 8px;
+}
+
+.bp-cover-date {
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--bp-muted);
+}
+
+.bp-cover-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--bp-accent-gold);
+  margin: 32px auto;
+}
+
+/* ========================================
+   Section Containers
+   ======================================== */
+
+.bp-section {
+  margin-bottom: var(--bp-section-gap);
+}
+
+.bp-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--bp-border);
+}
+
+.bp-section-number {
+  font-family: var(--bp-font-display);
+  font-weight: 500;
+  font-size: 48px;
+  color: var(--bp-accent-blue);
+  opacity: 0.3;
+  line-height: 1;
+}
+
+/* ========================================
+   Content Blocks
+   ======================================== */
+
+.bp-block {
+  margin-bottom: var(--bp-element-gap);
+}
+
+.bp-block-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.bp-block-grid--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.bp-value {
+  font-family: var(--bp-font-body);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--bp-fg);
+}
+
+.bp-value--emphasis {
+  font-family: var(--bp-font-editorial);
+  font-weight: 400;
+  font-size: 20px;
+  font-style: italic;
+  color: var(--bp-fg);
+}
+
+/* ========================================
+   Color Swatches
+   ======================================== */
+
+.bp-palette {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bp-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bp-swatch-color {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  border: 1px solid var(--bp-border);
+}
+
+.bp-swatch-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bp-muted);
+}
+
+.bp-swatch-hex {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--bp-fg);
+}
+
+/* ========================================
+   Tags/Chips
+   ======================================== */
+
+.bp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bp-tag {
+  padding: 4px 12px;
+  background: var(--bp-surface);
+  border: 1px solid var(--bp-border);
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--bp-fg);
+}
+
+/* ========================================
+   C.R.A.F.T. Framework
+   ======================================== */
+
+.bp-craft-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.bp-craft-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bp-surface);
+  border: 1px solid var(--bp-border);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.bp-craft-step--completed {
+  border-color: var(--bp-accent-gold);
+  background: rgba(212, 168, 83, 0.05);
+}
+
+.bp-craft-step--next {
+  border-color: var(--bp-accent-blue);
+  background: rgba(33, 80, 222, 0.05);
+}
+
+.bp-craft-letter {
+  font-family: var(--bp-font-display);
+  font-weight: 600;
+  font-size: 24px;
+  width: 40px;
+  text-align: center;
+  color: var(--bp-muted);
+}
+
+.bp-craft-step--completed .bp-craft-letter {
+  color: var(--bp-accent-gold);
+}
+
+.bp-craft-step--next .bp-craft-letter {
+  color: var(--bp-accent-blue);
+}
+
+.bp-craft-content {
+  flex: 1;
+}
+
+.bp-craft-title {
+  font-family: var(--bp-font-body);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--bp-fg);
+  margin-bottom: 2px;
+}
+
+.bp-craft-subtitle {
+  font-size: 11px;
+  color: var(--bp-muted);
+}
+
+.bp-craft-status {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bp-craft-status--done {
+  color: var(--bp-accent-gold);
+}
+
+.bp-craft-status--next {
+  color: var(--bp-accent-blue);
+}
+
+/* ========================================
+   Completion & Status Banners
+   ======================================== */
+
+.bp-completion-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: rgba(212, 168, 83, 0.08);
+  border: 1px solid var(--bp-accent-gold);
+  border-radius: 2px;
+  color: var(--bp-accent-gold);
+  font-family: var(--bp-font-body);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bp-completion-banner strong {
+  font-weight: 500;
+}
+
+.bp-next-step-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  color: var(--bp-accent-blue);
+  font-family: var(--bp-font-body);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  margin-bottom: 32px;
+}
+
+/* ========================================
+   CRAFT Framework - Action/Output Details
+   ======================================== */
+
+.bp-craft-details {
+  margin-top: 6px;
+}
+
+.bp-craft-action,
+.bp-craft-output {
+  font-size: 11px;
+  color: var(--bp-muted);
+  line-height: 1.5;
+}
+
+.bp-craft-detail-label {
+  font-weight: 500;
+  color: var(--bp-muted);
+  opacity: 0.7;
+}
+
+/* ========================================
+   Summary CTA Hierarchy
+   ======================================== */
+
+.bp-cta-block {
+  text-align: center;
+  padding: 48px;
+  background: var(--bp-surface);
+  border: 1px solid var(--bp-border);
+  border-radius: 4px;
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.bp-cta-title {
+  font-family: var(--bp-font-display);
+  font-weight: 500;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.bp-cta-description {
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  font-size: 14px;
+  color: var(--bp-muted);
+  max-width: 400px;
+}
+
+/* Primary CTA - Gold filled button */
+.bp-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 40px;
+  background: var(--bp-accent-gold);
+  color: var(--bp-bg);
+  font-family: var(--bp-font-body);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: opacity 0.2s ease;
+  margin-top: 8px;
+}
+
+.bp-cta-primary:hover {
+  opacity: 0.9;
+}
+
+/* Secondary CTA - Blue outline button */
+.bp-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: transparent;
+  border: 1px solid var(--bp-accent-blue);
+  color: var(--bp-accent-blue);
+  font-family: var(--bp-font-body);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.bp-cta-secondary:hover {
+  background: rgba(33, 80, 222, 0.08);
+}
+
+/* CTA Microcopy */
+.bp-cta-microcopy {
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  font-size: 12px;
+  color: var(--bp-muted);
+  max-width: 320px;
+  margin-top: -4px;
+}
+
+/* Tertiary CTA - Text link */
+.bp-cta-tertiary {
+  font-family: var(--bp-font-body);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--bp-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  margin-top: 8px;
+}
+
+.bp-cta-tertiary:hover {
+  color: var(--bp-fg);
+}
+
+/* Legacy button (for backwards compat) */
+.bp-cta-button {
+  display: inline-block;
+  padding: 14px 32px;
+  background: var(--bp-accent-gold);
+  color: var(--bp-bg);
+  font-family: var(--bp-font-body);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: opacity 0.2s ease;
+}
+
+.bp-cta-button:hover {
+  opacity: 0.9;
+}
+
+/* ========================================
+   Artifact Framing
+   ======================================== */
+
+.bp-artifact-framing {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--bp-border);
+}
+
+.bp-artifact-item {
+  font-family: var(--bp-font-body);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bp-muted);
+  position: relative;
+}
+
+.bp-artifact-item::before {
+  content: '•';
+  margin-right: 8px;
+  color: var(--bp-accent-gold);
+}
+
+/* ========================================
+   Access Code Block
+   ======================================== */
+
+.bp-access-code-block {
+  text-align: center;
+  padding: 32px 40px;
+  background: var(--bp-surface);
+  border: 1px solid var(--bp-border);
+  border-radius: 4px;
+  margin-top: 32px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bp-access-code-title {
+  font-family: var(--bp-font-display);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bp-fg);
+  margin-bottom: 8px;
+}
+
+.bp-access-code-description {
+  font-family: var(--bp-font-body);
+  font-weight: 300;
+  font-size: 13px;
+  color: var(--bp-muted);
+  margin-bottom: 16px;
+}
+
+.bp-access-code {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--bp-bg);
+  border: 1px solid var(--bp-accent-gold);
+  border-radius: 2px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  color: var(--bp-accent-gold);
+}
+
+/* ========================================
+   References Gallery
+   ======================================== */
+
+.bp-references-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.bp-reference-card {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--bp-surface);
+  border: 1px solid var(--bp-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bp-reference-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bp-reference-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: linear-gradient(transparent, rgba(10, 10, 15, 0.9));
+}
+
+.bp-reference-role {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bp-accent-blue);
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  .blueprint-document {
+    background: white;
+    color: #1a1a1a;
+  }
+  
+  .bp-page {
+    page-break-after: always;
+    min-height: 297mm; /* A4 height */
+    padding: 20mm;
+  }
+  
+  .bp-grid-overlay {
+    display: none;
+  }
+}
+
+/* ========================================
+   Responsive (for browser preview)
+   ======================================== */
+
+@media (max-width: 768px) {
+  .bp-block-grid,
+  .bp-block-grid--three {
+    grid-template-columns: 1fr;
+  }
+  
+  .bp-references-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .bp-cover-title {
+    font-size: 32px;
+  }
+  
+  .bp-section-title {
+    font-size: 24px;
+  }
+  
+  .bp-artifact-framing {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .bp-cta-block {
+    padding: 32px 24px;
+  }
+}
