@@ -154,17 +154,24 @@ interface MobileStackCardProps {
 
 const MobileStackCard = ({ index, step, progressRange, progressTotal }: MobileStackCardProps) => {
     // Drive scale and darken effect based on scroll progress
+    // Replaced expensive `filter: brightness` with an opacity overlay
     const scale = useTransform(progressTotal, progressRange, [1, 0.95]);
-    const brightness = useTransform(progressTotal, progressRange, [1, 0.4]);
+    const darkenOpacity = useTransform(progressTotal, progressRange, [0, 0.6]);
 
     return (
         <div className="sticky top-24 pt-4 pb-4" style={{ zIndex: index }}>
             <motion.div
-                style={{ scale, filter: `brightness(${brightness})` }}
-                className="w-full bg-card border border-border/20 rounded-3xl p-6 flex flex-col gap-6 shadow-2xl relative"
+                style={{ scale }}
+                className="w-full bg-card border border-border/20 rounded-3xl p-6 flex flex-col gap-6 shadow-2xl relative overflow-hidden will-change-transform"
             >
+                {/* Performance optimized darkening overlay */}
+                <motion.div
+                    style={{ opacity: darkenOpacity }}
+                    className="absolute inset-0 bg-black pointer-events-none z-50 rounded-3xl"
+                />
+
                 {/* Number / Phase Header */}
-                <div className="flex items-center gap-4 border-b border-border/20 pb-4">
+                <div className="flex items-center gap-4 border-b border-border/20 pb-4 relative z-10">
                     <span className="font-display type-structural-bold text-4xl text-transparent shrink-0" style={{ WebkitTextStroke: "1px hsl(var(--border))" }}>
                         0{index + 1}
                     </span>
@@ -228,7 +235,7 @@ function FrameworkMobile() {
 
 export function FrameworkSection() {
     return (
-        <section className="py-24 bg-background relative z-10 w-full overflow-hidden">
+        <section className="py-24 bg-background relative z-10 w-full">
             <div className="container mx-auto px-6 mb-16 md:mb-24">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
