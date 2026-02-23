@@ -5,8 +5,7 @@
    ======================================== */
 @font-face {
   font-family: 'Domaine Display Narrow';
-  src: url('/fonts/domainedispnar-medium.woff2') format('woff2'),
-       url('/fonts/domainedispnar-medium.woff') format('woff');
+  src: url('/fonts/DomaineDispNar-Medium.woff') format('woff');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -14,8 +13,7 @@
 
 @font-face {
   font-family: 'Domaine Display Narrow';
-  src: url('/fonts/domainedispnar-mediumitalic.woff2') format('woff2'),
-       url('/fonts/domainedispnar-mediumitalic.woff') format('woff');
+  src: url('/fonts/DomaineDispNar-MediumItalic.woff') format('woff');
   font-weight: 500;
   font-style: italic;
   font-display: swap;
@@ -549,10 +547,10 @@ html.theme-transitioning *::after {
     @apply text-base leading-relaxed;
   }
 
-  /* Hero Editorial Typography - Cormorant Garamond */
+  /* Hero Editorial Typography - Domaine Display Narrow */
   .heading-editorial {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    text-transform: uppercase;
+    font-family: 'Domaine Display Narrow', 'Cormorant Garamond', Georgia, serif;
+    /* Removed text-transform: uppercase; as Domaine is likely not meant to be forced uppercase based on the design *Crafted* */
     letter-spacing: 0.02em;
     line-height: 0.9;
   }
