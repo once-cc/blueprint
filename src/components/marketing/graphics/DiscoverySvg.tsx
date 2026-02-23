@@ -2,105 +2,78 @@ import { motion } from 'framer-motion';
 
 export function DiscoverySvg() {
     return (
-        <div className="relative w-full h-full flex items-center justify-center p-8">
-            <svg viewBox="0 0 200 200" className="w-full h-full max-w-[200px]" fill="none">
+        <div className="relative w-full h-full flex items-center justify-center p-8 overflow-hidden rounded-2xl">
+            {/* Atmospheric Shifting Background */}
+            <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-[#d4a853]/5 via-transparent to-[#d4a853]/5 blur-3xl"
+                animate={{
+                    backgroundPosition: ['0% 0%', '100% 100%', '0% 100%', '100% 0%', '0% 0%'],
+                    opacity: [0.3, 0.7, 0.4, 0.8, 0.3],
+                    scale: [1, 1.1, 1]
+                }}
+                transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+            />
+            <motion.div
+                className="absolute inset-x-0 h-full bg-gradient-to-t from-transparent via-[#d4a853]/10 to-transparent blur-2xl"
+                animate={{ y: ['-100%', '100%'] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+            />
 
-                {/* Ambient Glow Background Pulse */}
-                <motion.circle
-                    cx="100" cy="100" r="90"
-                    fill="rgba(212,168,83,0.02)"
-                    animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.6, 0.3] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                />
+            <svg viewBox="0 0 200 200" className="w-full h-full max-w-[200px] relative z-10" fill="none">
 
-                {/* Outer Grid Rings - Rotating & Pulsing */}
-                <motion.g
-                    animate={{ rotate: [0, 90, 180, 270, 360] }}
-                    transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-                    style={{ originX: "100px", originY: "100px" }}
-                >
-                    <motion.circle
-                        cx="100" cy="100" r="80"
-                        stroke="#d4a853" strokeWidth="0.5" strokeDasharray="4 8"
-                        animate={{ opacity: [0.2, 0.6, 0.2] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                    <motion.circle cx="100" cy="100" r="60" stroke="#d4a853" strokeWidth="0.5" opacity="0.4" />
-                </motion.g>
-
-                {/* Outer Grid Rings - Counter Rotating with Snap */}
-                <motion.g
-                    animate={{ rotate: [0, -45, -45, -90, -90, -135, -135, -180, -180, -225, -225, -270, -270, -315, -315, -360] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'circInOut' }}
-                    style={{ originX: "100px", originY: "100px" }}
-                >
-                    <motion.circle cx="100" cy="100" r="70" stroke="#d4a853" strokeWidth="0.5" opacity="0.4" strokeDasharray="2 12" />
-                </motion.g>
-
-                {/* Abstract Eye Shape - Drawing & Breathing */}
-                <motion.path
-                    d="M20 100 Q 100 30 180 100 Q 100 170 20 100 Z"
-                    stroke="#d4a853" strokeWidth="1"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: [0.6, 1, 0.6] }}
-                    transition={{
-                        pathLength: { duration: 2, ease: "easeInOut" },
-                        opacity: { delay: 2, duration: 4, repeat: Infinity, ease: "easeInOut" }
-                    }}
-                />
-
-                {/* Inner Iris - Spring Snaps */}
-                <motion.circle
-                    cx="100" cy="100" r="30"
-                    stroke="#d4a853" strokeWidth="1.5"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: [0, 1.1, 1], opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 1.5, type: 'spring', stiffness: 200, damping: 10 }}
-                />
-
-                {/* Inner Pupil Grid - Radar Ping */}
-                <circle cx="100" cy="100" r="15" stroke="#d4a853" strokeWidth="0.5" opacity="0.6" />
-                <motion.circle
-                    cx="100" cy="100" r="5" fill="#d4a853"
-                    animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                />
-
-                {/* Sharp Crosshairs - Targeted Assembly */}
-                <motion.g
-                    initial={{ opacity: 0, scale: 1.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1, duration: 0.8, ease: "circOut" }}
-                >
-                    <line x1="10" y1="100" x2="190" y2="100" stroke="#d4a853" strokeWidth="1" opacity="0.6" />
-                    <line x1="100" y1="10" x2="100" y2="190" stroke="#d4a853" strokeWidth="1" opacity="0.6" />
-
-                    {/* Diagonal Crosshairs */}
-                    <motion.line
-                        x1="40" y1="40" x2="160" y2="160" stroke="#d4a853" strokeWidth="0.5" opacity="0.4"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ delay: 1.5, duration: 1 }}
-                    />
-                    <motion.line
-                        x1="40" y1="160" x2="160" y2="40" stroke="#d4a853" strokeWidth="0.5" opacity="0.4"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ delay: 1.5, duration: 1 }}
-                    />
-                </motion.g>
-
-                {/* Scanning Target Nodes - Orbiting */}
+                {/* Outer Grid Rings - Slow Atmospheric Rotation */}
                 <motion.g
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
                     style={{ originX: "100px", originY: "100px" }}
                 >
-                    <motion.circle cx="100" cy="40" r="2.5" fill="#d4a853" animate={{ scale: [1, 1.5, 1] }} transition={{ duration: 1, repeat: Infinity }} />
-                    <motion.circle cx="100" cy="160" r="2.5" fill="#d4a853" animate={{ scale: [1, 1.5, 1] }} transition={{ duration: 1, delay: 0.5, repeat: Infinity }} />
-                    <motion.circle cx="40" cy="100" r="2.5" fill="#d4a853" animate={{ scale: [1, 1.5, 1] }} transition={{ duration: 1, delay: 0.25, repeat: Infinity }} />
-                    <motion.circle cx="160" cy="100" r="2.5" fill="#d4a853" animate={{ scale: [1, 1.5, 1] }} transition={{ duration: 1, delay: 0.75, repeat: Infinity }} />
+                    <circle cx="100" cy="100" r="80" stroke="#d4a853" strokeWidth="0.5" opacity="0.2" strokeDasharray="2 10" />
+                    <circle cx="100" cy="100" r="60" stroke="#d4a853" strokeWidth="0.5" opacity="0.1" />
                 </motion.g>
+
+                <motion.g
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
+                    style={{ originX: "100px", originY: "100px" }}
+                >
+                    <circle cx="100" cy="100" r="70" stroke="#d4a853" strokeWidth="0.5" opacity="0.3" strokeDasharray="1 5" />
+                </motion.g>
+
+                {/* The Blinking Eye */}
+                {/* We use two paths (top lid, bottom lid) to cleanly animate a blink without morphing complex polygons */}
+
+                {/* Top Lid */}
+                <motion.path
+                    d="M20 100 Q 100 30 180 100"
+                    stroke="#d4a853" strokeWidth="1.5"
+                    animate={{ d: ["M20 100 Q 100 30 180 100", "M20 100 Q 100 100 180 100", "M20 100 Q 100 30 180 100"] }}
+                    transition={{ duration: 6, times: [0, 0.05, 0.1], repeat: Infinity, repeatDelay: 2 }}
+                />
+
+                {/* Bottom Lid */}
+                <motion.path
+                    d="M20 100 Q 100 170 180 100"
+                    stroke="#d4a853" strokeWidth="1.5"
+                    animate={{ d: ["M20 100 Q 100 170 180 100", "M20 100 Q 100 100 180 100", "M20 100 Q 100 170 180 100"] }}
+                    transition={{ duration: 6, times: [0, 0.05, 0.1], repeat: Infinity, repeatDelay: 2 }}
+                />
+
+                {/* Inner Iris */}
+                <motion.g
+                    animate={{ scaleY: [1, 0, 1] }}
+                    transition={{ duration: 6, times: [0, 0.05, 0.1], repeat: Infinity, repeatDelay: 2 }}
+                    style={{ originX: "100px", originY: "100px" }}
+                >
+                    <circle cx="100" cy="100" r="30" stroke="#d4a853" strokeWidth="1" opacity="0.8" />
+                    <circle cx="100" cy="100" r="15" stroke="#d4a853" strokeWidth="0.5" opacity="0.6" />
+                    <circle cx="100" cy="100" r="5" fill="#d4a853" opacity="0.9" />
+                </motion.g>
+
+                {/* Sharp Crosshairs */}
+                <g opacity="0.5">
+                    <line x1="10" y1="100" x2="190" y2="100" stroke="#d4a853" strokeWidth="0.5" />
+                    <line x1="100" y1="10" x2="100" y2="190" stroke="#d4a853" strokeWidth="0.5" />
+                </g>
 
             </svg>
         </div>
