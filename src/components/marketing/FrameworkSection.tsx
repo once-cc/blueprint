@@ -79,7 +79,7 @@ export function FrameworkSection() {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-12 lg:gap-24 items-start pb-24 relative">
 
                     {/* LEFT COLUMN: Sticky Oversized Number */}
-                    <div className="hidden md:block sticky top-32 lg:top-48 h-[60vh] flex flex-col justify-center">
+                    <div className="hidden md:block sticky top-32 lg:top-48 h-[60vh] flex flex-col justify-center border-l border-white/10 pl-8 lg:pl-12">
                         <div className="relative overflow-hidden h-64 lg:h-80 w-full flex items-center">
                             <AnimatePresence mode="popLayout" initial={false}>
                                 <motion.div
