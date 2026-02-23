@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { TestimonialCarousel } from "@/components/blueprint/TestimonialCarousel";
 import { useNavigate } from "react-router-dom";
 import { DreamIntentModal } from "@/components/configurator/DreamIntentModal";
-
+import { DiscoverySvg } from "@/components/marketing/graphics/DiscoverySvg";
+import { DesignSvg } from "@/components/marketing/graphics/DesignSvg";
+import { DeliverSvg } from "@/components/marketing/graphics/DeliverSvg";
 const springConfig = { type: "spring", stiffness: 300, damping: 30 };
 
 const processSteps = [
@@ -248,13 +250,11 @@ export default function Blueprint() {
                     transition={{ delay: index * 0.1 }}
                     className="text-center desktop:text-left space-y-6"
                   >
-                    {/* Unique SVG Asset Placeholder */}
+                    {/* Unique SVG Asset Animation */}
                     <div className="relative w-full aspect-[4/3] bg-card/30 border border-border/20 rounded-2xl flex items-center justify-center overflow-hidden mb-6">
-                      <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                        <span className="font-display type-structural text-[10px] tracking-widest text-muted-foreground uppercase text-center px-4">
-                          [ {step.title.toUpperCase()} SVG ANIMATION ]
-                        </span>
-                      </div>
+                      {step.id === 'discovery' && <DiscoverySvg />}
+                      {step.id === 'design' && <DesignSvg />}
+                      {step.id === 'deliver' && <DeliverSvg />}
                     </div>
 
                     {/* Step number and Title */}
