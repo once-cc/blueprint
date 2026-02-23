@@ -1,6 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Syne:wght@400;500;600&display=swap');
 
 /* ========================================
+   Domaine Display Narrow
+   ======================================== */
+@font-face {
+  font-family: 'Domaine Display Narrow';
+  src: url('/fonts/domainedispnar-medium.woff2') format('woff2'),
+       url('/fonts/domainedispnar-medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display Narrow';
+  src: url('/fonts/domainedispnar-mediumitalic.woff2') format('woff2'),
+       url('/fonts/domainedispnar-mediumitalic.woff') format('woff');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ========================================
    Raela Pro — Full Weight Stack
    ======================================== */
 @font-face {
@@ -121,8 +142,8 @@
 
     /* Typography */
     --font-display: 'Syne', sans-serif;
-    --font-editorial: 'Cormorant Garamond', Georgia, serif;
-    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-editorial: 'Domaine Display Narrow', 'Cormorant Garamond', Georgia, serif;
+    --font-serif: 'Domaine Display Narrow', 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Raela Pro', system-ui, sans-serif;
     --font-raela: 'Raela Pro', system-ui, sans-serif;
 
@@ -146,8 +167,13 @@
     --parallax-medium: 24px;
     --parallax-strong: 36px;
 
-    /* Chamber Gate */
-    --bg-chamber: 210 20% 6%;
+    /* Vertical rhythm tokens (#10) */
+    --space-section: 2.5rem;
+    /* 40px — between major regions */
+    --space-group: 1.5rem;
+    /* 24px — between related items */
+    --space-element: 0.75rem;
+    /* 12px — between tightly coupled elements */
 
     /* Gradient overlays */
     --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 100%);
@@ -210,9 +236,6 @@
     --sidebar-accent-foreground: 220 15% 20%;
     --sidebar-border: 220 10% 90%;
     --sidebar-ring: 38 85% 50%;
-
-    /* Chamber Gate */
-    --bg-chamber: 45 15% 95%;
 
     /* Gradient overlays */
     --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 100%);
@@ -345,6 +368,7 @@ html.theme-transitioning *::after {
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
+    overscroll-behavior: none;
   }
 
   /* Typography scale */
@@ -859,54 +883,6 @@ html.theme-transitioning *::after {
   .text-shadow-hero {
     text-shadow: 0 4px 40px hsl(var(--background) / 0.8);
   }
-
-  /* ========================================
-     Chamber Gate Parallax Blur Animations
-     ======================================== */
-
-  /* Closing: Content recedes (clear → blurred) */
-  @keyframes blur-parallax-in {
-    0% {
-      filter: blur(0);
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-
-    100% {
-      filter: blur(20px);
-      transform: scale(1.03) translateY(-12px);
-      opacity: 0.6;
-    }
-  }
-
-  /* Opening: Content emerges (blurred → clear) */
-  @keyframes blur-parallax-out {
-    0% {
-      filter: blur(20px);
-      transform: scale(1.03) translateY(-12px);
-      opacity: 0.6;
-    }
-
-    100% {
-      filter: blur(0);
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-  }
-
-  .blur-parallax-closing {
-    animation: blur-parallax-in 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  .blur-parallax-opening {
-    animation: blur-parallax-out 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .blur-parallax-held {
-    filter: blur(20px);
-    transform: scale(1.03) translateY(-12px);
-    opacity: 0.6;
-  }
 }
 
 /* ============================================
@@ -1142,18 +1118,19 @@ html.theme-transitioning *::after {
 /* Selected state - adds accent glow over lift */
 .cfg-surface-selected {
   box-shadow:
+    inset 0 0 0 1px hsl(var(--accent) / 0.12),
     0 1px 2px rgba(0, 0, 0, 0.04),
     0 4px 12px rgba(0, 0, 0, 0.05),
-    0 12px 32px rgba(0, 0, 0, 0.03),
-    0 0 20px hsl(var(--accent) / 0.15);
+    0 0 24px hsl(var(--accent) / 0.18);
 }
 
 .dark .cfg-surface-selected {
   box-shadow:
+    inset 0 0 0 1px hsl(var(--accent) / 0.1),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
     0 1px 2px rgba(0, 0, 0, 0.2),
     0 4px 8px rgba(0, 0, 0, 0.15),
-    0 0 20px hsl(var(--accent) / 0.15);
+    0 0 24px hsl(var(--accent) / 0.18);
 }
 
 /* Reduced motion - disable shadow transitions */
@@ -1163,6 +1140,51 @@ html.theme-transitioning *::after {
   .cfg-surface-elevated,
   .cfg-surface-subtle,
   .cfg-surface-selected {
+    transition: none !important;
+  }
+}
+
+/* ========================================
+   Glassmorphism Form Controls (#3)
+   ======================================== */
+.cfg-input {
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 0.3);
+  border-radius: 0.75rem;
+  transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
+}
+
+.cfg-input:hover {
+  border-color: hsl(var(--border) / 0.5);
+}
+
+.cfg-input:focus,
+.cfg-input:focus-within {
+  border-color: hsl(var(--accent) / 0.5);
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.1), 0 0 20px hsl(var(--accent) / 0.08);
+  outline: none;
+}
+
+.dark .cfg-input {
+  background: hsl(var(--card) / 0.5);
+  border-color: hsl(var(--border) / 0.25);
+}
+
+.dark .cfg-input:hover {
+  border-color: hsl(var(--border) / 0.45);
+}
+
+.dark .cfg-input:focus,
+.dark .cfg-input:focus-within {
+  border-color: hsl(var(--accent) / 0.4);
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.08), 0 0 24px hsl(var(--accent) / 0.1);
+}
+
+/* Reduced motion — disable input transitions */
+@media (prefers-reduced-motion: reduce) {
+  .cfg-input {
     transition: none !important;
   }
 }

@@ -21,9 +21,10 @@ export default {
       fontFamily: {
         // Structural — Syne (orientation, architecture)
         display: ["Syne", "sans-serif"],
-        // Editorial — Cormorant Garamond (narrative, headings)
-        editorial: ["Cormorant Garamond", "Georgia", "serif"],
-        serif: ["Cormorant Garamond", "Georgia", "serif"],
+        // Editorial — Domaine Display Narrow (narrative, headings)
+        domaine: ["Domaine Display Narrow", "serif"],
+        editorial: ["Domaine Display Narrow", "Cormorant Garamond", "Georgia", "serif"],
+        serif: ["Domaine Display Narrow", "Cormorant Garamond", "Georgia", "serif"],
         cormorant: ["Cormorant Garamond", "Georgia", "serif"],
         // Functional — Raela Pro (body, UI, system)
         body: ["Raela Pro", "system-ui", "sans-serif"],
@@ -199,6 +200,10 @@ export default {
           "0%, 100%": { opacity: "0.03" },
           "50%": { opacity: "0.05" },
         },
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -220,6 +225,7 @@ export default {
         "light-ray-edge": "light-ray-edge 10s ease-in-out infinite",
         "crt-sweep": "crt-sweep 12s ease-in-out infinite",
         "scanline-flicker": "scanline-flicker 4s linear infinite",
+        shimmer: "shimmer 3s ease-in-out infinite",
       },
       spacing: {
         "18": "4.5rem",
