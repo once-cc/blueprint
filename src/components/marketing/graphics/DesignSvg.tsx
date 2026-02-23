@@ -5,104 +5,83 @@ export function DesignSvg() {
         <div className="relative w-full h-full flex items-center justify-center p-8">
             <svg viewBox="0 0 200 200" className="w-full h-full max-w-[200px]" fill="none">
 
-                {/* Background Grid - Pulsing Opacity */}
-                <motion.g
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0.3, 0.7, 0.3] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                    {/* Vertical Lines */}
-                    <line x1="40" y1="20" x2="40" y2="180" stroke="#d4a853" strokeWidth="0.5" opacity="0.3" />
-                    <line x1="100" y1="20" x2="100" y2="180" stroke="#d4a853" strokeWidth="0.5" opacity="0.5" />
-                    <line x1="160" y1="20" x2="160" y2="180" stroke="#d4a853" strokeWidth="0.5" opacity="0.3" />
+                {/* Background Grid */}
+                <g opacity="0.2">
+                    <line x1="100" y1="0" x2="100" y2="200" stroke="#d4a853" strokeWidth="0.5" />
+                    <line x1="0" y1="100" x2="200" y2="100" stroke="#d4a853" strokeWidth="0.5" />
+                </g>
 
-                    {/* Horizontal Lines */}
-                    <line x1="20" y1="40" x2="180" y2="40" stroke="#d4a853" strokeWidth="0.5" opacity="0.3" />
-                    <line x1="20" y1="100" x2="180" y2="100" stroke="#d4a853" strokeWidth="0.5" opacity="0.5" />
-                    <line x1="20" y1="160" x2="180" y2="160" stroke="#d4a853" strokeWidth="0.5" opacity="0.3" />
-                </motion.g>
+                {/* Center Main Circle being drawn by compass */}
+                <motion.circle
+                    cx="100" cy="100" r="60"
+                    stroke="#d4a853" strokeWidth="1.5"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 4, ease: "linear", repeat: Infinity, repeatDelay: 2 }}
+                    style={{ originX: "100px", originY: "100px", rotate: -90 }}
+                />
 
-                {/* Perfect Quadrant Circles - Sequential Draw & Pulse */}
+                {/* Quadrant Highlights (Synced with the compass rotation) */}
+                {/* The compass draws clockwise over 4 seconds (1 quadrant per second). We light them up sequentially. */}
                 <motion.g>
-                    {/* Top Left */}
-                    <motion.circle cx="40" cy="40" r="30" stroke="#d4a853" strokeWidth="1.5"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: [0.6, 1, 0.6] }}
-                        transition={{ pathLength: { duration: 1.5, ease: "easeInOut" }, opacity: { delay: 1.5, duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                    {/* Top Right Quadrant (0s - 1s) */}
+                    <motion.path
+                        d="M100 100 L100 40 A60 60 0 0 1 160 100 Z"
+                        fill="#d4a853" stroke="none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.2, 0] }}
+                        transition={{ duration: 6, times: [0, 0.08, 0.2], repeat: Infinity, repeatDelay: 0 }}
                     />
-                    {/* Top Right */}
-                    <motion.circle cx="160" cy="40" r="30" stroke="#d4a853" strokeWidth="1.5"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: [0.6, 1, 0.6] }}
-                        transition={{ pathLength: { delay: 0.2, duration: 1.5, ease: "easeInOut" }, opacity: { delay: 1.7, duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                    {/* Bottom Right Quadrant (1s - 2s) */}
+                    <motion.path
+                        d="M100 100 L160 100 A60 60 0 0 1 100 160 Z"
+                        fill="#d4a853" stroke="none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.2, 0] }}
+                        transition={{ duration: 6, times: [0.16, 0.25, 0.33], repeat: Infinity, repeatDelay: 0 }}
                     />
-                    {/* Bottom Left */}
-                    <motion.circle cx="40" cy="160" r="30" stroke="#d4a853" strokeWidth="1.5"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: [0.6, 1, 0.6] }}
-                        transition={{ pathLength: { delay: 0.4, duration: 1.5, ease: "easeInOut" }, opacity: { delay: 1.9, duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                    {/* Bottom Left Quadrant (2s - 3s) */}
+                    <motion.path
+                        d="M100 100 L100 160 A60 60 0 0 1 40 100 Z"
+                        fill="#d4a853" stroke="none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.2, 0] }}
+                        transition={{ duration: 6, times: [0.33, 0.41, 0.5], repeat: Infinity, repeatDelay: 0 }}
                     />
-                    {/* Bottom Right */}
-                    <motion.circle cx="160" cy="160" r="30" stroke="#d4a853" strokeWidth="1.5"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: [0.6, 1, 0.6] }}
-                        transition={{ pathLength: { delay: 0.6, duration: 1.5, ease: "easeInOut" }, opacity: { delay: 2.1, duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                    {/* Top Left Quadrant (3s - 4s) */}
+                    <motion.path
+                        d="M100 100 L40 100 A60 60 0 0 1 100 40 Z"
+                        fill="#d4a853" stroke="none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.2, 0] }}
+                        transition={{ duration: 6, times: [0.5, 0.58, 0.66], repeat: Infinity, repeatDelay: 0 }}
                     />
                 </motion.g>
 
-                {/* Drafting Compass Floating Parent */}
+
+                {/* Drafting Compass Parent - Rotates with the drawing circle */}
                 <motion.g
-                    animate={{ y: [-3, 3, -3] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 4, ease: "linear", repeat: Infinity, repeatDelay: 2 }}
+                    style={{ originX: "100px", originY: "100px" }}
                 >
-                    {/* Drafting Compass - Top Node */}
-                    <motion.g
-                        initial={{ y: -20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 1, duration: 0.8, type: 'spring' }}
-                    >
-                        <circle cx="100" cy="60" r="10" stroke="#d4a853" strokeWidth="1.5" />
-                        <motion.circle cx="100" cy="60" r="4" fill="#d4a853" animate={{ scale: [0.8, 1.2, 0.8] }} transition={{ duration: 2, repeat: Infinity }} />
-                        <rect x="97" y="35" width="6" height="15" stroke="#d4a853" strokeWidth="1" fill="none" />
-                    </motion.g>
+                    {/* The Compass structure anchored to center */}
+                    {/* Center Point Node */}
+                    <circle cx="100" cy="100" r="4" fill="#d4a853" />
+                    <circle cx="100" cy="100" r="8" stroke="#d4a853" strokeWidth="1" fill="none" />
 
-                    {/* Compass Arm Parent for rhythmic pivot */}
-                    <motion.g
-                        animate={{ rotate: [-2, 2, -2] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{ originX: "100px", originY: "60px" }}
-                    >
-                        {/* Compass Left Arm - Swinging open */}
-                        <motion.path
-                            d="M93 67 L60 160 L65 160 L98 67"
-                            stroke="#d4a853" strokeWidth="1.5" fill="rgba(212,168,83,0.1)"
-                            initial={{ rotate: -10, opacity: 0 }}
-                            animate={{ rotate: 0, opacity: 1 }}
-                            transition={{ delay: 1.2, duration: 1, type: "spring", stiffness: 100 }}
-                            style={{ originX: "100px", originY: "60px" }}
-                        />
+                    {/* Arm extending to the radius (60px) */}
+                    <motion.line
+                        x1="100" y1="100" x2="100" y2="40"
+                        stroke="#d4a853" strokeWidth="1.5"
+                    />
 
-                        {/* Compass Right Arm - Swinging open */}
-                        <motion.path
-                            d="M107 67 L140 160 L135 160 L102 67"
-                            stroke="#d4a853" strokeWidth="1.5" fill="rgba(212,168,83,0.1)"
-                            initial={{ rotate: 10, opacity: 0 }}
-                            animate={{ rotate: 0, opacity: 1 }}
-                            transition={{ delay: 1.2, duration: 1, type: "spring", stiffness: 100 }}
-                            style={{ originX: "100px", originY: "60px" }}
-                        />
+                    {/* Drawing Tip Mechanism */}
+                    <rect x="96" y="30" width="8" height="10" stroke="#d4a853" strokeWidth="1" fill="#141419" />
+                    <line x1="100" y1="30" x2="100" y2="20" stroke="#d4a853" strokeWidth="2" />
 
-                        {/* Compass Crossbar */}
-                        <motion.line
-                            x1="75" y1="120" x2="125" y2="120"
-                            stroke="#d4a853" strokeWidth="1.5"
-                            initial={{ scaleX: 0, opacity: 0 }}
-                            animate={{ scaleX: 1, opacity: 1 }}
-                            transition={{ delay: 1.8, duration: 0.5, type: 'spring' }}
-                            style={{ originX: "100px" }}
-                        />
-                    </motion.g>
                 </motion.g>
+
             </svg>
         </div>
     );
