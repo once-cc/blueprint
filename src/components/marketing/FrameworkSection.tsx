@@ -87,8 +87,9 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
 
     const groupScale = useTransform(descendProgress, [0, 1], [1, 0.85]);
     const groupOpacity = useTransform(descendProgress, [0, 0.8, 1], [1, 0, 0]);
-    const groupY = useTransform(descendProgress, [0, 1], ["0vh", "30vh"]);
-    const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "8deg"]);
+    // Stationary sink for first 60%, then float up -10vh for the remaining 40%
+    const groupY = useTransform(descendProgress, [0, 0.6, 1], ["0vh", "0vh", "-10vh"]);
+    const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "5deg"]);
 
     return (
         // Fixed height dictates exactly 1 viewport of entering/leaving, plus 30vh of centered pinning overlap
