@@ -82,7 +82,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
     // Descent begins precisely when this card unpins, fading seamlessly as the NEXT card slides perfectly into place
     const { scrollYProgress: descendProgress } = useScroll({
         target: trackerRef,
-        offset: ["end 80%", "end 20%"]
+        offset: ["end 100%", "end 50%"] // Starts retreating the exact moment the next card enters the screen from the bottom
     });
 
     const groupScale = useTransform(descendProgress, [0, 1], [1, 0.85]);
@@ -122,8 +122,8 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                         </motion.div>
 
                         <div
-                            // Unified width is inherited from the parent motion.div
-                            className="w-full aspect-video lg:max-h-[55vh] bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden"
+                            // Unified width is inherited from the parent motion.div. Relaxing height restrictions to prevent clipping
+                            className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden rounded-xl"
                         >
                             {/* Darkening overlay removed; group opacity handles the void fade organically */}
 
@@ -187,7 +187,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                                 {/* RIGHT COLUMN: Visual Identity */}
                                 <div className="flex items-center justify-center p-8 lg:p-12 bg-card/10 relative h-full">
                                     {/* Internal Framing line creating a square crop for the SVG */}
-                                    <div className="w-full aspect-square border-t border-r border-white/10 relative flex items-center justify-center p-8 bg-background/30 overflow-hidden shadow-inner">
+                                    <div className="w-full aspect-square max-h-[400px] border border-white/10 relative flex items-center justify-center p-8 bg-background/30 overflow-hidden shadow-inner">
                                         <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/30 z-20" />
                                         <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/30 z-20" />
                                         <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/30 z-20" />
