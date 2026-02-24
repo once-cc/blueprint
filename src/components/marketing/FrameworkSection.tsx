@@ -97,10 +97,10 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
         // To prevent this card from "un-pinning" and sliding up naturally before it fades out,
         // we artificially extend the container's height to 250vh. We then use a negative margin
         // on non-last cards to preserve the exact same 130vh visual spacing. This guarantees beautifully locked descent!
-        <div ref={trackerRef} className={`relative w-full ${isLast ? "h-[130vh]" : "h-[250vh] -mb-[120vh]"}`}>
+        <div ref={trackerRef} className={`relative w-full ${isLast ? "h-[180vh]" : "h-[250vh] -mb-[120vh]"}`}>
 
-            {/* Perfect vertical centering locked via transform, avoiding margin/padding jitter */}
-            <div className="sticky top-[50vh] -translate-y-1/2 w-full flex justify-center" style={{ zIndex: index, perspective: "1500px" }}>
+            {/* Top aligned natively to ensure layout boundaries perfectly match visual boundaries for flush docking */}
+            <div className="sticky top-[22vh] w-full flex justify-center" style={{ zIndex: index, perspective: "1500px" }}>
 
                 <motion.div style={{ y: useTransform(popProgress, [0, 1], ["-10vh", "0vh"]) }} className="w-full flex justify-center">
                     <motion.div
@@ -313,8 +313,8 @@ function FrameworkMobile() {
 
     return (
         <div className="block md:hidden">
-            {/* Stacking Container Height = roughly 100vh per card */}
-            <div ref={containerRef} className="container mx-auto px-4 relative h-[300vh]">
+            {/* Stacking Container Height = roughly 100vh per card, plus 50vh extra runway to dock flush */}
+            <div ref={containerRef} className="container mx-auto px-4 relative h-[350vh]">
                 {processSteps.map((step, i) => {
                     // Cards squish when the next card covers them
                     const startSquish = i / processSteps.length;
