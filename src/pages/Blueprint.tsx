@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, animate } from "framer-motion";
+import { motion, AnimatePresence, animate, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, FileText, Compass, Target, Rocket, Sparkles, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TestimonialCarousel } from "@/components/blueprint/TestimonialCarousel";
@@ -52,6 +52,22 @@ export default function Blueprint() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [forceReveal, setForceReveal] = useState(false);
 
+  // Footer pinning state
+  const [footerHeight, setFooterHeight] = useState(0);
+  const footerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (footerRef.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          setFooterHeight(entry.target.getBoundingClientRect().height);
+        }
+      });
+      resizeObserver.observe(footerRef.current);
+      return () => resizeObserver.disconnect();
+    }
+  }, []);
+
   const scrollToChatbox = () => {
     const el = document.getElementById("chatbox-section");
     const inputEl = document.getElementById("dream-intent-input");
@@ -97,7 +113,10 @@ export default function Blueprint() {
 
   return (
     <>
-      <div className="min-h-screen bg-background text-foreground">
+      <div
+        className="min-h-screen bg-background text-foreground relative z-10 shadow-2xl"
+        style={{ marginBottom: footerHeight }}
+      >
         {/* Splash Screen Overlay - Option D: Blur Dissolve */}
         <AnimatePresence>
           {!isReady && (
@@ -113,12 +132,15 @@ export default function Blueprint() {
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center pt-24 pb-32 overflow-hidden">
           {/* Loopable Hero Video Background */}
-          <div className="absolute inset-0 z-0 overflow-hidden">
-            <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10" /> {/* Dimming overlay for text legibility */}
+          <div className="absolute inset-0 z-0 overflow-hidden bg-background">
+            <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10 pointer-events-none" /> {/* Dimming overlay for text legibility */}
 
             {/* Environmental Volumetric Light Rays (Flipped to match video source: coming from top-right to bottom-left) */}
             <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse" />
             <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse delay-700" />
+
+            {/* Top gradient mask to beautifully blend video ceiling removed in favor of CSS mask on video element */}
+
             <video
               ref={videoRef}
               src={heroVideo}
@@ -128,7 +150,7 @@ export default function Blueprint() {
               loop
               playsInline
               onCanPlayThrough={() => setIsVideoLoaded(true)}
-              className="w-full h-full object-cover opacity-80 bg-background"
+              className="absolute bottom-[10%] left-[50%] -translate-x-[50%] w-[180%] max-w-none h-auto md:w-full md:h-full md:top-0 md:left-0 md:translate-x-0 md:bottom-auto md:object-cover opacity-80 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_100%)] md:[mask-image:none]"
               style={{ paddingBottom: '2px' }} /* Tiny offset often needed to hide 1px video edge bleed */
             />
             {/* Soft gradient mask blending video to background at bottom */}
@@ -137,10 +159,10 @@ export default function Blueprint() {
 
           <div className="container mx-auto px-8 md:px-12 lg:px-6 relative z-20">
             {/* Added severe negative margin-top for mobile to hoist text higher */}
-            <div className="grid lg:grid-cols-2 gap-12 items-center -mt-32 md:-mt-16 lg:mt-0">
-              {/* Left Column Structure: Shifted further right on desktop */}
+            <div className="grid lg:grid-cols-2 gap-12 items-center -mt-48 md:-mt-16 lg:mt-0">
+              {/* Left Column Structure: Shifted further right on desktop, centered on mobile */}
               {/* Added 'group' class here to act as the parent hover trigger for the eyebrow text */}
-              <div className="flex flex-col items-start space-y-4 md:space-y-6 text-left max-w-2xl lg:ml-16 xl:ml-24 lg:-mt-12 group">
+              <div className="flex flex-col items-center md:items-start space-y-4 md:space-y-6 text-center md:text-left mx-auto md:mx-0 max-w-2xl lg:ml-16 xl:ml-24 lg:-mt-12 group">
                 {/* Eyebrow - featuring a cinematic focus-pull bloom triggered by group hover */}
                 <motion.div
                   initial={{ y: 30 }}
@@ -163,10 +185,10 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
-                  className="heading-editorial text-[3.5rem] leading-[1.05] sm:text-6xl md:text-7xl lg:text-8xl tracking-tight drop-shadow-md pb-1"
+                  className="heading-editorial text-[3.5rem] sm:text-[4rem] leading-[1.05] md:text-7xl lg:text-8xl tracking-tight drop-shadow-md pb-1"
                 >
                   <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-600 block">
-                    The <em className="italic font-medium pr-2">Crafted</em>
+                    The <em className="italic font-medium pr-1">Crafted</em>
                   </span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-600 block">
                     Blueprint.
@@ -178,7 +200,7 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-                  className="font-body type-functional-light text-lg md:text-xl text-zinc-300 leading-relaxed drop-shadow-sm max-w-[32ch] mt-[-0.5rem]"
+                  className="font-body type-functional-light text-[1rem] md:text-xl text-zinc-300 leading-relaxed drop-shadow-sm max-w-[32ch] mt-[-0.5rem]"
                 >
                   An architectural foundation for high-performance digital experiences.
                 </motion.p>
@@ -188,10 +210,10 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-                  className="flex items-center gap-4 flex-wrap mt-2"
+                  className="flex items-center justify-center md:justify-start gap-4 flex-wrap mt-2 w-full md:w-auto"
                 >
                   <ShinyButton onClick={scrollToChatbox}>
-                    Get Started
+                    Begin My Blueprint
                   </ShinyButton>
                 </motion.div>
               </div>
@@ -211,7 +233,7 @@ export default function Blueprint() {
         <BenefitStackSection />
 
         {/* Testimonials Section */}
-        <section className="py-24">
+        <section className="py-24 pb-32">
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -231,41 +253,82 @@ export default function Blueprint() {
           {/* Full-width carousel */}
           <TestimonialCarousel />
         </section>
+      </div>
 
-        {/* Final CTA Section */}
-        <section className="py-24 bg-muted/30">
+      {/* Final CTA Section (Pinned Reveal Footer) */}
+      <footer
+        ref={footerRef}
+        className="fixed bottom-0 left-0 w-full bg-muted/30 -z-10 h-[60vh]"
+      >
+        <section className="text-foreground w-full h-full flex items-end pb-24">
           <div className="container mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="max-w-3xl mx-auto text-center space-y-8"
-            >
-              <h2 className="text-3xl md:text-5xl font-nohemi font-medium tracking-tight">
-                Ready to build with
-                <br />
-                <span className="text-accent">confidence?</span>
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Get your free Website Blueprint and discover exactly how your new site will drive results.
-              </p>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
-                <Button
-                  size="lg"
-                  className="gap-2 text-lg px-10 py-7 group"
-                  onClick={scrollToChatbox}
-                >
-                  Get Your Free Blueprint
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </motion.div>
-              <p className="text-sm text-muted-foreground">
-                No commitment required • Response within 24 hours
-              </p>
-            </motion.div>
+            <FooterReveal onCtaClick={scrollToChatbox} />
           </div>
         </section>
-      </div >
+      </footer>
     </>
+  );
+}
+
+function FooterReveal({ onCtaClick }: { onCtaClick: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end end"]
+  });
+
+  // Headline slides up slowly from behind a mask
+  const headlineY = useTransform(scrollYProgress, [0.6, 1], ["100%", "0%"]);
+
+  // Subcopy fades in after headline has moved
+  const subcopyOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
+  const subcopyY = useTransform(scrollYProgress, [0.85, 1], ["20px", "0px"]);
+
+  return (
+    <div ref={containerRef} className="max-w-3xl mx-auto text-center space-y-8 py-32 h-[80vh] flex flex-col items-center justify-end overflow-hidden">
+
+      {/* The Masking Container for the Headline */}
+      <div className="overflow-hidden pb-4">
+        <motion.h2
+          style={{ y: headlineY }}
+          className="text-5xl md:text-7xl lg:text-[6rem] font-nohemi font-medium tracking-tighter leading-[0.95]"
+        >
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 to-zinc-950 block pb-1">
+            <em className="italic pr-2">Clarity</em> Before
+          </span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 to-zinc-950 block">
+            Commitment.
+          </span>
+        </motion.h2>
+      </div>
+
+      <motion.p
+        style={{ opacity: subcopyOpacity, y: subcopyY }}
+        className="text-xl text-muted-foreground"
+      >
+        A complimentary plan for your next site — before you invest in the build.
+      </motion.p>
+
+      {/* Static CTA Container */}
+      <div className="relative z-10 pt-4">
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
+          <ShinyButton
+            size="lg"
+            className="group"
+            onClick={onCtaClick}
+          >
+            <span className="flex items-center gap-2">
+              Begin My Blueprint
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1/4" />
+            </span>
+          </ShinyButton>
+        </motion.div>
+
+        <p className="text-sm text-muted-foreground mt-8">
+          No commitment required • Response within 24 hours
+        </p>
+      </div>
+
+    </div>
   );
 }
