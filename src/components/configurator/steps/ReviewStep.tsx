@@ -529,27 +529,27 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                 <Button
                   onClick={onBack}
                   size="sm"
-                  className="relative overflow-hidden group gap-2 bg-transparent text-muted-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border-0 px-2 h-8 transition-colors duration-300 -ml-2"
+                  className="relative overflow-hidden group bg-transparent text-muted-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border-0 w-8 h-8 p-0 transition-colors duration-300 -ml-2"
+                  aria-label="Go back"
                 >
                   <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-                  <ArrowLeft className="relative z-10 w-3 h-3" />
-                  <span className="relative z-10 text-xs">Back</span>
+                  <ArrowLeft className="relative z-10 w-4 h-4" />
                 </Button>
               </motion.div>
             )}
 
             {/* Dream Intent Preview */}
-            {blueprint.dreamIntent && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="p-5 rounded-xl border border-accent/20 bg-accent/5 text-center"
-              >
-                <p className="text-xs uppercase tracking-wider text-accent mb-2">Your Vision</p>
-                <p className="text-foreground italic">"{blueprint.dreamIntent}"</p>
-              </motion.div>
-            )}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="p-5 rounded-xl border border-accent/20 bg-accent/5 text-center"
+            >
+              <p className="text-xs uppercase tracking-wider text-accent mb-2">Your Vision</p>
+              <p className={cn("italic", blueprint.dreamIntent ? "text-foreground" : "text-muted-foreground")}>
+                {blueprint.dreamIntent ? `"${blueprint.dreamIntent}"` : "Not yet configured."}
+              </p>
+            </motion.div>
           </div>
         </div>
       </StepLayout>
