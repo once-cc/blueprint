@@ -12,7 +12,7 @@ import { SuccessState } from './SuccessState';
 import { SessionResumeModal } from './SessionResumeModal';
 import { StepLayout } from './StepLayout';
 import { VideoLogo } from '@/components/ui/VideoLogo';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import { ConfiguratorAct } from '@/types/blueprint';
 import { useNavigate } from 'react-router-dom';
 import { preloadTypographyFonts } from '@/utils/fontPreloader';
@@ -513,8 +513,13 @@ export function BlueprintConfigurator() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => navigate('/blueprint')} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  Exit to Homepage
+                <AlertDialogAction
+                  onClick={() => navigate('/blueprint')}
+                  className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300"
+                >
+                  <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                  <ArrowLeft className="relative z-10 w-4 h-4" />
+                  <span className="relative z-10">Exit to Homepage</span>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
