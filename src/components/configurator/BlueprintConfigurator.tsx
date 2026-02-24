@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { createClient } from '@supabase/supabase-js';
 import { useBlueprint } from '@/hooks/useBlueprint';
 import { useLenisScroll } from '@/hooks/useLenisScroll';
 import { ProgressRail } from './ProgressRail';
 import { DreamIntentHUD } from './DreamIntentHUD';
 import { DreamIntentTooltip } from './DreamIntentTooltip';
 import { ThemeToggle } from './ThemeToggle';
-import { StickyProgressIndicator } from './StickyProgressIndicator';
+
 import { ActTransition } from './ActTransition';
 import { SuccessState } from './SuccessState';
 import { SessionResumeModal } from './SessionResumeModal';
 import { StepLayout } from './StepLayout';
 import { VideoLogo } from '@/components/ui/VideoLogo';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ConfiguratorAct } from '@/types/blueprint';
-import { useChamberGate } from '@/hooks/useChamberGate';
+import { useNavigate } from 'react-router-dom';
 import { preloadTypographyFonts } from '@/utils/fontPreloader';
 
 // Act I: Discovery Steps
@@ -38,26 +37,10 @@ import { ReviewStep } from './steps/ReviewStep';
 
 import { BlueprintReference, ReferenceRole } from '@/types/blueprint';
 import { supabase } from '@/integrations/supabase/client';
+import { getBlueprintClient } from '@/lib/blueprintClient';
 
 type TransitionState = { from: ConfiguratorAct; to: ConfiguratorAct } | null;
 
-const SESSION_TOKEN_KEY = 'blueprint_session_token';
-
-// Factory to create a token-scoped Supabase client for blueprint operations
-const createBlueprintClient = () => {
-  const token = localStorage.getItem(SESSION_TOKEN_KEY);
-  if (!token) return null;
-  
-  return createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    {
-      global: { 
-        headers: { 'x-blueprint-token': token } 
-      }
-    }
-  );
-};
 
 export function BlueprintConfigurator() {
   const {
@@ -75,12 +58,15 @@ export function BlueprintConfigurator() {
     confirmSession,
   } = useBlueprint();
 
-  const [showTransition, setShowTransition] = useState<TransitionState>(null);
+  // Reordered transition state to track if we're actively transitioning between acts
+  const [activeTransition, setActiveTransition] = useState<TransitionState>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitResult, setSubmitResult] = useState<{ scores?: { integrity: number; complexity: number; tier?: string } } | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [references, setReferences] = useState<BlueprintReference[]>([]);
   const [showDreamTooltip, setShowDreamTooltip] = useState(false);
-  const { triggerGateNavigation } = useChamberGate();
+  const [isDreamIntentEditing, setIsDreamIntentEditing] = useState(false);
+  const navigate = useNavigate();
   const { scrollTo } = useLenisScroll();
 
   // Preload all typography fonts on mount
@@ -101,13 +87,13 @@ export function BlueprintConfigurator() {
   // Track scroll for HUD collapse with hysteresis to prevent wobble
   useEffect(() => {
     let isCurrentlyScrolled = false;
-    
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
       // Hysteresis: different thresholds for expand vs collapse prevents rapid toggling
       const shouldCollapse = scrollY > 50;
       const shouldExpand = scrollY < 20;
-      
+
       if (shouldCollapse && !isCurrentlyScrolled) {
         isCurrentlyScrolled = true;
         setIsScrolled(true);
@@ -116,7 +102,7 @@ export function BlueprintConfigurator() {
         setIsScrolled(false);
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -126,7 +112,7 @@ export function BlueprintConfigurator() {
     if (!blueprint?.id) return;
 
     const loadReferences = async () => {
-      const blueprintClient = createBlueprintClient();
+      const blueprintClient = getBlueprintClient();
       if (!blueprintClient) {
         console.error('[Blueprint] No session token found for loading references');
         return;
@@ -148,7 +134,7 @@ export function BlueprintConfigurator() {
         const refsWithUrls = await Promise.all(
           data.map(async (ref) => {
             let url = ref.url;
-            
+
             // Refresh signed URL if this is an uploaded file (not a link)
             if (ref.storage_path && ref.type !== 'link') {
               const { data: signedData } = await supabase.storage
@@ -183,14 +169,42 @@ export function BlueprintConfigurator() {
 
   if (isLoading || !blueprint) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-accent" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
+        {/* Soft Ambient Glow */}
+        <div className="absolute inset-0 bg-gradient-to-t from-accent/5 via-background to-background opacity-50" />
+
+        <motion.div
+          className="relative z-10 flex flex-col items-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {/* Logo with pulse effect */}
+          <div className="relative">
+            <motion.div
+              className="absolute inset-0 rounded-full blur-2xl bg-accent/20"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 0.8, 0.5]
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <VideoLogo size="lg" />
+          </div>
+        </motion.div>
       </div>
     );
   }
 
   if (isSubmitted || blueprint.status === 'submitted') {
-    return <SuccessState />;
+    return (
+      <SuccessState
+        blueprintId={blueprint.id}
+        blueprint={blueprint}
+        scores={submitResult?.scores || null}
+        deliver={blueprint.deliver as Record<string, unknown> | null}
+      />
+    );
   }
 
   // Show resume modal for returning users
@@ -215,23 +229,27 @@ export function BlueprintConfigurator() {
     const toAct = getActForStep(step);
 
     if (step > currentStep && fromAct !== toAct && toAct !== 'review') {
-      setShowTransition({ from: fromAct, to: toAct });
+      setActiveTransition({ from: fromAct, to: toAct });
     } else {
       setCurrentStep(step);
     }
     // Scroll to step header anchor on step change
     setTimeout(() => {
-      scrollTo('#step-header-anchor', { duration: 0.8, offset: 0 });
+      if (document.getElementById('step-header-anchor')) {
+        scrollTo('#step-header-anchor', { duration: 0.8, offset: -120 });
+      }
     }, 50);
   };
 
   const handleTransitionContinue = () => {
-    if (showTransition) {
-      const nextStep = showTransition.to === 'design' ? 4 : 7;
+    if (activeTransition) {
+      const nextStep = activeTransition.to === 'design' ? 4 : 7;
       setCurrentStep(nextStep);
-      setShowTransition(null);
+      setActiveTransition(null);
       setTimeout(() => {
-        scrollTo('#step-header-anchor', { duration: 0.8, offset: 0 });
+        if (document.getElementById('step-header-anchor')) {
+          scrollTo('#step-header-anchor', { duration: 0.8, offset: -120 });
+        }
       }, 50);
     }
   };
@@ -239,47 +257,29 @@ export function BlueprintConfigurator() {
   const handleSubmit = async () => {
     const result = await submitBlueprint();
     if (result.success) {
+      setSubmitResult({ scores: result.scores });
       setIsSubmitted(true);
     }
     return result.success;
   };
 
-  // Render transition screen
-  if (showTransition) {
-    return (
-      <div className="min-h-screen bg-background">
-        {/* Animated gradient background */}
-        <div className="animated-gradient-bg" aria-hidden="true" />
-        {/* Global Components */}
-        <DreamIntentHUD
-          dreamIntent={blueprint.dreamIntent}
-          onUpdate={updateDreamIntent}
-          isCollapsed={isScrolled}
-        />
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
-
-        <div className="container mx-auto px-4 py-20">
-          <ProgressRail 
-            currentStep={currentStep} 
-            onStepClick={goToStep}
-            className="mb-8" 
-          />
-          <ActTransition
-            completedAct={showTransition.from}
-            nextAct={showTransition.to}
-            onContinue={handleTransitionContinue}
-            discovery={blueprint.discovery}
-            design={blueprint.design}
-          />
-        </div>
-      </div>
-    );
-  }
 
   // Render step content
   const renderStep = () => {
+    // Intercept with transition screen if active
+    if (activeTransition) {
+      return (
+        <ActTransition
+          key={`transition-${activeTransition.from}-${activeTransition.to}`}
+          completedAct={activeTransition.from}
+          nextAct={activeTransition.to}
+          onContinue={handleTransitionContinue}
+          discovery={blueprint.discovery}
+          design={blueprint.design}
+        />
+      );
+    }
+
     switch (currentStep) {
       // Act I: Discovery
       case 1:
@@ -429,19 +429,24 @@ export function BlueprintConfigurator() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div
+      initial={{ opacity: 0, filter: 'blur(10px)' }}
+      animate={{ opacity: 1, filter: 'blur(0px)' }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className="min-h-screen bg-background bg-editorial-grid"
+    >
       {/* Animated gradient background */}
       <div className="animated-gradient-bg" aria-hidden="true" />
-      
-      {/* Back to Blueprint button */}
+
+      {/* Back to Blueprint logo button */}
       <motion.button
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        onClick={() => triggerGateNavigation('/blueprint')}
-        className="hidden sm:flex fixed top-4 left-4 z-50 items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full bg-background/80 backdrop-blur-md border border-border/50"
+        onClick={() => navigate('/blueprint')}
+        className="hidden sm:flex fixed top-4 left-6 z-50 items-center justify-center hover:scale-105 transition-transform duration-300"
+        aria-label="Return to Blueprint Home"
       >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Blueprint</span>
+        <VideoLogo size="sm" className="opacity-80 hover:opacity-100 transition-opacity" />
       </motion.button>
 
       {/* Global Components */}
@@ -449,20 +454,25 @@ export function BlueprintConfigurator() {
         dreamIntent={blueprint.dreamIntent}
         onUpdate={updateDreamIntent}
         isCollapsed={isScrolled}
+        isEditing={isDreamIntentEditing}
+        onEditingChange={setIsDreamIntentEditing}
       />
-      <DreamIntentTooltip show={showDreamTooltip && currentStep === 1} currentStep={currentStep} />
+      <DreamIntentTooltip
+        show={showDreamTooltip && currentStep === 1}
+        currentStep={currentStep}
+        onClick={() => setIsDreamIntentEditing(true)}
+      />
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
-      
-      {/* Sticky Progress Indicator */}
-      <StickyProgressIndicator currentStep={currentStep} />
+
+
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-20 md:py-24">
+      <div className="container mx-auto px-6 sm:px-8 md:px-12 pt-4 pb-16 md:pt-5 md:pb-20">
         {/* Logo above progress - cinematic centered */}
-        <motion.div 
-          className="flex justify-center mb-4"
+        <motion.div
+          className="flex justify-center mb-2"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -470,10 +480,10 @@ export function BlueprintConfigurator() {
           <VideoLogo size="sm" />
         </motion.div>
 
-        <ProgressRail 
-          currentStep={currentStep} 
+        <ProgressRail
+          currentStep={currentStep}
           onStepClick={goToStep}
-          className="mb-8 md:mb-12" 
+          className="mb-4 md:mb-6"
         />
 
         <div className="max-w-4xl mx-auto">
@@ -482,7 +492,7 @@ export function BlueprintConfigurator() {
           </AnimatePresence>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
