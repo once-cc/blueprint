@@ -1,154 +1,125 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, useMotionValue, animate, PanInfo } from "framer-motion";
-import { testimonials } from "@/data/testimonials";
-import { TestimonialCard } from "./TestimonialCard";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { testimonials, type Testimonial } from "@/data/testimonials";
+
+// Number of duplicate sets to ensure smooth infinite sweeping
+const MULTIPLIER = 3;
+const extendedTestimonials = Array.from({ length: MULTIPLIER }).flatMap((_, idx) =>
+  testimonials.map(t => ({ ...t, uniqueKey: `${t.id}-${idx}` }))
+);
 
 export function TestimonialCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Carousel Physics State
-  // We have 6 testimonials. 360 / 6 = 60 degrees.
-  const theta = 360 / testimonials.length;
-
-  // A larger radius pushes the cards further out from the center OF THE CYLINDER.
-  // To keep the *front* card exactly at scale 1, we push the cylinder itself back by the same amount.
-  const CYLINDER_RADIUS = 850;
-
-  const rotation = useMotionValue(0);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    return rotation.onChange((val) => {
-      const normalized = ((val % 360) + 360) % 360;
-      let closest = Math.round((360 - normalized) / theta) % testimonials.length;
-      if (closest < 0) closest += testimonials.length;
-      setActiveIndex(closest);
-    });
-  }, [rotation, theta]);
-
-  const snapToDegree = (targetRotation: number) => {
-    animate(rotation, targetRotation, {
-      type: "spring",
-      stiffness: 150,
-      damping: 25,
-      mass: 1
-    });
-  };
-
-  const handlePanEnd = (_e: any, info: PanInfo) => {
-    const currentRot = rotation.get();
-
-    // Convert swipe velocity to momentum logic. 
-    // Faster swipe = spins further before snapping.
-    const velocityFactor = info.velocity.x * 0.08;
-    const targetWithMomentum = currentRot + velocityFactor;
-
-    // Find nearest natural resting face
-    const nearestFace = Math.round(targetWithMomentum / theta) * theta;
-    snapToDegree(nearestFace);
-  };
-
-  const spinCarousel = (direction: -1 | 1) => {
-    const currentRot = rotation.get();
-    const roundedCurrentRot = Math.round(currentRot / theta) * theta;
-    const nextRot = roundedCurrentRot + (direction * theta);
-    snapToDegree(nextRot);
-  };
-
-  const handleCardClick = (index: number) => {
-    if (index === activeIndex) return;
-
-    const currentRot = rotation.get();
-    const currentNormalized = ((currentRot % 360) + 360) % 360;
-    const targetNormalized = (360 - (index * theta)) % 360;
-
-    let diff = targetNormalized - currentNormalized;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-
-    snapToDegree(currentRot + diff);
-  };
+  // Track continuous horizontal scroll
+  const x = useMotionValue(0);
+  // Add a spring to smooth out the dragging and snapping
+  const animatedX = useSpring(x, { stiffness: 400, damping: 40 });
 
   return (
-    <div className="relative w-full overflow-hidden py-16 bg-background">
+    <div className="relative w-full overflow-hidden py-24 bg-background select-none">
 
-      {/* Background Gradient Fades (Z-index high to mask cylinder clipping at edges) */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+      {/* Background Gradient Fades to mask edges smoothly */}
+      <div className="absolute left-0 top-0 bottom-0 w-24 md:w-64 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-24 md:w-64 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
 
-      {/* Navigation Controls */}
-      <button
-        onClick={() => spinCarousel(1)}
-        className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-card border border-border/50 flex items-center justify-center hover:border-accent hover:text-accent transition-colors shadow-lg"
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={() => spinCarousel(-1)}
-        className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-card border border-border/50 flex items-center justify-center hover:border-accent hover:text-accent transition-colors shadow-lg"
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-
-      {/* 3D Scene */}
+      {/* 3D Scene Container */}
       <div
         ref={containerRef}
-        className="flex justify-center items-center h-[500px] relative z-10 touch-none"
+        className="flex justify-center items-center relative z-10 w-full"
         style={{ perspective: "1000px" }}
       >
-        {/* Invisible Pan Detector 
-            Takes up entire scene, captures drag without physically moving.
-            We use onPan instead of drag="x" so it doesn't slide off screen. */}
         <motion.div
-          className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
-          onPan={(_e, info) => {
-            const currentRot = rotation.get();
-            // Map physical pixel drag to rotation degrees. 
-            rotation.set(currentRot + info.delta.x * 0.2);
-          }}
-          onPanEnd={handlePanEnd}
-        />
-
-        {/* The Rotatable Cylinder 
-            Pushed back mathematically by -CYLINDER_RADIUS so the active front card sits naturally at Z=0 */}
-        <motion.div
-          className="relative flex justify-center items-center pointer-events-none"
-          style={{
-            rotateY: rotation,
-            z: -CYLINDER_RADIUS,
-            transformStyle: "preserve-3d"
-          }}
+          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing px-[50vw]" // Padding ensures cards can reach center
+          style={{ x: animatedX, transformStyle: "preserve-3d" }}
+          drag="x"
+          dragConstraints={{ left: -3000, right: 3000 }} // Loose constraints, ideally infinite
+          dragElastic={0.1}
         >
-          {testimonials.map((testimonial, idx) => {
-            const itemRotationY = idx * theta;
-
-            return (
-              <motion.div
-                key={testimonial.id}
-                className="absolute flex justify-center items-center"
-                style={{
-                  width: "350px",
-                  height: "400px",
-                  // Position card around the cylinder perimeter
-                  transform: `rotateY(${itemRotationY}deg) translateZ(${CYLINDER_RADIUS}px)`,
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden"
-                }}
-              >
-                {/* Re-enable pointer events so cards beneath the pan-layer can still be clicked */}
-                <div className="w-full h-full relative pointer-events-auto z-30">
-                  <TestimonialCard
-                    testimonial={testimonial}
-                    onClick={() => handleCardClick(idx)}
-                    isActive={activeIndex === idx}
-                  />
-                </div>
-              </motion.div>
-            )
-          })}
+          {extendedTestimonials.map((testimonial, idx) => (
+            <Card
+              key={testimonial.uniqueKey}
+              testimonial={testimonial}
+              index={idx}
+              x={animatedX}
+            />
+          ))}
         </motion.div>
       </div>
+
     </div>
+  );
+}
+
+// Extract Card to its own component so it can track its individual position
+function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: string }, index: number, x: any }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [centerDistance, setCenterDistance] = useState(0);
+
+  // Track global X motion and calculate this specific card's distance from the absolute viewport center
+  useEffect(() => {
+    return x.onChange(() => {
+      if (!cardRef.current) return;
+      // Get card's current bounding box on screen
+      const rect = cardRef.current.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const windowCenter = window.innerWidth / 2;
+      // Distance in pixels from the absolute screen center
+      setCenterDistance(cardCenter - windowCenter);
+    });
+  }, [x]);
+
+  // Create a local motion value that updates alongside state, 
+  // to drive smooth Framer useTransforms
+  const distanceMotionValue = useMotionValue(0);
+  useEffect(() => {
+    distanceMotionValue.set(centerDistance);
+  }, [centerDistance, distanceMotionValue]);
+
+  // If perfectly centered (0), z is 0 (front). If far left or right (±800px), pushed back (-200px)
+  const z = useTransform(distanceMotionValue, [-800, 0, 800], [-300, 0, -300]);
+
+  // If far left (-800px), tilt right (25deg). Center (0), flat (0deg). Far right (800px), tilt left (-25deg).
+  const rotateY = useTransform(distanceMotionValue, [-800, 0, 800], [25, 0, -25]);
+
+  // Fade out cards as they get to the absolute edges
+  const opacity = useTransform(distanceMotionValue, [-800, -300, 0, 300, 800], [0, 0.5, 1, 0.5, 0]);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      className="flex-shrink-0 w-[280px] md:w-[350px] aspect-[4/5] md:aspect-square relative flex items-center justify-center rounded-3xl overflow-hidden bg-muted border border-border/20 shadow-xl"
+      style={{
+        z,
+        rotateY,
+        opacity,
+        transformStyle: "preserve-3d"
+      }}
+    >
+      {/* The Reference image specifically mentions portrait images, clean and minimal */}
+      {testimonial.image ? (
+        <img
+          src={testimonial.image}
+          alt={testimonial.name}
+          className="absolute inset-0 w-full h-full object-cover"
+          draggable={false}
+        />
+      ) : (
+        // Fallback minimal text design if no image is present, staying faithful to the reference vibe
+        <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between bg-gradient-to-br from-card to-background text-foreground">
+          <p className="text-base md:text-xl font-raela font-medium leading-snug line-clamp-[6]">
+            "{testimonial.quote}"
+          </p>
+
+          <div className="mt-4">
+            <p className="font-nohemi font-semibold text-base md:text-lg">{testimonial.name}</p>
+            <p className="text-xs md:text-sm text-accent lowercase tracking-wide">{testimonial.role}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Subtle inner shadow overlay to give it physical volume */}
+      <div className="absolute inset-0 border border-white/10 rounded-3xl pointer-events-none" />
+    </motion.div>
   );
 }
