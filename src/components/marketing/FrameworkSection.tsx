@@ -102,7 +102,8 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
             {/* Top aligned natively to ensure layout boundaries perfectly match visual boundaries for flush docking */}
             <div className="sticky top-[22vh] w-full flex justify-center" style={{ zIndex: index, perspective: "1500px" }}>
 
-                <motion.div style={{ y: useTransform(popProgress, [0, 1], ["-10vh", "0vh"]) }} className="w-full flex justify-center">
+                {/* Removed the -10vh entering pop shift so the card sits perfectly flush against the upstream section boundary */}
+                <div className="w-full flex justify-center">
                     <motion.div
                         style={{ scale: groupScale, opacity: groupOpacity, y: groupY, rotateX: groupRotateX }}
                         // Important to ensure the perspective origin behaves well
@@ -204,7 +205,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                             </div>
                         </div>
                     </motion.div>
-                </motion.div>
+                </div>
             </div>
         </div>
     );
@@ -220,7 +221,7 @@ function FrameworkDesktop() {
     return (
         <div className="hidden md:block w-full">
             {/* Stacking Container Height flows organically from physical spacing on children */}
-            <div ref={containerRef} className="relative mt-8 md:mt-16">
+            <div ref={containerRef} className="relative">
                 {processSteps.map((step, i) => {
                     return (
                         <DesktopStackCard
