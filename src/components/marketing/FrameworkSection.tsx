@@ -68,16 +68,15 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
     // This allows useScroll to perfectly map its document position without getting paused/stuck by position: sticky!
     const trackerRef = useRef<HTMLDivElement>(null);
 
-    // Title pops up perfectly as the card centers into the viewport
+    // Title pops up perfectly exactly as the card hits its sticky docking point
     const { scrollYProgress: popProgress } = useScroll({
         target: trackerRef,
-        offset: ["start 80%", "start 20%"]
+        offset: ["start 22vh", "start 2vh"]
     });
 
     const titleY = useTransform(popProgress, [0, 1], ["85%", "40%"]);
-    // Opacity: First card starts fully visible instantly, subsequent cards fade in as they pop.
-    // However, the LAST card shouldn't fade back out later.
-    const titleOpacity = useTransform(popProgress, [0, 0.4, 1], [index === 0 ? 1 : 0, 1, 1]);
+    // Opacity: All cards start hidden and fade/slide up immediately once they stick
+    const titleOpacity = useTransform(popProgress, [0, 0.4, 1], [0, 1, 1]);
 
     // Exit begins the moment this card's top hits -30vh from the viewport top
     // (exactly when the next card's top enters the viewport from the bottom).
