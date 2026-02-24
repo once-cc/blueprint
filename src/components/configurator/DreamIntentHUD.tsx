@@ -4,6 +4,7 @@ import { Sparkles, Pencil, Check } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { ShinyButton } from '@/components/ui/shiny-button';
 import { Textarea } from '@/components/ui/textarea';
 
 interface DreamIntentHUDProps {
@@ -25,6 +26,7 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
   }, [isEditing, dreamIntent]);
 
   const maxDisplayLength = isMobile ? 35 : 80;
+  const isValidInput = Boolean(editValue.trim() && editValue !== dreamIntent);
 
   const handleSave = (intent: string) => {
     onUpdate(intent);
@@ -121,14 +123,26 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
                 isolation: isolate;
                 border-radius: var(--radius);
                 background: linear-gradient(var(--hud-bg), var(--hud-bg)) padding-box,
+                  linear-gradient(rgba(245, 166, 35, 0.15), rgba(245, 166, 35, 0.15)) border-box;
+                border: 1px solid transparent;
+              }
+
+              /* Animating state: drawing attention when empty/unchanged */
+              .hud-input-container.animating:not(:focus-within) {
+                background: linear-gradient(var(--hud-bg), var(--hud-bg)) padding-box,
                   conic-gradient(
                     from var(--hud-gradient-angle),
                     transparent 40%,
                     var(--hud-highlight) 80%,
                     var(--hud-highlight-bright) 100%
                   ) border-box;
-                border: 1px solid transparent;
                 animation: hud-gradient-spin 4s linear infinite;
+              }
+
+              /* Focused state: static amber border */
+              .hud-input-container:focus-within {
+                background: linear-gradient(var(--hud-bg), var(--hud-bg)) padding-box,
+                  linear-gradient(var(--hud-highlight-bright), var(--hud-highlight-bright)) border-box;
               }
 
               @keyframes hud-gradient-spin {
@@ -137,7 +151,7 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
                 }
               }
             `}</style>
-            <div className="hud-input-container p-[1px]">
+            <div className={`hud-input-container p-[1px] ${!isValidInput ? 'animating' : ''}`}>
               <Textarea
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
@@ -147,17 +161,18 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
               />
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="ghost" onClick={() => setIsEditing(false)}>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="ghost" onClick={() => setIsEditing(false)} className="rounded-full px-6 text-sm">
               Cancel
             </Button>
-            <Button
+            <ShinyButton
               onClick={() => handleSave(editValue)}
-              className="bg-accent text-accent-foreground hover:bg-accent/90 px-6"
-              disabled={!editValue.trim() || editValue === dreamIntent}
+              disabled={!isValidInput}
+              isAnimating={isValidInput}
+              size="sm"
             >
               Save Vision
-            </Button>
+            </ShinyButton>
           </div>
         </DialogContent>
       </Dialog>
