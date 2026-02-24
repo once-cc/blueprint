@@ -2,31 +2,31 @@ import React, { KeyboardEvent, useRef, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 
 interface DreamInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    onSubmit: () => void;
-    placeholder?: string;
-    className?: string;
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  placeholder?: string;
+  className?: string;
 }
 
 export function DreamInput({
-    value,
-    onChange,
-    onSubmit,
-    placeholder = "What are we building together?",
-    className = ""
+  value,
+  onChange,
+  onSubmit,
+  placeholder = "What are we building together?",
+  className = ""
 }: DreamInputProps) {
-    const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && value.trim()) {
-            onSubmit();
-        }
-    };
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && value.trim()) {
+      onSubmit();
+    }
+  };
 
-    return (
-        <>
-            <style>{`
+  return (
+    <>
+      <style>{`
         @property --gradient-angle {
           syntax: "<angle>";
           initial-value: 0deg;
@@ -160,30 +160,31 @@ export function DreamInput({
         }
       `}</style>
 
-            <div
-                className={`shiny-input-container flex flex-row items-center w-full min-w-[300px] border border-transparent shadow-2xl backdrop-blur-md group ${className}`}
-                onClick={() => inputRef.current?.focus()}
-            >
-                <input
-                    ref={inputRef}
-                    type="text"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={placeholder}
-                    className="flex-1 bg-transparent border-none text-white placeholder-zinc-500 font-body type-functional text-lg md:text-xl py-3 px-6 lg:py-4 lg:px-8 outline-none focus:outline-none focus:ring-0 active:outline-none w-full"
-                    autoComplete="off"
-                    autoFocus
-                />
-                <button
-                    onClick={() => value.trim() && onSubmit()}
-                    disabled={!value.trim()}
-                    className="mr-2 lg:mr-3 p-3 lg:p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group-focus-within:bg-zinc-800"
-                    aria-label="Submit dream intent"
-                >
-                    <ArrowRight className="w-5 h-5 text-white" />
-                </button>
-            </div>
-        </>
-    );
+      <div
+        className={`shiny-input-container flex flex-row items-center w-full min-w-[300px] border border-transparent shadow-2xl backdrop-blur-md group ${className}`}
+        onClick={() => inputRef.current?.focus()}
+      >
+        <input
+          id="dream-intent-input"
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent border-none text-white placeholder-zinc-500 font-body type-functional text-lg md:text-xl py-3 px-6 lg:py-4 lg:px-8 outline-none focus:outline-none focus:ring-0 active:outline-none w-full"
+          autoComplete="off"
+          autoFocus
+        />
+        <button
+          onClick={() => value.trim() && onSubmit()}
+          disabled={!value.trim()}
+          className="mr-2 lg:mr-3 p-3 lg:p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group-focus-within:bg-zinc-800"
+          aria-label="Submit dream intent"
+        >
+          <ArrowRight className="w-5 h-5 text-white" />
+        </button>
+      </div>
+    </>
+  );
 }

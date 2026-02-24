@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate } from "framer-motion";
 import { ArrowRight, FileText, Compass, Target, Rocket, Sparkles, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TestimonialCarousel } from "@/components/blueprint/TestimonialCarousel";
@@ -54,8 +54,23 @@ export default function Blueprint() {
 
   const scrollToChatbox = () => {
     const el = document.getElementById("chatbox-section");
+    const inputEl = document.getElementById("dream-intent-input");
+
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Offset by 100px so it centers comfortably on screen
+      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+
+      animate(window.scrollY, y, {
+        duration: 1.2,
+        ease: [0.16, 1, 0.3, 1], // Cinematic ease-out curve
+        onUpdate: (latest) => window.scrollTo(0, latest),
+        onComplete: () => {
+          if (inputEl) {
+            // Give layout a tick to settle, then force focus without scrolling out of position
+            setTimeout(() => inputEl.focus({ preventScroll: true }), 50);
+          }
+        }
+      });
     }
   };
 
