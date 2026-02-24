@@ -16,6 +16,16 @@ import { Loader2 } from 'lucide-react';
 import { ConfiguratorAct } from '@/types/blueprint';
 import { useNavigate } from 'react-router-dom';
 import { preloadTypographyFonts } from '@/utils/fontPreloader';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // Act I: Discovery Steps
 import { BusinessFoundationsStep } from './steps/BusinessFoundationsStep';
@@ -66,6 +76,7 @@ export function BlueprintConfigurator() {
   const [references, setReferences] = useState<BlueprintReference[]>([]);
   const [showDreamTooltip, setShowDreamTooltip] = useState(false);
   const [isDreamIntentEditing, setIsDreamIntentEditing] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
   const navigate = useNavigate();
   const { scrollTo } = useLenisScroll();
 
@@ -167,42 +178,15 @@ export function BlueprintConfigurator() {
     loadReferences();
   }, [blueprint?.id]);
 
-  if (isLoading || !blueprint) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
-        {/* Soft Ambient Glow */}
-        <div className="absolute inset-0 bg-gradient-to-t from-accent/5 via-background to-background opacity-50" />
+  // We removed the early return for isLoading to allow a smooth overlay transition
 
-        <motion.div
-          className="relative z-10 flex flex-col items-center"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          {/* Logo with pulse effect */}
-          <div className="relative">
-            <motion.div
-              className="absolute inset-0 rounded-full blur-2xl bg-accent/20"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 0.8, 0.5]
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <VideoLogo size="lg" />
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (isSubmitted || blueprint.status === 'submitted') {
+  if (isSubmitted || blueprint?.status === 'submitted') {
     return (
       <SuccessState
-        blueprintId={blueprint.id}
-        blueprint={blueprint}
+        blueprintId={blueprint?.id || ''}
+        blueprint={blueprint!}
         scores={submitResult?.scores || null}
-        deliver={blueprint.deliver as Record<string, unknown> | null}
+        deliver={blueprint?.deliver as Record<string, unknown> | null}
       />
     );
   }
@@ -214,14 +198,14 @@ export function BlueprintConfigurator() {
         isOpen={true}
         onContinue={confirmSession}
         onStartFresh={resetBlueprint}
-        lastUpdated={blueprint.updatedAt}
-        currentStep={blueprint.currentStep}
-        dreamIntent={blueprint.dreamIntent}
+        lastUpdated={blueprint?.updatedAt || new Date()}
+        currentStep={blueprint?.currentStep || 1}
+        dreamIntent={blueprint?.dreamIntent}
       />
     );
   }
 
-  const currentStep = blueprint.currentStep;
+  const currentStep = blueprint?.currentStep ?? 1;
 
   const goToStep = (step: number) => {
     // Check for act transitions
@@ -429,70 +413,116 @@ export function BlueprintConfigurator() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, filter: 'blur(10px)' }}
-      animate={{ opacity: 1, filter: 'blur(0px)' }}
-      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen bg-background bg-editorial-grid"
-    >
-      {/* Animated gradient background */}
-      <div className="animated-gradient-bg" aria-hidden="true" />
+    <>
+      <AnimatePresence>
+        {(isLoading || !blueprint) && (
+          <motion.div
+            key="splash"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background overflow-hidden"
+            exit={{ opacity: 0, scale: 1.05, filter: 'blur(15px)' }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-accent/5 via-background to-background opacity-50" />
+            <motion.div
+              className="relative z-10 flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <div className="relative">
+                <motion.div
+                  className="absolute inset-0 rounded-full blur-2xl bg-accent/20"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <VideoLogo size="lg" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Back to Blueprint logo button */}
-      <motion.button
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        onClick={() => navigate('/blueprint')}
-        className="hidden sm:flex fixed top-4 left-6 z-50 items-center justify-center hover:scale-105 transition-transform duration-300"
-        aria-label="Return to Blueprint Home"
-      >
-        <VideoLogo size="sm" className="opacity-80 hover:opacity-100 transition-opacity" />
-      </motion.button>
-
-      {/* Global Components */}
-      <DreamIntentHUD
-        dreamIntent={blueprint.dreamIntent}
-        onUpdate={updateDreamIntent}
-        isCollapsed={isScrolled}
-        isEditing={isDreamIntentEditing}
-        onEditingChange={setIsDreamIntentEditing}
-      />
-      <DreamIntentTooltip
-        show={showDreamTooltip && currentStep === 1}
-        currentStep={currentStep}
-        onClick={() => setIsDreamIntentEditing(true)}
-      />
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
-
-
-      {/* Main Content */}
-      <div className="container mx-auto px-6 sm:px-8 md:px-12 pt-4 pb-16 md:pt-5 md:pb-20">
-        {/* Logo above progress - cinematic centered */}
+      {/* Main Content conditionally wrapped in AnimatePresence but structurally persistent outside the early splash */}
+      {!isLoading && blueprint && (
         <motion.div
-          className="flex justify-center mb-2"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
+          animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+          className="min-h-screen bg-background bg-editorial-grid"
         >
-          <VideoLogo size="sm" />
-        </motion.div>
+          {/* Animated gradient background */}
+          <div className="animated-gradient-bg" aria-hidden="true" />
 
-        <ProgressRail
-          currentStep={currentStep}
-          onStepClick={goToStep}
-          className="mb-4 md:mb-6"
-        />
+          {/* Global Components */}
+          <DreamIntentHUD
+            dreamIntent={blueprint.dreamIntent}
+            onUpdate={updateDreamIntent}
+            isCollapsed={isScrolled}
+            isEditing={isDreamIntentEditing}
+            onEditingChange={setIsDreamIntentEditing}
+          />
+          <DreamIntentTooltip
+            show={showDreamTooltip && currentStep === 1}
+            currentStep={currentStep}
+            onClick={() => setIsDreamIntentEditing(true)}
+          />
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
 
-        <div className="max-w-4xl mx-auto">
-          <AnimatePresence mode="wait">
-            {renderStep()}
-          </AnimatePresence>
-        </div>
-      </div>
-    </motion.div>
+
+
+          {/* Main Content */}
+          <div className="container mx-auto px-6 sm:px-8 md:px-12 pt-4 pb-16 md:pt-5 md:pb-20">
+            {/* Logo above progress - cinematic centered */}
+            <motion.div
+              className="flex justify-center mb-2"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <button
+                onClick={() => setShowExitDialog(true)}
+                className="hover:scale-105 transition-transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full"
+                aria-label="Return to Blueprint Home"
+              >
+                <VideoLogo size="sm" />
+              </button>
+            </motion.div>
+
+            <ProgressRail
+              currentStep={currentStep}
+              onStepClick={goToStep}
+              className="mb-4 md:mb-6"
+            />
+
+            <div className="max-w-4xl mx-auto">
+              <AnimatePresence mode="wait">
+                {renderStep()}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+            <AlertDialogContent className="max-w-[400px]">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to exit?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Your progress is automatically saved to your session. Are you sure you'd like to exit to the Blueprint homepage?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => navigate('/blueprint')} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  Exit to Homepage
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </motion.div >
+      )
+      }
+    </>
   );
 }
 
