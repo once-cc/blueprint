@@ -76,14 +76,15 @@ function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: stri
     distanceMotionValue.set(centerDistance);
   }, [centerDistance, distanceMotionValue]);
 
-  // If perfectly centered (0), z is 0 (front). If far left or right (±800px), pushed back (-200px)
-  const z = useTransform(distanceMotionValue, [-800, 0, 800], [-300, 0, -300]);
+  // If perfectly centered (0), z is pushed back (-400px). If far left or right (±800px), brought forward (100px)
+  // This creates the requested concave, "wrapping around the user" effect.
+  const z = useTransform(distanceMotionValue, [-800, 0, 800], [150, -350, 150]);
 
-  // If far left (-800px), tilt right (25deg). Center (0), flat (0deg). Far right (800px), tilt left (-25deg).
-  const rotateY = useTransform(distanceMotionValue, [-800, 0, 800], [25, 0, -25]);
+  // If far left (-800px), tilt right (35deg) towards center. Far right (800px), tilt left (-35deg) towards center.
+  const rotateY = useTransform(distanceMotionValue, [-800, 0, 800], [35, 0, -35]);
 
   // Fade out cards as they get to the absolute edges
-  const opacity = useTransform(distanceMotionValue, [-800, -300, 0, 300, 800], [0, 0.5, 1, 0.5, 0]);
+  const opacity = useTransform(distanceMotionValue, [-800, -500, 0, 500, 800], [0, 0.8, 1, 0.8, 0]);
 
   return (
     <motion.div
