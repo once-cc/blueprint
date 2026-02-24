@@ -220,7 +220,7 @@ function FrameworkDesktop() {
     return (
         <div className="hidden md:block w-full">
             {/* Stacking Container Height flows organically from physical spacing on children */}
-            <div ref={containerRef} className="relative mt-[38vh]">
+            <div ref={containerRef} className="relative mt-8 md:mt-16">
                 {processSteps.map((step, i) => {
                     return (
                         <DesktopStackCard
