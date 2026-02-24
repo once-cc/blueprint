@@ -135,6 +135,15 @@ export function DreamInput({
         /* Focus states applied via container hover for consistency, 
            plus active focus-within from Tailwind classes below */
         
+        /* Animate */
+        .shiny-input-container,
+        .shiny-input-container::before,
+        .shiny-input-container::after {
+          animation: var(--animation) var(--duration),
+            var(--animation) calc(var(--duration) / 0.4) reverse paused;
+          animation-composition: add;
+        }
+
         .shiny-input-container:is(:hover, :focus-within) {
           --gradient-percent: 20%;
           --gradient-angle-offset: 95deg;
@@ -142,6 +151,7 @@ export function DreamInput({
           transform: translateY(-2px);
         }
 
+        .shiny-input-container:is(:hover, :focus-within),
         .shiny-input-container:is(:hover, :focus-within)::before,
         .shiny-input-container:is(:hover, :focus-within)::after {
           animation-play-state: running;
