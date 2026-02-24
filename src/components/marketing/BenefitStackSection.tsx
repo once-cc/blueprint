@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
-import { CheckCircle, ShieldCheck, Zap, LineChart, Target } from "lucide-react";
+import { ShieldCheck, Zap, LineChart, Target } from "lucide-react";
+import { GridSection } from "@/components/ui/grid-section";
 
 const benefits = [
     {
@@ -56,7 +57,7 @@ const Word = ({ children, progress, range }: WordRevealProps) => {
 };
 
 export function BenefitStackSection() {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start center", "center center"]
@@ -66,10 +67,15 @@ export function BenefitStackSection() {
     const words = introText.split(" ");
 
     return (
-        <section ref={containerRef} className="py-24 pt-[30vh] bg-background relative z-20">
-            <div className="container mx-auto px-6 mb-24">
+        <GridSection ref={containerRef} className="py-24 md:py-32 bg-muted/30 z-20 overflow-hidden">
+            {/* The Editorial Ramp / Central Spine connecting to next section */}
+            <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
+
+            <div className="container mx-auto px-6 mb-24 relative z-10">
                 <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-                    <CheckCircle className="w-6 h-6 text-accent mb-8 opacity-80" />
+                    <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2 mb-8">
+                        <span className="text-accent/60">//</span> Strategic Intelligence
+                    </span>
 
                     <h2 className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-center">
                         {words.map((word, i) => {
@@ -106,54 +112,51 @@ export function BenefitStackSection() {
                 </div>
             </div>
 
-            {/* Bento Grid Container */}
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-                    {benefits.map((benefit, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
-                            className="group relative bg-card/40 hover:bg-card/60 border border-border/20 hover:border-border/50 rounded-3xl p-8 md:p-10 flex flex-col gap-6 overflow-hidden transition-all duration-500"
-                        >
-                            {/* Hover glow effect aligned with brand colors */}
-                            <div
-                                className="absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                                style={{
-                                    background: `radial-gradient(600px circle at top left, ${benefit.color}15, transparent 40%)`
-                                }}
-                            />
+            {/* Architectural Schematic Grid */}
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
+                <div className="max-w-5xl mx-auto">
+                    {/* The 2x2 Drawn Grid */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="grid grid-cols-1 md:grid-cols-2 bg-background border border-white/5 divide-y divide-white/5 md:divide-y-0 relative shadow-2xl"
+                    >
+                        {/* Horizontal divider for desktop row 2 */}
+                        <div className="hidden md:absolute md:block top-1/2 left-0 right-0 h-px bg-white/5 z-0 pointer-events-none" />
+                        {/* Vertical divider for desktop col 2 */}
+                        <div className="hidden md:absolute md:block top-0 bottom-0 left-1/2 w-px bg-white/5 z-0 pointer-events-none" />
 
-                            {/* Outer Glow */}
+                        {benefits.map((benefit, i) => (
                             <div
-                                className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-[0.03] group-hover:opacity-[0.08] pointer-events-none transition-opacity duration-500"
-                                style={{ backgroundColor: benefit.color }}
-                            />
-
-                            <div className="flex items-center gap-4">
-                                <div className="relative w-16 h-16 rounded-2xl bg-background border border-border/20 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
-                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-                                    <benefit.icon className="w-8 h-8 opacity-80 transition-colors duration-500" style={{ color: benefit.color }} />
+                                key={i}
+                                className="group relative p-8 md:p-12 flex flex-col gap-8 transition-colors duration-500 hover:bg-white/[0.02]"
+                            >
+                                {/* Technical Header */}
+                                <div className="flex justify-between items-start">
+                                    <div className="flex flex-col gap-2">
+                                        <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: benefit.color }}>
+                                            <span className="opacity-60">//</span> 0{i + 1}
+                                        </span>
+                                        <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-foreground group-hover:text-white transition-colors duration-300">
+                                            {benefit.title}
+                                        </h3>
+                                    </div>
+                                    <div className="relative w-12 h-12 rounded bg-background border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-white/30 transition-colors duration-500">
+                                        <benefit.icon className="w-5 h-5 opacity-80" style={{ color: benefit.color }} />
+                                    </div>
                                 </div>
-                                <span className="font-nohemi font-medium text-xs tracking-widest text-muted-foreground uppercase">
-                                    0{i + 1}
-                                </span>
-                            </div>
 
-                            <div className="flex flex-col gap-3 relative z-10">
-                                <h3 className="font-nohemi font-medium text-2xl md:text-3xl text-foreground group-hover:text-white transition-colors duration-300">
-                                    {benefit.title}
-                                </h3>
-                                <p className="font-body type-functional-light text-base text-muted-foreground leading-relaxed">
+                                {/* Annotation copy */}
+                                <p className="font-body type-functional-light text-sm md:text-base text-muted-foreground leading-relaxed max-w-sm">
                                     {benefit.description}
                                 </p>
                             </div>
-                        </motion.div>
-                    ))}
+                        ))}
+                    </motion.div>
                 </div>
             </div>
-        </section>
+        </GridSection>
     );
 }
