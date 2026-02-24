@@ -270,7 +270,7 @@ export default function Blueprint() {
         className="fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden"
       >
         {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 overflow-hidden mix-blend-plus-lighter">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 overflow-hidden">
           <img
             src={footerBg}
             alt="Footer Background"
