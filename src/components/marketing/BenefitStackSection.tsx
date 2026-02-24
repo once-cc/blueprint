@@ -1,11 +1,11 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { CheckCircle, ShieldCheck, Zap, LineChart, Target, Eye } from "lucide-react";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { CheckCircle, ShieldCheck, Zap, LineChart, Target } from "lucide-react";
 
 const benefits = [
     {
         title: "Absolute Certainty",
-        description: "Eliminate the guesswork from development. You see exactly what you’re getting, how it maps to conversion, and why every decision was made before writing a single line of code.",
+        description: "Eliminate the guesswork from development. You see exactly what you're getting, how it maps to conversion, and why every decision was made before writing a single line of code.",
         icon: ShieldCheck,
         color: "hsl(220 12% 40%)" // Muted metallic
     },
@@ -29,65 +29,29 @@ const benefits = [
     }
 ];
 
-interface StackCardProps {
-    index: number;
-    benefit: {
-        title: string;
-        description: string;
-        icon: any; // Lucide icon reference
-        color: string;
-    };
-    progressRange: [number, number];
-    progressTotal: import("framer-motion").MotionValue<number>;
+interface WordRevealProps {
+    children: string;
+    progress: MotionValue<number>;
+    range: [number, number];
 }
 
-// Individual Sticky Card
-const StackCard = ({ index, benefit, progressRange, progressTotal }: StackCardProps) => {
-    // Use the overall container scroll to drive the scale and darken effect
-    // As the user scrolls past this card (progress > start of its range), it scales down and darkens
-    const scale = useTransform(progressTotal, progressRange, [1, 0.95]);
-    const brightness = useTransform(progressTotal, progressRange, [1, 0.4]);
+const Word = ({ children, progress, range }: WordRevealProps) => {
+    const opacity = useTransform(progress, range, [0.25, 1]);
+    const highlight = useTransform(
+        progress,
+        range,
+        ["hsl(220 12% 50% / 0.25)", "hsl(45 10% 92%)"]
+    );
 
     return (
-        <div className="sticky top-24 pt-4 md:pt-8" style={{ zIndex: index }}>
-            <motion.div
-                style={{ scale, filter: `brightness(${brightness})` }}
-                className="w-full bg-card border border-border/20 rounded-3xl p-8 md:p-16 flex flex-col md:flex-row gap-8 md:gap-16 items-center shadow-2xl overflow-hidden relative"
+        <span className="relative">
+            <motion.span
+                style={{ opacity, color: highlight }}
+                className="transition-colors duration-100"
             >
-                {/* Subtle Background Glow corresponding to icon color */}
-                <div
-                    className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full blur-[100px] opacity-[0.03] pointer-events-none"
-                    style={{ backgroundColor: benefit.color }}
-                />
-
-                {/* Cinematics Icon Column */}
-                <div className="w-full md:w-1/3 flex justify-center items-center">
-                    <div className="relative w-40 h-40 md:w-64 md:h-64 rounded-[2rem] bg-background/50 border border-border/10 flex items-center justify-center shadow-inner">
-                        {/* Diagonal light sweeps (CSS only via gradients) */}
-                        <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-                        <benefit.icon className="w-16 h-16 md:w-24 md:h-24 opacity-80" style={{ color: benefit.color }} />
-                    </div>
-                </div>
-
-                {/* Editorial Content Column */}
-                <div className="w-full md:w-2/3 flex flex-col gap-6 text-center md:text-left relative z-10">
-                    <div className="flex items-center gap-3 justify-center md:justify-start">
-                        <CheckCircle className="w-5 h-5 text-accent/80 hidden md:block" />
-                        <span className="font-nohemi font-medium text-[10px] md:text-sm tracking-widest text-muted-foreground uppercase">
-                            Advantage 0{index + 1}
-                        </span>
-                    </div>
-
-                    <h3 className="font-nohemi font-medium text-3xl md:text-5xl leading-tight">
-                        {benefit.title}
-                    </h3>
-
-                    <p className="font-body type-functional-light text-base md:text-xl text-muted-foreground leading-relaxed max-w-2xl">
-                        {benefit.description}
-                    </p>
-                </div>
-            </motion.div>
-        </div>
+                {children}
+            </motion.span>
+        </span>
     );
 };
 
@@ -95,49 +59,100 @@ export function BenefitStackSection() {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start start", "end end"]
+        offset: ["start center", "center center"]
     });
 
-    // z-20 combined with -mt-[50vh] pulls this entire section up to overlap the last card of FrameworkSection
-    // pt-[50vh] plus the existing py-24 padding ensures the content itself doesn't collide with the card it's overlapping
+    const introText = "Why Start With a Blueprint? It eliminates the costly risks of developing blind. A precise architectural map ensuring pixel-perfect execution.";
+    const words = introText.split(" ");
+
     return (
-        <section className="py-24 pt-[50vh] -mt-[50vh] bg-background relative z-20">
-            <div className="container mx-auto px-6 mb-16 md:mb-24">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center max-w-4xl mx-auto flex flex-col items-center"
-                >
-                    <CheckCircle className="w-6 h-6 text-accent mb-6 opacity-80" />
-                    <h2 className="font-nohemi font-medium text-4xl md:text-6xl tracking-tight mb-6">
-                        Why Start With a Blueprint?
+        <section ref={containerRef} className="py-24 pt-[30vh] bg-background relative z-20">
+            <div className="container mx-auto px-6 mb-24">
+                <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+                    <CheckCircle className="w-6 h-6 text-accent mb-8 opacity-80" />
+
+                    <h2 className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-center">
+                        {words.map((word, i) => {
+                            const start = i / words.length;
+                            const end = start + 1 / words.length;
+
+                            if (["Blueprint?", "costly", "risks", "pixel-perfect"].some(w => word.includes(w))) {
+                                return (
+                                    <span key={i}>
+                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pr-1.5">
+                                            <motion.span
+                                                style={{
+                                                    opacity: useTransform(scrollYProgress, [start, end], [0.4, 1])
+                                                }}
+                                            >
+                                                {word}
+                                            </motion.span>
+                                        </span>
+                                        {i !== words.length - 1 && " "}
+                                    </span>
+                                );
+                            }
+
+                            return (
+                                <span key={i}>
+                                    <Word progress={scrollYProgress} range={[start, end]}>
+                                        {word}
+                                    </Word>
+                                    {i !== words.length - 1 && " "}
+                                </span>
+                            );
+                        })}
                     </h2>
-                    <p className="font-body type-functional-light text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                        It eliminates the costly risks of developing blind. A precise architectural map ensuring pixel-perfect execution.
-                    </p>
-                </motion.div>
+                </div>
             </div>
 
-            {/* Stacking Container */}
-            {/* Height is roughly number of cards * 100vh to ensure enough scroll duration */}
-            <div ref={containerRef} className="container mx-auto px-4 sm:px-6 relative h-[400vh]">
-                {benefits.map((benefit, i) => {
-                    // Calculate the progress range for THIS card's "squish" effect
-                    // Cards start squishing when the NEXT card starts covering them
-                    const startSquish = i / benefits.length;
-                    const endSquish = (i + 1) / benefits.length;
-
-                    return (
-                        <StackCard
+            {/* Bento Grid Container */}
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+                    {benefits.map((benefit, i) => (
+                        <motion.div
                             key={i}
-                            index={i}
-                            benefit={benefit}
-                            progressRange={[startSquish, endSquish]}
-                            progressTotal={scrollYProgress}
-                        />
-                    );
-                })}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
+                            className="group relative bg-card/40 hover:bg-card/60 border border-border/20 hover:border-border/50 rounded-3xl p-8 md:p-10 flex flex-col gap-6 overflow-hidden transition-all duration-500"
+                        >
+                            {/* Hover glow effect aligned with brand colors */}
+                            <div
+                                className="absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                                style={{
+                                    background: `radial-gradient(600px circle at top left, ${benefit.color}15, transparent 40%)`
+                                }}
+                            />
+
+                            {/* Outer Glow */}
+                            <div
+                                className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-[0.03] group-hover:opacity-[0.08] pointer-events-none transition-opacity duration-500"
+                                style={{ backgroundColor: benefit.color }}
+                            />
+
+                            <div className="flex items-center gap-4">
+                                <div className="relative w-16 h-16 rounded-2xl bg-background border border-border/20 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+                                    <benefit.icon className="w-8 h-8 opacity-80 transition-colors duration-500" style={{ color: benefit.color }} />
+                                </div>
+                                <span className="font-nohemi font-medium text-xs tracking-widest text-muted-foreground uppercase">
+                                    0{i + 1}
+                                </span>
+                            </div>
+
+                            <div className="flex flex-col gap-3 relative z-10">
+                                <h3 className="font-nohemi font-medium text-2xl md:text-3xl text-foreground group-hover:text-white transition-colors duration-300">
+                                    {benefit.title}
+                                </h3>
+                                <p className="font-body type-functional-light text-base text-muted-foreground leading-relaxed">
+                                    {benefit.description}
+                                </p>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
             </div>
         </section>
     );
