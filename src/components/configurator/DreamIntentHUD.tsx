@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Pencil, Check } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { DreamIntentModal } from './DreamIntentModal';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 interface DreamIntentHUDProps {
   dreamIntent?: string;
@@ -13,8 +15,15 @@ interface DreamIntentHUDProps {
 export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: DreamIntentHUDProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [editValue, setEditValue] = useState(dreamIntent || '');
   const isMobile = useIsMobile();
-  
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditValue(dreamIntent || '');
+    }
+  }, [isEditing, dreamIntent]);
+
   const maxDisplayLength = isMobile ? 35 : 80;
 
   const handleSave = (intent: string) => {
@@ -24,8 +33,8 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
     setTimeout(() => setShowSuccess(false), 1500);
   };
 
-  const truncatedIntent = dreamIntent && dreamIntent.length > maxDisplayLength 
-    ? `${dreamIntent.slice(0, maxDisplayLength)}...` 
+  const truncatedIntent = dreamIntent && dreamIntent.length > maxDisplayLength
+    ? `${dreamIntent.slice(0, maxDisplayLength)}...`
     : dreamIntent;
 
   return (
@@ -33,9 +42,9 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
       {/* HUD Pill */}
       <motion.div
         initial={{ opacity: 0, y: -20, scale: 0.9 }}
-        animate={{ 
-          opacity: 1, 
-          y: 0, 
+        animate={{
+          opacity: 1,
+          y: 0,
           scale: [0.9, 1.05, 0.98, 1],
         }}
         transition={{
@@ -56,6 +65,7 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
             flex items-center rounded-full
             bg-background/80 backdrop-blur-md border border-border/50
             hover:bg-muted/50 transition-colors duration-300
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background
             ${isMobile ? 'gap-1.5 px-3 py-1.5' : 'gap-2 px-4 py-2'}
             ${isCollapsed ? 'px-3' : ''}
           `}
@@ -85,15 +95,38 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
         </motion.button>
       </motion.div>
 
-      {/* Edit Modal - using shared component */}
-      <DreamIntentModal
-        isOpen={isEditing}
-        onClose={() => setIsEditing(false)}
-        onSave={handleSave}
-        initialValue={dreamIntent || ''}
-        saveLabel="Save"
-        description="What does success look like for this website?"
-      />
+      {/* Inline Edit Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="sm:max-w-[550px] border-border/50 bg-background/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-nohemi tracking-tight">Revise Your Vision</DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground mt-1.5">
+              What does success look like for this website?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              className="min-h-[120px] text-lg bg-muted/30 border-border/50 focus-visible:ring-accent resize-none p-4"
+              placeholder="Describe the application you want to build..."
+              autoFocus
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="ghost" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => handleSave(editValue)}
+              className="bg-accent text-accent-foreground hover:bg-accent/90 px-6"
+              disabled={!editValue.trim() || editValue === dreamIntent}
+            >
+              Save Vision
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
