@@ -80,9 +80,9 @@ function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: stri
   // This creates the requested subtle concave effect
   const z = useTransform(distanceMotionValue, [-800, 0, 800], [100, -200, 100]);
 
-  // Smooth, gentle inward tilt: far left (-800px) tilts right (-20deg). Far right (800px), tilts left (20deg).
-  // CSS 3D rotateY works clockwise viewing from top-down. 
-  const rotateY = useTransform(distanceMotionValue, [-800, 0, 800], [-20, 0, 20]);
+  // Smooth, gentle inward tilt: far left (-800px) tilts right (20deg). Far right (800px), tilts left (-20deg).
+  // CSS 3D rotateY works counter-clockwise viewing from top-down for positive values.
+  const rotateY = useTransform(distanceMotionValue, [-800, 0, 800], [20, 0, -20]);
 
   // Fade out cards as they get to the absolute edges
   const opacity = useTransform(distanceMotionValue, [-800, -500, 0, 500, 800], [0, 0.8, 1, 0.8, 0]);
