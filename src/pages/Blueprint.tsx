@@ -8,7 +8,7 @@ import { ShinyButton } from "@/components/ui/shiny-button";
 import { ScrollytellSection } from "@/components/marketing/ScrollytellSection";
 import { FrameworkSection } from "@/components/marketing/FrameworkSection";
 import { BenefitStackSection } from "@/components/marketing/BenefitStackSection";
-import { ScatteredLogos } from "@/components/marketing/ScatteredLogos";
+import { VisionIntent } from "@/components/marketing/VisionIntent";
 import heroVideo from "@/assets/hero2.webm";
 import heroPoster from "@/assets/hero-static.webp";
 const springConfig = { type: "spring", stiffness: 300, damping: 30 };
@@ -57,19 +57,18 @@ export default function Blueprint() {
     const inputEl = document.getElementById("dream-intent-input");
 
     if (el) {
+      if (inputEl) {
+        // Force focus instantly so mobile keyboards activate without waiting for the scroll
+        inputEl.focus({ preventScroll: true });
+      }
+
       // Offset by 100px so it centers comfortably on screen
       const y = el.getBoundingClientRect().top + window.scrollY - 100;
 
       animate(window.scrollY, y, {
         duration: 1.2,
         ease: [0.16, 1, 0.3, 1], // Cinematic ease-out curve
-        onUpdate: (latest) => window.scrollTo(0, latest),
-        onComplete: () => {
-          if (inputEl) {
-            // Give layout a tick to settle, then force focus without scrolling out of position
-            setTimeout(() => inputEl.focus({ preventScroll: true }), 50);
-          }
-        }
+        onUpdate: (latest) => window.scrollTo(0, latest)
       });
     }
   };
@@ -206,7 +205,7 @@ export default function Blueprint() {
 
         </section >
 
-        <ScatteredLogos />
+        <VisionIntent />
         <ScrollytellSection />
         <FrameworkSection />
         <BenefitStackSection />
