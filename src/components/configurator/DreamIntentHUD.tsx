@@ -98,10 +98,10 @@ export function DreamIntentHUD({
             {!isCollapsed && (
               <motion.span
                 initial={{ opacity: 0, maxWidth: 0 }}
-                animate={{ opacity: 1, maxWidth: isMobile ? 180 : 300 }}
+                animate={{ opacity: 1, maxWidth: isMobile ? 110 : 300 }}
                 exit={{ opacity: 0, maxWidth: 0 }}
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
-                className="text-sm text-muted-foreground truncate overflow-hidden whitespace-nowrap"
+                className={`text-muted-foreground truncate overflow-hidden whitespace-nowrap ${isMobile ? 'text-xs' : 'text-sm'}`}
               >
                 {truncatedIntent || 'Set Your Vision..'}
               </motion.span>
