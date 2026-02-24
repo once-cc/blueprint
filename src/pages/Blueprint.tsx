@@ -284,9 +284,9 @@ function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () => void, 
   // Headline slides up slowly from behind a mask
   const headlineY = useTransform(scrollProgress, [0.3, 1], ["100%", "0%"]);
 
-  // Subcopy fades in after headline has moved
-  const subcopyOpacity = useTransform(scrollProgress, [0.7, 1], [0, 1]);
-  const subcopyY = useTransform(scrollProgress, [0.7, 1], ["20px", "0px"]);
+  // Subcopy fades in near the very end of the animation (when headline is mostly complete)
+  const subcopyOpacity = useTransform(scrollProgress, [0.85, 1], [0, 1]);
+  const subcopyY = useTransform(scrollProgress, [0.85, 1], ["20px", "0px"]);
 
   return (
     <div className="max-w-3xl mx-auto text-center space-y-8 flex flex-col items-center justify-end overflow-hidden">
