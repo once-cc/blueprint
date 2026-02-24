@@ -194,12 +194,12 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
             <GoldSeal />
           </div>
 
-          <span className="font-display type-structural-bold tracking-widest text-accent text-[10px] md:text-xs mb-4 uppercase">
+          <span className="font-nohemi font-medium type-structural-bold tracking-widest text-accent text-[10px] md:text-xs mb-4 uppercase">
             BLUEPRINT GENERATED
           </span>
 
           {/* Headline */}
-          <h1 className="heading-editorial text-4xl md:text-6xl lg:text-7xl mb-6 tracking-tight leading-[1.15]">
+          <h1 className="font-nohemi font-medium text-4xl md:text-6xl lg:text-7xl mb-6 tracking-tight leading-[1.15]">
             Your Roadmap is <em className="italic font-medium">Crafted</em>.
           </h1>
 
@@ -275,7 +275,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tight text-foreground text-center mb-16 md:mb-20"
+          className="text-3xl md:text-4xl lg:text-5xl font-nohemi font-medium tracking-tight text-foreground text-center mb-16 md:mb-20"
         >
           What Happens Next
         </motion.h2>
@@ -311,7 +311,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
                 <span className="text-xs font-mono font-semibold text-[#d4a853]/80">{item.step}</span>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-foreground mb-1">{item.title}</h3>
+                <h3 className="text-base font-nohemi font-medium text-foreground mb-1">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </div>
             </motion.div>

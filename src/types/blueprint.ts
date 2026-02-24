@@ -3,7 +3,7 @@
 // ============= Business Foundations Types (Progressive Flow) =============
 
 // Primary Purpose (Layer 1)
-export type PrimaryPurpose = 
+export type PrimaryPurpose =
   | 'monetization'      // Monetization & Sales
   | 'lead_contact'      // Lead & Contact
   | 'promotion'         // Promotion & Visibility
@@ -24,8 +24,8 @@ export type ConversionGoalValue =
   | 'publish_content' | 'build_audience' | 'foster_community';
 
 // Advanced Objective Keys (Layer 4)
-export type AdvancedObjectiveKey = 
-  | 'pricing_model' | 'visibility' | 'booking_type' 
+export type AdvancedObjectiveKey =
+  | 'pricing_model' | 'visibility' | 'booking_type'
   | 'lead_type' | 'content_format';
 
 // Typed advanced objectives structure
@@ -61,7 +61,7 @@ export interface BlueprintDiscovery {
 
   // Step 2: Brand Voice (new slider-based structure)
   brandVoice?: BrandVoice;
-  
+
   // Legacy fields (kept for backward compatibility)
   brandArchetype?: 'guide' | 'visionary' | 'disruptor' | 'sanctuary';
   tonePrimary?: string;
@@ -83,17 +83,21 @@ export interface BlueprintDesign {
   imageryStyle?: 'photography' | 'illustrations' | 'product' | 'cinematic' | 'minimal' | 'mixed';
 
   // Step 5: Typography & Motion
+  // Typography Direction: directional signal only, not final font selection
+  typography_direction?: 'modern_minimal' | 'elegant_premium' | 'bold_expressive' | 'tech_sans' | 'editorial' | 'display';
+  /** @deprecated Use typography_direction instead */
   typographyStyle?: 'modern_minimal' | 'elegant_premium' | 'bold_expressive' | 'tech_sans' | 'editorial' | 'display';
   fontWeight?: 'light' | 'regular' | 'mixed' | 'bold';
   animationIntensity?: number; // 1-10
 
   // Step 6: Color Palette
+  // INTERNAL: All colour fields are reference hints only, not final palette definition
   colourRelationship?: 'monochrome' | 'analogous' | 'complementary' | 'triadic';
-  baseHue?: number; // 0-360, user-adjustable base hue
-  paletteEnergy?: number; // 1-10, Calm to Energetic
-  paletteContrast?: number; // 1-10, Subtle to Bold
-  generatedPalette?: { role: string; color: string }[];
-  
+  baseHue?: number; // 0-360, colour_reference_hint only
+  paletteEnergy?: number; // 1-10, Calm to Energetic, colour_reference_hint
+  paletteContrast?: number; // 1-10, Subtle to Bold, colour_reference_hint
+  generatedPalette?: { role: string; color: string }[]; // colour_reference_hint
+
   // Legacy fields (kept for backward compatibility)
   colourPaletteStyle?: 'monochrome' | 'muted' | 'bold' | 'dark' | 'pastels';
   customPalette?: { role: string; color: string }[];
@@ -115,18 +119,20 @@ export interface BlueprintDeliver {
   // Step 7: Functionality & Scope
   pages?: string[];
   features?: string[];
-  
-  // NEW: Service buckets (Big Bucket → Sub-Bucket pattern)
+
+  // DEPRECATED: Service buckets removed from user selection (kept for migration compatibility)
+  /** @deprecated Service buckets no longer collected via UI */
   serviceBuckets?: ServiceBucketSelection[];
-  
+
   // DEPRECATED: Keep for migration compatibility
+  /** @deprecated Replaced by authority-led process scoping */
   additionalServices?: {
     domainHosting?: boolean;
     seoRequired?: boolean;
     offerPositioning?: boolean;
     serviceProductization?: boolean;
   };
-  
+
   timeline?: 'urgent' | '4_6_weeks' | '6_10_weeks' | 'flexible';
   budget?: 'under_5k' | '5_10k' | '10_25k' | 'flexible';
 
@@ -157,7 +163,8 @@ export interface Blueprint {
   id: string;
   status: 'draft' | 'submitted' | 'generated';
   userEmail?: string;
-  userName?: string;
+  firstName?: string;
+  lastName?: string;
   businessName?: string;
   dreamIntent?: string; // For the persistent HUD
   discovery: BlueprintDiscovery;
@@ -215,7 +222,7 @@ export const CONFIGURATOR_STEPS: ConfiguratorStepInfo[] = [
   { step: 3, act: 'discovery', title: 'CTA Energy', framing: 'How should your website make the first ask?' },
   // Act II: Design
   { step: 4, act: 'design', title: 'Visual Style', framing: 'What aesthetic direction fits your brand?' },
-  { step: 5, act: 'design', title: 'Typography', framing: 'Choose the typographic personality that represents your brand.' },
+  { step: 5, act: 'design', title: 'Typography', framing: 'Set the typographic posture for your brand.' },
   { step: 6, act: 'design', title: 'Color Palette', framing: 'Define your colour logic and palette.' },
   // Act III: Deliver
   { step: 7, act: 'deliver', title: 'Functionality & Scope', framing: 'What does your website need to do?' },

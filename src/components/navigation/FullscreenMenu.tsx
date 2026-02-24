@@ -2,9 +2,7 @@ import { motion } from "framer-motion";
 import { X, Instagram, Linkedin, ArrowUpRight } from "lucide-react";
 import { SiX } from "@icons-pack/react-simple-icons";
 import { useNavigate } from "react-router-dom";
-import { useChamberGate } from "@/hooks/useChamberGate";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
-import { VideoLogo } from "@/components/ui/VideoLogo";
 
 interface FullscreenMenuProps {
   isOpen: boolean;
@@ -12,12 +10,8 @@ interface FullscreenMenuProps {
 }
 
 const navLinks = [
-  { label: "Home", href: "#", isRoute: false },
-  { label: "Approach", href: "#approach", isRoute: false },
-  { label: "Work", href: "#work", isRoute: false },
-  { label: "Services", href: "#services", isRoute: false },
+  { label: "Configurator", href: "/configurator", isRoute: true },
   { label: "Blueprint", href: "/blueprint", isRoute: true },
-  { label: "Contact", href: "/contact", isRoute: true },
 ];
 
 const socialLinks = [
@@ -33,9 +27,8 @@ const socialLinks = [
 export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
   const letters = "CLELAND".split("");
   const navigate = useNavigate();
-  const { triggerGateNavigation } = useChamberGate();
   const { scrollTo } = useLenisScroll();
-  
+
   /**
    * Handle navigation - routes vs anchor scrolls
    * Uses chamber gate for Blueprint route
@@ -44,16 +37,11 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
   const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
     e.preventDefault();
     onClose();
-    
+
     // Wait for menu close animation
     setTimeout(() => {
       if (link.isRoute) {
-        // Use gate navigation for Blueprint
-        if (link.href === '/blueprint') {
-          triggerGateNavigation(link.href);
-        } else {
-          navigate(link.href);
-        }
+        navigate(link.href);
       } else if (link.href === "#") {
         scrollTo(0);
       } else {
@@ -61,7 +49,7 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
       }
     }, 400);
   };
-  
+
   if (!isOpen) return null;
 
   return (
@@ -89,7 +77,7 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
           {letters.map((letter, index) => (
             <motion.span
               key={index}
-              className="font-display font-bold tracking-tight text-foreground/10"
+              className="font-nohemi font-medium tracking-tight text-foreground/10"
               style={{ fontSize: "clamp(4rem, 15vw, 12rem)" }}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -104,10 +92,10 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
             </motion.span>
           ))}
         </div>
-        
+
         {/* Sub-copy - increased size */}
         <motion.p
-          className="font-display text-muted-foreground/40 tracking-[0.2em] uppercase mt-2 pr-2"
+          className="font-nohemi font-medium text-muted-foreground/40 tracking-[0.2em] uppercase mt-2 pr-2"
           style={{ fontSize: "clamp(0.85rem, 1.8vw, 1.1rem)" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -127,7 +115,7 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Editorial grid texture overlay */}
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none z-0"
           aria-hidden="true"
           style={{
@@ -138,11 +126,11 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
             backgroundSize: '40px 40px'
           }}
         />
-        
+
         <div className="relative z-10 flex flex-col min-h-full p-8 md:p-12">
           {/* Header */}
           <div className="flex items-center justify-between mb-16">
-            <span className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="font-nohemi font-medium text-xs uppercase tracking-[0.2em] text-muted-foreground">
               Menu
             </span>
             <button
@@ -172,7 +160,7 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
                   <a
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link)}
-                    className="font-display text-2xl md:text-3xl text-foreground hover:text-accent transition-colors duration-300 block group"
+                    className="font-nohemi font-medium text-2xl md:text-3xl text-foreground hover:text-accent transition-colors duration-300 block group"
                   >
                     <span className="relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[2px] after:bottom-0 after:left-0 after:bg-accent after:origin-left after:transition-transform after:duration-300 group-hover:after:scale-x-100">
                       {link.label}
@@ -193,12 +181,12 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+              <p className="font-nohemi font-medium text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
                 Existing clients
               </p>
               <a
                 href="https://portal.clelandconsultancy.com"
-                className="font-display text-lg text-foreground hover:text-accent transition-colors flex items-center gap-2 group"
+                className="font-nohemi font-medium text-lg text-foreground hover:text-accent transition-colors flex items-center gap-2 group"
               >
                 Enter Client Portal
                 <ArrowUpRight className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -216,12 +204,12 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.4, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+              <p className="font-nohemi font-medium text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
                 Get in touch
               </p>
               <a
                 href="mailto:joshua@clelandconsultancy.com"
-                className="font-display text-foreground hover:text-accent transition-colors"
+                className="font-nohemi font-medium text-foreground hover:text-accent transition-colors"
               >
                 joshua@clelandconsultancy.com
               </a>
@@ -249,7 +237,7 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
 
             {/* Location */}
             <motion.div
-              className="mt-8 flex items-center gap-4 text-xs font-display uppercase tracking-wider text-muted-foreground"
+              className="mt-8 flex items-center gap-4 text-xs font-nohemi font-medium uppercase tracking-wider text-muted-foreground"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -265,19 +253,7 @@ export function FullscreenMenu({ isOpen, onClose }: FullscreenMenuProps) {
               </span>
             </motion.div>
 
-            {/* Menu logo - positioned bottom right with gutter */}
-            <motion.div
-              className="absolute right-4 bottom-0 flex items-end justify-end"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <VideoLogo 
-                size="custom" 
-                className="w-auto max-h-[100px] object-contain" 
-              />
-            </motion.div>
+
           </div>
         </div>
       </motion.div>

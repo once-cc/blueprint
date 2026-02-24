@@ -43,16 +43,16 @@ export function ConfiguratorDropdown({
   renderItemContent,
 }: ConfiguratorDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // Normalize value to array for multi-select
-  const selectedValues = multiSelect 
-    ? (Array.isArray(value) ? value : []) 
+  const selectedValues = multiSelect
+    ? (Array.isArray(value) ? value : [])
     : [];
-  
-  const selectedItem = !multiSelect 
-    ? items.find(item => item.value === value) 
+
+  const selectedItem = !multiSelect
+    ? items.find(item => item.value === value)
     : null;
-  
+
   const selectedCount = multiSelect ? selectedValues.length : 0;
   const hasSelection = multiSelect ? selectedCount > 0 : !!selectedItem;
 
@@ -102,7 +102,7 @@ export function ConfiguratorDropdown({
       </div>
 
       {/* Dropdown */}
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} onOpenChange={setIsOpen} modal={false}>
         <PopoverTrigger asChild>
           <motion.button
             type="button"
@@ -115,7 +115,7 @@ export function ConfiguratorDropdown({
               'border bg-card/80 backdrop-blur-sm',
               hasSelection
                 ? 'border-accent/50 cfg-surface-selected'
-                : 'border-border/40 dark:border-border/50 hover:border-border'
+                : 'border-border/40 dark:border-border/50 hover:border-accent/40 hover:bg-accent/5'
             )}
           >
             <div className="flex flex-col items-start gap-1 min-w-0 flex-1">
@@ -157,8 +157,8 @@ export function ConfiguratorDropdown({
             <div className="p-2 space-y-1">
               <AnimatePresence>
                 {items.map((item, index) => {
-                  const isSelected = multiSelect 
-                    ? selectedValues.includes(item.value) 
+                  const isSelected = multiSelect
+                    ? selectedValues.includes(item.value)
                     : item.value === value;
 
                   return (
@@ -167,21 +167,23 @@ export function ConfiguratorDropdown({
                       type="button"
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                       transition={{ delay: index * 0.03, duration: 0.2 }}
                       onClick={() => handleSelect(item.value)}
                       className={cn(
                         'w-full p-3 rounded-lg border text-left transition-all duration-150',
                         isSelected
                           ? 'border-accent bg-accent/10'
-                          : 'border-transparent hover:bg-muted/40 hover:border-border/30'
+                          : 'border-transparent hover:bg-accent/5 hover:border-accent/30'
                       )}
                     >
                       {renderItemContent ? (
                         renderItemContent(item, isSelected)
                       ) : (
-                        <DefaultItemContent 
-                          item={item} 
-                          isSelected={isSelected} 
+                        <DefaultItemContent
+                          item={item}
+                          isSelected={isSelected}
                           multiSelect={multiSelect}
                         />
                       )}
@@ -215,7 +217,7 @@ function DefaultItemContent({ item, isSelected, multiSelect }: DefaultItemConten
           {isSelected && <Check className="w-3 h-3 text-accent-foreground" />}
         </div>
       )}
-      
+
       {/* Icon if provided */}
       {item.icon && !multiSelect && (
         <div className={cn(
@@ -235,7 +237,7 @@ function DefaultItemContent({ item, isSelected, multiSelect }: DefaultItemConten
           {item.icon}
         </div>
       )}
-      
+
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <span

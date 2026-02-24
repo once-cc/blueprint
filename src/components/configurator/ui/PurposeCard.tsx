@@ -53,14 +53,14 @@ export function PurposeCard({
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       )}
-      
+
       <div className={cn(
         'flex items-start gap-4',
         size === 'compact' && 'gap-3'
       )}>
         {/* Icon */}
         <motion.div
-          animate={{ 
+          animate={{
             scale: isSelected ? 1.1 : 1,
             rotate: isSelected ? 5 : 0,
           }}
@@ -68,8 +68,8 @@ export function PurposeCard({
           className={cn(
             'flex-shrink-0 rounded-lg flex items-center justify-center transition-colors',
             size === 'default' ? 'w-12 h-12' : 'w-10 h-10',
-            isSelected 
-              ? 'bg-accent/20 text-accent' 
+            isSelected
+              ? 'bg-accent/20 text-accent'
               : 'bg-muted/50 text-muted-foreground group-hover:text-foreground group-hover:bg-muted'
           )}
         >
@@ -77,14 +77,14 @@ export function PurposeCard({
             size === 'default' ? 'w-6 h-6' : 'w-5 h-5'
           )} />
         </motion.div>
-        
+
         {/* Content */}
         <div className="flex-1 min-w-0">
           <motion.h3
             animate={{ x: isSelected ? 4 : 0 }}
             transition={springConfig}
             className={cn(
-              'font-display font-semibold text-foreground transition-colors',
+              'font-nohemi font-medium text-foreground transition-colors',
               size === 'default' ? 'text-lg' : 'text-base',
               isDisabled && 'text-muted-foreground'
             )}
@@ -102,7 +102,7 @@ export function PurposeCard({
             {description}
           </motion.p>
         </div>
-        
+
         {/* Checkbox indicator for multi-select */}
         {isSelected && size === 'compact' && (
           <motion.div
@@ -110,17 +110,17 @@ export function PurposeCard({
             animate={{ scale: 1 }}
             className="flex-shrink-0 w-5 h-5 rounded-full bg-accent flex items-center justify-center"
           >
-            <svg 
-              className="w-3 h-3 text-accent-foreground" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              className="w-3 h-3 text-accent-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={3} 
-                d="M5 13l4 4L19 7" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M5 13l4 4L19 7"
               />
             </svg>
           </motion.div>

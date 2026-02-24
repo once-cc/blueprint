@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Check, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+import { DiscoverySvg } from '@/components/marketing/graphics/DiscoverySvg';
+import { DesignSvg } from '@/components/marketing/graphics/DesignSvg';
+import { DeliverSvg } from '@/components/marketing/graphics/DeliverSvg';
 import { ACT_INFO, ConfiguratorAct, BlueprintDiscovery, BlueprintDesign } from '@/types/blueprint';
 
 interface ActTransitionProps {
@@ -35,8 +37,9 @@ const getSummaryItems = (
     if (design.visualStyle) {
       items.push({ label: 'Visual Style', value: formatValue(design.visualStyle) });
     }
-    if (design.typographyStyle) {
-      items.push({ label: 'Typography', value: formatValue(design.typographyStyle) });
+    const typography = design.typography_direction || design.typographyStyle;
+    if (typography) {
+      items.push({ label: 'Typography', value: formatValue(typography) });
     }
     if (design.animationIntensity) {
       items.push({ label: 'Animation', value: `${design.animationIntensity}/10` });
@@ -70,47 +73,21 @@ export function ActTransition({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)] md:min-h-[calc(100vh-16rem)] text-center px-4"
+      className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)] supports-[height:100dvh]:min-h-[calc(100dvh-12rem)] md:min-h-[calc(100vh-16rem)] md:supports-[height:100dvh]:min-h-[calc(100dvh-16rem)] text-center px-4 relative"
     >
-      {/* Celebration Animation */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-        className="relative mb-8"
-      >
-        {/* Sparkles */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
-            transition={{
-              delay: 0.3 + i * 0.1,
-              duration: 1,
-              repeat: Infinity,
-              repeatDelay: 2,
-            }}
-            className="absolute"
-            style={{
-              top: `${20 + Math.sin(i * 60 * Math.PI / 180) * 50}%`,
-              left: `${50 + Math.cos(i * 60 * Math.PI / 180) * 60}%`,
-            }}
-          >
-            <Sparkles className="w-4 h-4 text-accent" />
-          </motion.div>
-        ))}
+      {/* Subtle Ambient Background Glow */}
+      <div className="absolute inset-0 bg-gradient-to-t from-accent/5 via-transparent to-transparent opacity-50 pointer-events-none" />
 
-        {/* Check Icon */}
-        <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center">
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          >
-            <Check className="w-10 h-10 text-accent" />
-          </motion.div>
-        </div>
+      {/* Celebration Animation / Act SVG */}
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 mb-6 w-full max-w-[240px] aspect-square mx-auto"
+      >
+        {completedAct === 'discovery' && <DiscoverySvg />}
+        {completedAct === 'design' && <DesignSvg />}
+        {completedAct === 'deliver' && <DeliverSvg />}
       </motion.div>
 
       {/* Completed Act Label */}
@@ -118,7 +95,7 @@ export function ActTransition({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="text-sm uppercase tracking-[0.2em] text-accent font-medium mb-2"
+        className="relative z-10 text-sm uppercase tracking-[0.2em] text-accent font-medium mb-2"
       >
         {completedInfo.label} Complete
       </motion.p>
@@ -128,56 +105,60 @@ export function ActTransition({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="text-2xl md:text-3xl font-display font-bold tracking-tight text-foreground mb-6"
+        className="relative z-10 text-2xl md:text-3xl font-nohemi font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80 mb-8"
       >
         Excellent choices.
       </motion.h2>
 
-      {/* Summary */}
+      {/* Summary Bento Grid */}
       {summaryItems.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-muted/30 rounded-2xl border border-border/30 p-6 mb-8 max-w-md w-full"
+          className="relative z-10 grid grid-cols-2 gap-3 mb-10 w-full max-w-md"
         >
-          <div className="space-y-3">
-            {summaryItems.map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className="flex justify-between text-sm"
-              >
-                <span className="text-muted-foreground">{item.label}</span>
-                <span className="text-foreground font-medium">{item.value}</span>
-              </motion.div>
-            ))}
-          </div>
+          {summaryItems.map((item, i) => (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 + i * 0.1 }}
+              className="col-span-1 p-4 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-center text-center cursor-default hover:bg-white/[0.05] transition-colors"
+            >
+              <p className="text-[10px] font-mono tracking-widest text-muted-foreground/60 uppercase mb-2">
+                {item.label}
+              </p>
+              <p className="text-sm font-medium text-white/90">
+                {item.value}
+              </p>
+            </motion.div>
+          ))}
         </motion.div>
       )}
 
-      {/* Next Act Preview */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="text-muted-foreground mb-6"
-      >
-        Next: <span className="text-foreground">{nextInfo.label}</span> — {nextInfo.description}
-      </motion.p>
-
-      {/* Continue Button */}
+      {/* Next Act Preview & Action Area */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9 }}
+        transition={{ delay: 0.8 }}
+        className="relative z-10 w-full max-w-md flex flex-col items-center"
       >
-        <Button onClick={onContinue} size="lg" className="gap-2">
-          Continue to {nextInfo.label}
-          <ArrowRight className="w-4 h-4" />
-        </Button>
+        <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-6 flex items-center justify-center gap-2 flex-wrap">
+          Next: <span className="text-white/80">{nextInfo.label}</span> <span className="text-white/20">—</span> <span>{nextInfo.description}</span>
+        </p>
+
+        {/* Premium CTA Button */}
+        <button
+          onClick={onContinue}
+          className="relative w-full h-14 rounded-xl font-medium text-base text-black bg-white overflow-hidden group transition-transform active:scale-[0.98]"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative flex items-center justify-center gap-2 h-full">
+            Continue to {nextInfo.label}
+            <ArrowRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
+          </div>
+        </button>
       </motion.div>
     </motion.div>
   );

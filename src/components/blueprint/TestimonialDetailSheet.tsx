@@ -55,7 +55,7 @@ export function TestimonialDetailSheet({ testimonial, isOpen, onClose }: Testimo
 
                 {/* Author */}
                 <div>
-                  <h3 className="text-2xl font-display font-semibold mb-1">{testimonial.name}</h3>
+                  <h3 className="text-2xl font-nohemi font-medium mb-1">{testimonial.name}</h3>
                   <p className="text-muted-foreground">
                     {testimonial.role} at {testimonial.company}
                   </p>
@@ -64,7 +64,7 @@ export function TestimonialDetailSheet({ testimonial, isOpen, onClose }: Testimo
                 {/* Project */}
                 <div className="bg-muted/50 rounded-xl p-6 space-y-2">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground">Project</p>
-                  <h4 className="text-lg font-display font-semibold text-accent">{testimonial.projectTitle}</h4>
+                  <h4 className="text-lg font-nohemi font-medium text-accent">{testimonial.projectTitle}</h4>
                   <p className="text-sm text-muted-foreground">{testimonial.projectDescription}</p>
                 </div>
 
@@ -99,8 +99,8 @@ export function TestimonialDetailSheet({ testimonial, isOpen, onClose }: Testimo
 
                 {/* CTA */}
                 <div className="pt-6 border-t border-border/30">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="w-full gap-2 group"
                     onClick={() => {
                       onClose();
