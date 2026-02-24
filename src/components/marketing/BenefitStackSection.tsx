@@ -67,7 +67,7 @@ export function BenefitStackSection() {
     const words = introText.split(" ");
 
     return (
-        <GridSection ref={containerRef} className="py-24 md:py-32 bg-muted/30 z-20 overflow-visible relative mt-24">
+        <GridSection ref={containerRef} className="py-24 md:py-32 bg-muted/30 z-20 overflow-visible relative">
             {/* The Editorial Ramp / Central Spine connecting to next section */}
             <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
 
