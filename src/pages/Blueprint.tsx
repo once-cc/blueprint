@@ -11,6 +11,7 @@ import { BenefitStackSection } from "@/components/marketing/BenefitStackSection"
 import { VisionIntent } from "@/components/marketing/VisionIntent";
 import heroVideo from "@/assets/hero2.webm";
 import heroPoster from "@/assets/hero-static.webp";
+import footerBg from "@/assets/footer.webp";
 const springConfig = { type: "spring", stiffness: 300, damping: 30 };
 
 const processSteps = [
@@ -266,9 +267,19 @@ export default function Blueprint() {
       {/* Final CTA Section (Pinned Reveal Footer) */}
       <footer
         ref={footerRef}
-        className="fixed bottom-0 left-0 w-full bg-muted/30 -z-10 flex flex-col justify-end"
+        className="fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden"
       >
-        <section className="text-foreground w-full pb-24 md:pb-32 pt-32">
+        {/* Background Image Layer */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen overflow-hidden">
+          <img
+            src={footerBg}
+            alt="Footer Background"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+
+        {/* Content Overlay */}
+        <section className="text-foreground w-full pb-24 md:pb-32 pt-32 relative z-10">
           <div className="container mx-auto px-6">
             <FooterReveal onCtaClick={scrollToChatbox} scrollProgress={footerScrollProgress} />
           </div>
