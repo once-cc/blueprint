@@ -40,7 +40,7 @@ export function ScatteredLogos() {
     };
 
     return (
-        <section className="relative w-full min-h-[600px] md:min-h-[800px] -mt-32 z-20 pointer-events-none">
+        <section id="chatbox-section" className="relative w-full min-h-[600px] md:min-h-[800px] -mt-32 z-20 pointer-events-none">
             {/* Background Gradient to blend hero and scrollytell */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-muted/30" />
 
@@ -53,9 +53,9 @@ export function ScatteredLogos() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="w-full max-w-2xl flex flex-col items-center gap-6 pointer-events-auto"
                 >
-                    <h2 className="heading-editorial text-3xl md:text-5xl lg:text-5xl text-center text-white drop-shadow-md leading-[1.1] mb-2">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-500 block">
-                            Define your vision.
+                    <h2 className="font-nohemi font-medium text-4xl md:text-5xl lg:text-6xl text-center leading-[1.1] mb-2">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-900 block">
+                            Define Your Vision.
                         </span>
                     </h2>
 
