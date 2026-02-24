@@ -12,7 +12,7 @@ import { SuccessState } from './SuccessState';
 import { SessionResumeModal } from './SessionResumeModal';
 import { StepLayout } from './StepLayout';
 import { VideoLogo } from '@/components/ui/VideoLogo';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { ConfiguratorAct } from '@/types/blueprint';
 import { useNavigate } from 'react-router-dom';
 import { preloadTypographyFonts } from '@/utils/fontPreloader';
@@ -511,16 +511,22 @@ export function BlueprintConfigurator() {
                   Your progress is automatically saved to your session. Are you sure you'd like to exit to the Blueprint homepage?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogFooter className="sm:justify-between flex-col-reverse sm:flex-row w-full mt-6 sm:space-x-0 gap-3">
                 <AlertDialogAction
                   onClick={() => navigate('/blueprint')}
-                  className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300"
+                  className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300 w-full sm:w-auto"
                 >
                   <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
                   <ArrowLeft className="relative z-10 w-4 h-4" />
                   <span className="relative z-10">Exit to Homepage</span>
                 </AlertDialogAction>
+
+                <AlertDialogCancel
+                  className="gap-2 min-w-[140px] bg-primary text-primary-foreground hover:bg-primary/90 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 mt-0 sm:mt-0 w-full sm:w-auto"
+                >
+                  Cancel
+                  <ArrowRight className="w-4 h-4" />
+                </AlertDialogCancel>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
