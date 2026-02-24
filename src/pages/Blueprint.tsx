@@ -328,9 +328,12 @@ function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () => void, 
           </ShinyButton>
         </motion.div>
 
-        <p className="text-sm text-muted-foreground mt-8">
+        <motion.p
+          style={{ opacity: subcopyOpacity, y: subcopyY }}
+          className="text-sm text-muted-foreground mt-8"
+        >
           No commitment required • Response within 24 hours
-        </p>
+        </motion.p>
       </div>
 
     </div>
