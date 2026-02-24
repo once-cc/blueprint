@@ -108,12 +108,21 @@ function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: stri
         />
       ) : (
         // Fallback minimal text design if no image is present, staying faithful to the reference vibe
-        <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between bg-gradient-to-br from-card to-background text-foreground">
-          <p className="text-base md:text-xl font-raela font-medium leading-snug line-clamp-[6]">
+        <div
+          className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between bg-gradient-to-br from-card to-background text-foreground"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <p
+            className="text-base md:text-xl font-raela font-medium leading-snug line-clamp-[6]"
+            style={{ transform: "translateZ(40px)" }}
+          >
             "{testimonial.quote}"
           </p>
 
-          <div className="mt-4">
+          <div
+            className="mt-4"
+            style={{ transform: "translateZ(25px)" }}
+          >
             <p className="font-nohemi font-semibold text-base md:text-lg">{testimonial.name}</p>
             <p className="text-xs md:text-sm text-accent lowercase tracking-wide">{testimonial.role}</p>
           </div>
