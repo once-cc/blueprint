@@ -1,3 +1,6 @@
+import staticLogo from '@/assets/logo-static.webp';
+import animatedLogoUrl from '@/assets/logo-animation.webm';
+
 interface VideoLogoProps {
     size?: 'sm' | 'md' | 'lg' | 'custom';
     className?: string;
@@ -22,10 +25,10 @@ export function VideoLogo({ size = 'md', className = '' }: VideoLogoProps) {
             className={videoClass}
             aria-label="Cleland Consultancy Logo"
         >
-            <source src="/assets/logo-animation.webm" type="video/webm" />
+            <source src={animatedLogoUrl} type="video/webm" />
             {/* Fallback for browsers/devices that don't support the video or fail to load */}
             <img
-                src="/assets/logo-static.webp"
+                src={staticLogo}
                 alt="Cleland Consultancy Logo"
                 className={videoClass}
             />
