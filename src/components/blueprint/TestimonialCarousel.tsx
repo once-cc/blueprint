@@ -1,105 +1,154 @@
-import { useState, useCallback, useEffect } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
-import { testimonials, type Testimonial } from "@/data/testimonials";
+import { useState, useRef, useEffect } from "react";
+import { motion, useMotionValue, useTransform, animate, PanInfo } from "framer-motion";
+import { testimonials } from "@/data/testimonials";
 import { TestimonialCard } from "./TestimonialCard";
-import { TestimonialDetailSheet } from "./TestimonialDetailSheet";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function TestimonialCarousel() {
-  const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
-      loop: true,
-      align: "start",
-      dragFree: true,
-      containScroll: false,
-    },
-    [
-      Autoplay({
-        delay: 4000,
-        stopOnInteraction: false,
-        stopOnMouseEnter: true,
-      }),
-    ]
-  );
+  // Carousel Physics State
+  const CYLINDER_RADIUS = 600; // Distance cards are pushed back in 3D space
+  const theta = 360 / testimonials.length; // Degrees between each card
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  // Track continuous global rotation (can go beyond 360 or under 0)
+  const rotation = useMotionValue(0);
 
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
+  // State for active index focusing
+  const [activeIndex, setActiveIndex] = useState(0);
 
+  // Update active index based on rotation, handling wrap-around
   useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-  }, [emblaApi, onSelect]);
+    return rotation.onChange((val) => {
+      // Normalize rotation to find which card is closest to 0deg
+      // 0deg = index 0. -theta = index 1.
+      const normalized = ((val % 360) + 360) % 360;
+      let closest = Math.round((360 - normalized) / theta) % testimonials.length;
+      if (closest < 0) closest += testimonials.length;
+      setActiveIndex(closest);
+    });
+  }, [rotation, theta]);
 
-  const handleCardClick = (testimonial: Testimonial) => {
-    setSelectedTestimonial(testimonial);
-    setIsSheetOpen(true);
+  const snapToDegree = (targetRotation: number) => {
+    animate(rotation, targetRotation, {
+      type: "spring",
+      stiffness: 200,
+      damping: 30,
+      mass: 1
+    });
   };
 
-  const handleCloseSheet = () => {
-    setIsSheetOpen(false);
-    setTimeout(() => setSelectedTestimonial(null), 300);
+  const handleDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    // Current un-snapped rotation based on drag
+    const currentRot = rotation.get();
+
+    // Add momentum factor based on velocity
+    const velocityFactor = info.velocity.x * 0.05;
+    const targetWithMomentum = currentRot + velocityFactor;
+
+    // Find nearest face
+    const nearestFace = Math.round(targetWithMomentum / theta) * theta;
+    snapToDegree(nearestFace);
+  };
+
+  const spinCarousel = (direction: -1 | 1) => {
+    const currentRot = rotation.get();
+    // Round to nearest integer multiple to fix tiny floating point drifts
+    const roundedCurrentRot = Math.round(currentRot / theta) * theta;
+    const nextRot = roundedCurrentRot + (direction * theta);
+    snapToDegree(nextRot);
+  };
+
+  const handleCardClick = (index: number) => {
+    if (index === activeIndex) return;
+
+    // Calculate the shortest path to rotate the cylinder so 'index' faces front
+    const currentRot = rotation.get();
+    const currentNormalized = ((currentRot % 360) + 360) % 360;
+
+    // Target normalized rotation needed for this index
+    const targetNormalized = (360 - (index * theta)) % 360;
+
+    // Find shortest angular distance between current phase and target phase
+    let diff = targetNormalized - currentNormalized;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+
+    snapToDegree(currentRot + diff);
   };
 
   return (
-    <div className="relative">
-      {/* Gradient fade edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+    <div className="relative w-full overflow-hidden py-10" style={{ perspective: "1200px" }}>
 
-      {/* Navigation buttons */}
+      {/* Background Gradient Fades (Z-index high to mask cylinder clipping) */}
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+
+      {/* Navigation Controls */}
       <button
-        onClick={scrollPrev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-card border border-border/50 flex items-center justify-center hover:border-accent hover:text-accent transition-colors shadow-lg"
-        aria-label="Previous testimonial"
+        onClick={() => spinCarousel(1)}
+        className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-card border border-border/50 flex items-center justify-center hover:border-accent hover:text-accent transition-colors shadow-lg"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
       <button
-        onClick={scrollNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-card border border-border/50 flex items-center justify-center hover:border-accent hover:text-accent transition-colors shadow-lg"
-        aria-label="Next testimonial"
+        onClick={() => spinCarousel(-1)}
+        className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-card border border-border/50 flex items-center justify-center hover:border-accent hover:text-accent transition-colors shadow-lg"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
 
-      {/* Carousel */}
-      <div ref={emblaRef} className="overflow-hidden cursor-grab active:cursor-grabbing">
-        <div className="flex gap-6 py-4">
-          {/* Duplicate testimonials for seamless infinite loop */}
-          {[...testimonials, ...testimonials].map((testimonial, index) => (
-            <div 
-              key={`${testimonial.id}-${index}`} 
-              className="flex-shrink-0 w-[380px] md:w-[420px]"
-            >
-              <TestimonialCard
-                testimonial={testimonial}
-                onClick={() => handleCardClick(testimonial)}
-              />
-            </div>
-          ))}
-        </div>
+      {/* 3D Scene Container */}
+      <div
+        ref={containerRef}
+        className="flex justify-center items-center h-[350px] relative z-10"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* The Rotatable Draggable Cylinder Viewport */}
+        <motion.div
+          className="relative w-full max-w-[340px] md:max-w-[420px] h-full cursor-grab active:cursor-grabbing"
+          style={{
+            rotateY: rotation,
+            transformStyle: "preserve-3d"
+          }}
+          drag="x"
+          dragElastic={0.4}
+          // Decrease ratio so dragging maps cleanly to degrees
+          onDrag={(_e, info) => {
+            const currentRot = rotation.get();
+            rotation.set(currentRot + info.delta.x * 0.25);
+          }}
+          onDragEnd={handleDragEnd}
+        >
+          {testimonials.map((testimonial, idx) => {
+
+            // Map the layout angles for each card (Static)
+            const itemRotationY = idx * theta;
+
+            return (
+              <motion.div
+                key={testimonial.id}
+                className="absolute inset-0 flex justify-center items-center"
+                style={{
+                  // 1. Rotate the card to its spot on the cylinder
+                  // 2. Push it outward by the radius Z
+                  // 3. Since the parent container (camera) rotates, this keeps it glued to the wall
+                  transform: `rotateY(${itemRotationY}deg) translateZ(${CYLINDER_RADIUS}px)`,
+                  backfaceVisibility: "hidden", // Hide them when they spin around the back
+                  WebkitBackfaceVisibility: "hidden"
+                }}
+              >
+                <TestimonialCard
+                  testimonial={testimonial}
+                  onClick={() => handleCardClick(idx)}
+                  isActive={activeIndex === idx}
+                />
+              </motion.div>
+            )
+          })}
+        </motion.div>
       </div>
 
-      {/* Detail Sheet */}
-      <TestimonialDetailSheet
-        testimonial={selectedTestimonial}
-        isOpen={isSheetOpen}
-        onClose={handleCloseSheet}
-      />
     </div>
   );
 }
