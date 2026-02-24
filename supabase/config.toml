@@ -20,3 +20,13 @@ verify_jwt = false
 
 [functions.update-blueprint]
 verify_jwt = false
+
+[functions.get-blueprint-report-snapshot]
+verify_jwt = false
+
+[functions.soft-delete-blueprint]
+verify_jwt = false
+
+[functions.resend-email-1]
+verify_jwt = false
+

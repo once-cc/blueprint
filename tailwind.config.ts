@@ -30,6 +30,8 @@ export default {
         body: ["Raela Pro", "system-ui", "sans-serif"],
         raela: ["Raela Pro", "system-ui", "sans-serif"],
         sans: ["Raela Pro", "system-ui", "sans-serif"],
+        // Tech — Nohemi (precision, framework)
+        nohemi: ["Nohemi", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -171,6 +173,16 @@ export default {
             transform: "translate(15px, 15px) rotate(45deg)"
           },
         },
+        "light-ray-corner-reverse": {
+          "0%, 100%": {
+            opacity: "0",
+            transform: "translate(0, 0) rotate(135deg)"
+          },
+          "15%, 85%": {
+            opacity: "0.55",
+            transform: "translate(-15px, 15px) rotate(135deg)"
+          },
+        },
         "light-ray-edge": {
           "0%, 100%": {
             opacity: "0",
@@ -222,6 +234,7 @@ export default {
         "ripple": "ripple 1s ease-out forwards",
         "gradient-border": "gradient-border 4s linear infinite",
         "light-ray-corner": "light-ray-corner 8s ease-in-out infinite",
+        "light-ray-corner-reverse": "light-ray-corner-reverse 8s ease-in-out infinite",
         "light-ray-edge": "light-ray-edge 10s ease-in-out infinite",
         "crt-sweep": "crt-sweep 12s ease-in-out infinite",
         "scanline-flicker": "scanline-flicker 4s linear infinite",

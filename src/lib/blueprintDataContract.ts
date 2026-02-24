@@ -206,7 +206,7 @@ export function buildBlueprintContract(
       contract_version: "1.0",
       created_at: blueprint.createdAt.toISOString(),
       submitted_at: blueprint.submittedAt?.toISOString() ?? null,
-      client_name: blueprint.userName ?? null,
+      client_name: [blueprint.firstName, blueprint.lastName].filter(Boolean).join(' ') || null,
       client_email: blueprint.userEmail ?? null,
       business_name: blueprint.businessName ?? null,
       site_topic: discovery.siteTopic ?? null,
@@ -241,11 +241,12 @@ export function buildBlueprintContract(
         imagery_style: design.imageryStyle ?? null,
       },
       typography_motion: {
-        typography_style: design.typographyStyle ?? null,
+        typography_style: design.typography_direction ?? design.typographyStyle ?? null,
         font_weight: design.fontWeight ?? null,
         animation_intensity: design.animationIntensity ?? null,
       },
       colour_imagery: {
+        // NOTE: All colour fields are reference hints only, not final palette definition
         colour_relationship: design.colourRelationship ?? null,
         base_hue: design.baseHue ?? null,
         palette_energy: design.paletteEnergy ?? null,

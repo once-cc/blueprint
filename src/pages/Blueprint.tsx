@@ -12,6 +12,7 @@ import { VisionIntent } from "@/components/marketing/VisionIntent";
 import heroVideo from "@/assets/hero2.webm";
 import heroPoster from "@/assets/hero-static.webp";
 import footerBg from "@/assets/footer.webp";
+import { GlobalGrid } from "@/components/ui/global-grid";
 const springConfig = { type: "spring", stiffness: 300, damping: 30 };
 
 const processSteps = [
@@ -134,6 +135,9 @@ export default function Blueprint() {
             />
           )}
         </AnimatePresence>
+
+        {/* Global Grid Overlay (Restored visibility over solid background) */}
+        <GlobalGrid />
 
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center pt-24 pb-32 overflow-hidden">
@@ -270,7 +274,7 @@ export default function Blueprint() {
         className="fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden"
       >
         {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 overflow-hidden [mask-image:linear-gradient(to_right,black_0%,transparent_45%,transparent_55%,black_100%)]">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 overflow-hidden">
           <img
             src={footerBg}
             alt="Footer Background"

@@ -1,20 +1,19 @@
 import { forwardRef, useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BlueprintDeliver, ServiceBucketSelection, PAGE_OPTIONS, FEATURE_OPTIONS } from '@/types/blueprint';
+import { BlueprintDeliver, PAGE_OPTIONS, FEATURE_OPTIONS } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
-import { 
-  Home, User, Briefcase, FolderOpen, FileText, 
+import {
+  Home, User, Briefcase, FolderOpen, FileText,
   Mail, ShoppingCart, Users, MessageSquare, HelpCircle,
   Calendar, Store, UserCircle, Newspaper, Send,
-  Bot, BarChart, Globe, Languages, FormInput, Rocket, CheckCircle2
+  Bot, BarChart, Globe, Languages, FormInput, Rocket, CheckCircle2,
+  Compass, Palette, TrendingUp
 } from 'lucide-react';
 import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation } from '../ui/animationConfig';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
-import { SERVICE_BUCKETS } from '../data/serviceBucketsData';
-import { ServiceBucketCard } from '../ui/ServiceBucketCard';
 
 interface FunctionalityStepProps {
   deliver: BlueprintDeliver;
@@ -62,7 +61,7 @@ const budgetOptions = [
   { id: 'under_5k', label: 'Under $5K', description: 'Essential build' },
   { id: '5_10k', label: '$5K - $10K', description: 'Full website' },
   { id: '10_25k', label: '$10K - $25K', description: 'Premium experience' },
-  { id: 'flexible', label: 'Flexible', description: 'For the right outcome, let\'s discuss' },
+  { id: 'flexible', label: 'Flexible', description: "For the right outcome, let's discuss" },
 ];
 
 // Map FEATURE_OPTIONS to dropdown items
@@ -75,28 +74,35 @@ const featureItems: DropdownItem[] = FEATURE_OPTIONS.map((feature) => {
   };
 });
 
+// System domains for non-interactive framing
+const systemDomains = [
+  {
+    id: 'strategy',
+    title: 'Strategy & Direction',
+    icon: Compass,
+    items: ['Positioning', 'Messaging', 'Audience clarity']
+  },
+  {
+    id: 'design',
+    title: 'Design & Build',
+    icon: Palette,
+    items: ['Visual system', 'Website architecture', 'Performance & structure']
+  },
+  {
+    id: 'growth',
+    title: 'Growth & Continuity',
+    icon: TrendingUp,
+    items: ['Conversion paths', 'Measurement', 'Iteration readiness']
+  }
+];
+
 export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepProps>(
   function FunctionalityStep({ deliver, onUpdate, onBack, onNext }, ref) {
     const selectedPages = deliver.pages || [];
     const selectedFeatures = deliver.features || [];
-    
-    // Local expansion state (not persisted to blueprint)
-    const [expandedBuckets, setExpandedBuckets] = useState<Set<string>>(new Set());
 
-    // Initialize service buckets from deliver data or defaults
-    const getServiceBuckets = useCallback((): ServiceBucketSelection[] => {
-      if (deliver.serviceBuckets && deliver.serviceBuckets.length > 0) {
-        return deliver.serviceBuckets;
-      }
-      return SERVICE_BUCKETS.map(bucket => ({
-        id: bucket.id,
-        label: bucket.label,
-        selected: false,
-        selectedSubs: [],
-      }));
-    }, [deliver.serviceBuckets]);
-
-    const serviceBuckets = useMemo(() => getServiceBuckets(), [getServiceBuckets]);
+    // Track which system domains have been "acknowledged" (for subtle interactivity)
+    const [acknowledgedDomains, setAcknowledgedDomains] = useState<Set<string>>(new Set());
 
     const togglePage = (page: string) => {
       const newPages = selectedPages.includes(page)
@@ -110,61 +116,17 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
       onUpdate({ features });
     };
 
-    // Service Bucket Handlers
-    const handleBucketToggle = useCallback((bucketId: string) => {
-      const currentBuckets = getServiceBuckets();
-      const bucket = currentBuckets.find(b => b.id === bucketId);
-      
-      // Find the bucket definition to get all sub-bucket IDs
-      const bucketDefinition = SERVICE_BUCKETS.find(b => b.id === bucketId);
-      const allSubIds = bucketDefinition?.subBuckets.map(sub => sub.id) || [];
-      
-      if (bucket?.selected) {
-        // Toggling OFF: clear selected subs but keep expanded unchanged
-        onUpdate({
-          serviceBuckets: currentBuckets.map(b =>
-            b.id === bucketId ? { ...b, selected: false, selectedSubs: [] } : b
-          ),
-        });
-      } else {
-        // Toggling ON: auto-select ALL sub-services
-        onUpdate({
-          serviceBuckets: currentBuckets.map(b =>
-            b.id === bucketId ? { ...b, selected: true, selectedSubs: allSubIds } : b
-          ),
-        });
-      }
-    }, [getServiceBuckets, onUpdate]);
-
-    const handleBucketExpand = useCallback((bucketId: string) => {
-      setExpandedBuckets(prev => {
+    const handleDomainClick = (domainId: string) => {
+      setAcknowledgedDomains(prev => {
         const next = new Set(prev);
-        if (next.has(bucketId)) {
-          next.delete(bucketId);
+        if (next.has(domainId)) {
+          next.delete(domainId);
         } else {
-          next.add(bucketId);
+          next.add(domainId);
         }
         return next;
       });
-    }, []);
-
-    const handleSubToggle = useCallback((bucketId: string, subId: string) => {
-      const currentBuckets = getServiceBuckets();
-      const bucket = currentBuckets.find(b => b.id === bucketId);
-      
-      // Only allow sub-selection if bucket is selected
-      if (!bucket?.selected) return;
-      
-      const newSelectedSubs = bucket.selectedSubs.includes(subId)
-        ? bucket.selectedSubs.filter(s => s !== subId)
-        : [...bucket.selectedSubs, subId];
-      
-      onUpdate({
-        serviceBuckets: currentBuckets.map(b =>
-          b.id === bucketId ? { ...b, selectedSubs: newSelectedSubs } : b
-        ),
-      });
-    }, [getServiceBuckets, onUpdate]);
+    };
 
     // Validation
     const isValid = selectedPages.length > 0;
@@ -218,7 +180,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                     >
                       <Icon className="w-5 h-5" />
                     </motion.div>
-                    <motion.span 
+                    <motion.span
                       animate={getContentShift(isSelected)}
                       transition={springConfig}
                       className="text-xs font-medium"
@@ -248,34 +210,115 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
             />
           </motion.div>
 
-          {/* Additional Services - Service Buckets */}
+          {/* System Domains - Subtle Interactive Framing */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
+            className="space-y-4"
           >
-            <Label className="text-sm font-medium text-foreground mb-4 block">
-              Additional Services
-            </Label>
-            <div className="space-y-3">
-              {SERVICE_BUCKETS.map((bucket, index) => {
-                const bucketState = serviceBuckets.find(b => b.id === bucket.id);
-                
+            <div className="space-y-1">
+              <Label className="text-sm font-medium text-foreground">
+                Delivery Focus Areas
+              </Label>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                These domains guide how we structure execution.
+                Specific inclusions are confirmed after strategy alignment.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              {systemDomains.map((domain, index) => {
+                const Icon = domain.icon;
+                const isAcknowledged = acknowledgedDomains.has(domain.id);
+
                 return (
-                  <ServiceBucketCard
-                    key={bucket.id}
-                    bucket={bucket}
-                    selected={bucketState?.selected ?? false}
-                    expanded={expandedBuckets.has(bucket.id)}
-                    selectedSubs={bucketState?.selectedSubs ?? []}
-                    onToggleSelected={() => handleBucketToggle(bucket.id)}
-                    onToggleExpanded={() => handleBucketExpand(bucket.id)}
-                    onToggleSub={(subId) => handleSubToggle(bucket.id, subId)}
-                    index={index}
-                  />
+                  <motion.button
+                    key={domain.id}
+                    type="button"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 * index }}
+                    whileHover={{
+                      scale: 1.02,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleDomainClick(domain.id)}
+                    className={cn(
+                      'p-4 rounded-lg border text-left transition-all duration-200',
+                      isAcknowledged
+                        ? 'border-accent/50 bg-accent/5 shadow-[0_0_12px_hsl(var(--accent)/0.08)]'
+                        : 'border-border/50 bg-card/30 hover:border-accent/30 hover:bg-card/50'
+                    )}
+                  >
+                    {/* Header with Icon */}
+                    <div className="flex items-start gap-3 mb-3">
+                      <motion.div
+                        animate={{
+                          scale: isAcknowledged ? 1.1 : 1,
+                          rotate: isAcknowledged ? 5 : 0
+                        }}
+                        transition={{ duration: 0.2 }}
+                        className={cn(
+                          'p-2 rounded-lg transition-colors',
+                          isAcknowledged
+                            ? 'bg-accent/10 text-accent'
+                            : 'bg-muted/50 text-muted-foreground'
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </motion.div>
+                      <h4 className={cn(
+                        "text-sm font-medium transition-colors flex-1",
+                        isAcknowledged ? 'text-accent' : 'text-foreground'
+                      )}>
+                        {domain.title}
+                      </h4>
+                    </div>
+
+                    {/* Domain Items */}
+                    <ul className="space-y-1.5 ml-1">
+                      {domain.items.map((item, itemIndex) => (
+                        <motion.li
+                          key={item}
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 * index + 0.05 * itemIndex }}
+                          className="flex items-center gap-2 text-xs text-muted-foreground"
+                        >
+                          <motion.span
+                            animate={{
+                              opacity: isAcknowledged ? 1 : 0.6,
+                              x: isAcknowledged ? 2 : 0
+                            }}
+                            transition={{ duration: 0.2 }}
+                            className={cn(
+                              'transition-colors',
+                              isAcknowledged && 'text-accent/70'
+                            )}
+                          >
+                            •
+                          </motion.span>
+                          {item}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.button>
                 );
               })}
             </div>
+
+            {/* Subtle feedback when all acknowledged */}
+            {acknowledgedDomains.size === systemDomains.length && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs text-accent/70 text-center pt-2"
+              >
+                All domains acknowledged ✓
+              </motion.p>
+            )}
           </motion.div>
 
           {/* Timeline & Budget */}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { getBlueprintClientWithToken, clearBlueprintClient } from '@/lib/blueprintClient';
 import { supabase } from '@/integrations/supabase/client';
 import { Blueprint, BlueprintDiscovery, BlueprintDesign, BlueprintDeliver } from '@/types/blueprint';
 import { useToast } from '@/hooks/use-toast';
@@ -9,23 +9,7 @@ const SESSION_TOKEN_KEY = 'blueprint_session_token';
 const DREAM_INTENT_KEY = 'dream_intent';
 const DEBOUNCE_MS = 1000;
 
-// Factory to create a token-scoped Supabase client for blueprint operations
-const createBlueprintClient = (token: string) => {
-  return createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    {
-      global: {
-        headers: { 'x-blueprint-token': token }
-      },
-      auth: {
-        storage: localStorage,
-        persistSession: true,
-        autoRefreshToken: true,
-      }
-    }
-  );
-};
+
 
 // Helper to map database row to Blueprint type
 const mapDbToBlueprint = (
@@ -35,7 +19,8 @@ const mapDbToBlueprint = (
   id: data.id as string,
   status: data.status as Blueprint['status'],
   userEmail: (data.user_email as string) ?? undefined,
-  userName: (data.user_name as string) ?? undefined,
+  firstName: (data.first_name as string) ?? undefined,
+  lastName: (data.last_name as string) ?? undefined,
   businessName: (data.business_name as string) ?? undefined,
   dreamIntent: (data.dream_intent as string) ?? storedDreamIntent ?? undefined,
   discovery: (data.discovery as BlueprintDiscovery) || {},
@@ -66,6 +51,16 @@ export function useBlueprint() {
       // Init lock - prevent double initialization
       if (isInitializingRef.current) return;
       isInitializingRef.current = true;
+      const startTime = Date.now();
+
+      const finishLoading = async () => {
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 1000) {
+          await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
+        }
+        setIsLoading(false);
+        isInitializingRef.current = false;
+      };
 
       const storedId = localStorage.getItem(STORAGE_KEY);
       const storedToken = localStorage.getItem(SESSION_TOKEN_KEY);
@@ -83,7 +78,7 @@ export function useBlueprint() {
       // Attempt to resume existing blueprint using token-scoped client
       if (storedId && storedToken) {
 
-        const blueprintClient = createBlueprintClient(storedToken);
+        const blueprintClient = getBlueprintClientWithToken(storedToken);
         const { data, error } = await blueprintClient
           .from('blueprints')
           .select('*')
@@ -98,8 +93,7 @@ export function useBlueprint() {
 
           setBlueprint(mapDbToBlueprint(data as Record<string, unknown>, storedDreamIntent));
           setSessionStatus({ hasExisting: !!hasProgress, confirmed: !hasProgress });
-          setIsLoading(false);
-          isInitializingRef.current = false;
+          await finishLoading();
           return;
         }
 
@@ -138,8 +132,7 @@ export function useBlueprint() {
         });
       }
 
-      setIsLoading(false);
-      isInitializingRef.current = false;
+      await finishLoading();
     };
 
     initBlueprint();
@@ -168,12 +161,13 @@ export function useBlueprint() {
       if (updates.dreamIntent !== undefined) dbUpdates.dream_intent = updates.dreamIntent;
       if (updates.currentStep !== undefined) dbUpdates.current_step = updates.currentStep;
       if (updates.userEmail !== undefined) dbUpdates.user_email = updates.userEmail;
-      if (updates.userName !== undefined) dbUpdates.user_name = updates.userName;
+      if (updates.firstName !== undefined) dbUpdates.first_name = updates.firstName;
+      if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
       if (updates.businessName !== undefined) dbUpdates.business_name = updates.businessName;
       if (updates.status !== undefined) dbUpdates.status = updates.status;
       if (updates.submittedAt !== undefined) dbUpdates.submitted_at = updates.submittedAt.toISOString();
 
-      const blueprintClient = createBlueprintClient(token);
+      const blueprintClient = getBlueprintClientWithToken(token);
       const { error } = await blueprintClient
         .from('blueprints')
         .update(dbUpdates)
@@ -236,7 +230,7 @@ export function useBlueprint() {
   }, [saveToDatabase]);
 
   // Update user details
-  const updateUserDetails = useCallback((details: { userName?: string; userEmail?: string; businessName?: string }) => {
+  const updateUserDetails = useCallback((details: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => {
     setBlueprint(prev => {
       if (!prev) return prev;
       saveToDatabase(details);
@@ -245,7 +239,7 @@ export function useBlueprint() {
   }, [saveToDatabase]);
 
   // Submit the blueprint and trigger PDF generation + email delivery
-  const submitBlueprint = useCallback(async (): Promise<{ success: boolean; pdfUrl?: string }> => {
+  const submitBlueprint = useCallback(async (): Promise<{ success: boolean; pdfUrl?: string; scores?: { integrity: number; complexity: number; tier?: string } }> => {
     if (!blueprint?.id) return { success: false };
 
     const token = localStorage.getItem(SESSION_TOKEN_KEY);
@@ -260,60 +254,79 @@ export function useBlueprint() {
 
     setIsSaving(true);
 
-    const blueprintClient = createBlueprintClient(token);
-    const { error } = await blueprintClient
-      .from('blueprints')
-      .update({
-        status: 'submitted',
-        submitted_at: new Date().toISOString(),
-      })
-      .eq('id', blueprint.id);
+    try {
+      // Generate PDF client-side and upload to storage for email attachment
+      let pdfUrl: string | null = null;
+      try {
+        const { generateBlueprintPdfBlob } = await import('@/lib/generateBlueprintPdf');
+        const { blob, filename } = generateBlueprintPdfBlob(blueprint);
+        const storagePath = `pdfs/${blueprint.id}/${filename}`;
 
-    if (error) {
+        const { error: uploadError } = await supabase.storage
+          .from('blueprint-references')
+          .upload(storagePath, blob, {
+            contentType: 'application/pdf',
+            upsert: true,
+          });
+
+        if (!uploadError) {
+          // Get a signed URL valid for 7 days
+          const { data: signedData } = await supabase.storage
+            .from('blueprint-references')
+            .createSignedUrl(storagePath, 60 * 60 * 24 * 7);
+          pdfUrl = signedData?.signedUrl || null;
+        } else {
+          console.warn('[useBlueprint] PDF upload failed, continuing without attachment:', uploadError.message);
+        }
+      } catch (pdfErr) {
+        console.warn('[useBlueprint] PDF generation failed, continuing without attachment:', pdfErr);
+      }
+
+      // Call the atomic submit-blueprint Edge Function
+      const { data, error: invokeError } = await supabase.functions.invoke('submit-blueprint', {
+        body: { blueprint_id: blueprint.id, pdf_url: pdfUrl }
+      });
+
+      if (invokeError || !data?.success) {
+        const errorMsg = data?.errors?.join(', ') || data?.error || 'Submission failed';
+        toast({
+          title: 'Error',
+          description: errorMsg,
+          variant: 'destructive',
+        });
+        setIsSaving(false);
+        return { success: false };
+      }
+
+      // Update local state with submitted status and scores
+      setBlueprint(prev => prev ? {
+        ...prev,
+        status: 'submitted',
+        submittedAt: new Date()
+      } : prev);
+
+      // Clear stored IDs and token so next visit creates fresh blueprint
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SESSION_TOKEN_KEY);
+      localStorage.removeItem(DREAM_INTENT_KEY);
+
+      setIsSaving(false);
+
+      toast({
+        title: 'Blueprint Submitted',
+        description: 'Your Crafted Blueprint has been received. Check your email for next steps.',
+      });
+
+      return { success: true, scores: data.scores };
+    } catch (err) {
       toast({
         title: 'Error',
-        description: 'Failed to submit blueprint. Please try again.',
+        description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       });
       setIsSaving(false);
       return { success: false };
     }
-
-    // Update local state immediately
-    setBlueprint(prev => prev ? {
-      ...prev,
-      status: 'submitted',
-      submittedAt: new Date()
-    } : prev);
-
-    // Trigger unified delivery pipeline (fire-and-forget, non-blocking)
-    supabase.functions.invoke('generate-and-send-blueprint', {
-      body: { blueprint_id: blueprint.id }
-    }).then(result => {
-      if (result.data?.success) {
-        // Update local state with PDF URL if available
-        const returnedPdfUrl = result.data.pdf_url;
-        if (returnedPdfUrl) {
-          setBlueprint(prev => prev ? { ...prev, pdfUrl: returnedPdfUrl } : prev);
-        }
-      }
-    }).catch(err => {
-      // Delivery failures don't block submission success
-    });
-
-    // Clear stored IDs and token so next visit creates fresh blueprint
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(SESSION_TOKEN_KEY);
-    localStorage.removeItem(DREAM_INTENT_KEY);
-
-    setIsSaving(false);
-
-    toast({
-      title: 'Blueprint Submitted',
-      description: 'Your Crafted Blueprint has been received. Check your email for next steps.',
-    });
-
-    return { success: true };
   }, [blueprint?.id, blueprint?.userEmail, toast]);
 
   // Reset to start fresh

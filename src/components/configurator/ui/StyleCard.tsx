@@ -63,9 +63,8 @@ export function StyleCard({
         <motion.div
           animate={{ ...getContentShift(isSelected), ...getIconAnimation(isSelected) }}
           transition={springConfig}
-          className={`${isCompact ? 'mb-2' : 'mb-4'} ${
-            isSelected ? 'text-accent' : 'text-muted-foreground'
-          }`}
+          className={`${isCompact ? 'mb-2' : 'mb-4'} ${isSelected ? 'text-accent' : 'text-muted-foreground'
+            }`}
         >
           {icon}
         </motion.div>
@@ -75,9 +74,8 @@ export function StyleCard({
       <motion.h3
         animate={getContentShift(isSelected)}
         transition={springConfig}
-        className={`font-display font-semibold ${
-          isCompact ? 'text-base' : 'text-lg md:text-xl'
-        } ${isSelected ? 'text-foreground' : 'text-foreground/90'}`}
+        className={`font-nohemi font-medium ${isCompact ? 'text-base' : 'text-lg md:text-xl'
+          } ${isSelected ? 'text-foreground' : 'text-foreground/90'}`}
       >
         {label}
       </motion.h3>
@@ -87,9 +85,8 @@ export function StyleCard({
         <motion.p
           animate={getContentShift(isSelected)}
           transition={springConfig}
-          className={`mt-2 text-muted-foreground ${
-            isCompact ? 'text-xs' : 'text-sm'
-          }`}
+          className={`mt-2 text-muted-foreground ${isCompact ? 'text-xs' : 'text-sm'
+            }`}
         >
           {description}
         </motion.p>

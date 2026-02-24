@@ -8,8 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { CheckCircle2 } from 'lucide-react';
 import {
-  Zap, Award, MessageCircle, Compass, BookOpen,
-  Shield, Crown, Mail, PartyPopper, TrendingUp,
+  Flame, Target, Focus, Radio, Gem,
+  Key, Map, Crosshair, Aperture, Command,
 } from 'lucide-react';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
 
@@ -21,21 +21,21 @@ interface CTAEnergyStepProps {
 }
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Zap,
-  Award,
-  MessageCircle,
-  Compass,
-  BookOpen,
-  Shield,
-  Crown,
-  Mail,
-  PartyPopper,
-  TrendingUp,
+  Zap: Flame,
+  Award: Gem,
+  MessageCircle: Radio,
+  Compass: Map,
+  BookOpen: Focus,
+  Shield: Key,
+  Crown: Target,
+  Mail: Command,
+  PartyPopper: Aperture,
+  TrendingUp: Crosshair,
 };
 
 // Map SALES_PERSONALITIES to dropdown items
 const salesPersonalityItems: DropdownItem[] = SALES_PERSONALITIES.map((personality) => {
-  const Icon = iconMap[personality.icon] || Zap;
+  const Icon = iconMap[personality.icon] || Flame;
   return {
     value: personality.id,
     label: personality.title,

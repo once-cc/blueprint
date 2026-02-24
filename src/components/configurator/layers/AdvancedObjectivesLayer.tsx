@@ -27,8 +27,8 @@ export function AdvancedObjectivesLayer({
   direction = 'forward',
 }: AdvancedObjectivesLayerProps) {
   const variants = getLayerVariants(direction);
-  
-  // Defensive check - if no questions or undefined, show loading
+
+  // No relevant advanced questions — show a clean pass-through state
   if (!questions || questions.length === 0) {
     return (
       <motion.div
@@ -37,14 +37,53 @@ export function AdvancedObjectivesLayer({
         animate="animate"
         exit="exit"
         transition={layerTransition}
-        className="absolute inset-0 flex items-center justify-center overflow-y-auto overscroll-contain"
+        className="absolute inset-0 flex flex-col items-center justify-center px-4"
         data-lenis-prevent
       >
-        <span className="text-muted-foreground">Loading...</span>
+        <div className="text-center space-y-4 max-w-md">
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
+          >
+            You're all set
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-muted-foreground"
+          >
+            No additional details needed for your selections. Continue to the next step.
+          </motion.p>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center justify-between w-full max-w-2xl pt-12"
+        >
+          <Button
+            onClick={onBack}
+            className="relative overflow-hidden group gap-2 bg-transparent text-muted-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border-0 transition-colors duration-300"
+          >
+            <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+            <ArrowLeft className="w-4 h-4 relative z-10" />
+            <span className="relative z-10">Back</span>
+          </Button>
+          <Button
+            onClick={onContinue}
+            className="gap-2"
+          >
+            Continue
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
       </motion.div>
     );
   }
-  
+
   return (
     <motion.div
       variants={variants}
@@ -62,7 +101,7 @@ export function AdvancedObjectivesLayer({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl font-display font-bold text-foreground"
+            className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
           >
             Would you like to get more specific?
           </motion.h2>
@@ -75,7 +114,7 @@ export function AdvancedObjectivesLayer({
             These optional details help us tailor your blueprint. Skip if unsure.
           </motion.p>
         </div>
-        
+
         {/* Questions */}
         <div className="space-y-8">
           {questions.map((question, qIndex) => (
@@ -89,11 +128,11 @@ export function AdvancedObjectivesLayer({
               <h3 className="text-base font-medium text-foreground">
                 {question.question}
               </h3>
-              
+
               <div className="flex flex-wrap gap-2">
                 {question.options.map((option, oIndex) => {
                   const isSelected = answers[question.key] === option.value;
-                  
+
                   return (
                     <motion.button
                       key={option.value}
@@ -124,7 +163,7 @@ export function AdvancedObjectivesLayer({
             </motion.div>
           ))}
         </div>
-        
+
         {/* Progress hint */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -136,7 +175,7 @@ export function AdvancedObjectivesLayer({
             {Object.keys(answers).length} of {questions.length} answered
           </span>
         </motion.div>
-        
+
         {/* Navigation */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -145,14 +184,14 @@ export function AdvancedObjectivesLayer({
           className="flex items-center justify-between pt-4 pb-8"
         >
           <Button
-            variant="ghost"
             onClick={onBack}
-            className="gap-2"
+            className="relative overflow-hidden group gap-2 bg-transparent text-muted-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border-0 transition-colors duration-300"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+            <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-0" />
+            <ArrowLeft className="w-4 h-4 relative z-10" />
+            <span className="relative z-10">Back</span>
           </Button>
-          
+
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -162,7 +201,7 @@ export function AdvancedObjectivesLayer({
               Skip
               <SkipForward className="w-4 h-4" />
             </Button>
-            
+
             <Button
               onClick={onContinue}
               className="gap-2"

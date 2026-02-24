@@ -16,7 +16,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isLoading: authLoading, signIn, signUp } = useAuth();
-  
+
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -51,7 +51,7 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -214,7 +214,7 @@ export default function Auth() {
         {/* Back to home */}
         <div className="mt-8 text-center">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/blueprint')}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back to home
