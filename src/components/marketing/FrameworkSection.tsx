@@ -79,21 +79,25 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
     // However, the LAST card shouldn't fade back out later.
     const titleOpacity = useTransform(popProgress, [0, 0.4, 1], [index === 0 ? 1 : 0, 1, 1]);
 
-    // Descent begins precisely when this card unpins, fading seamlessly as the NEXT card slides perfectly into place
+    // Exit begins the moment this card's top hits -30vh from the viewport top
+    // (exactly when the next card's top enters the viewport from the bottom).
+    // It completes after 100vh of scroll (when this card's top is at -130vh).
     const { scrollYProgress: descendProgress } = useScroll({
         target: trackerRef,
-        offset: ["end 100%", "end 50%"] // Starts retreating the exact moment the next card enters the screen from the bottom
+        offset: ["start -30vh", "start -130vh"]
     });
 
-    const groupScale = useTransform(descendProgress, [0, 1], [1, 0.85]);
-    const groupOpacity = useTransform(descendProgress, [0, 0.8, 1], [1, 0, 0]);
-    // Stationary sink for first 60%, then float up distinctly for the remaining 40%
-    const groupY = useTransform(descendProgress, [0, 0.6, 1], ["0vh", "0vh", "-20vh"]);
+    // Suppress exit animation precisely for the last card so it stays pinned as the next section overlays it
+    const groupScale = useTransform(descendProgress, [0, 1], [1, isLast ? 1 : 0.85]);
+    const groupOpacity = useTransform(descendProgress, [0, 0.8, 1], [1, isLast ? 1 : 0]);
+    const groupY = useTransform(descendProgress, [0, 1], ["0vh", "0vh"]); // Strictly stationary, no drift
     const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "0deg"]);
 
     return (
-        // Fixed height dictates exactly 1 viewport of entering/leaving, plus 30vh of centered pinning overlap
-        <div ref={trackerRef} className="relative w-full h-[130vh]">
+        // To prevent this card from "un-pinning" and sliding up naturally before it fades out,
+        // we artificially extend the container's height to 250vh. We then use a negative margin
+        // on non-last cards to preserve the exact same 130vh visual spacing. This guarantees beautifully locked descent!
+        <div ref={trackerRef} className={`relative w-full ${isLast ? "h-[130vh]" : "h-[250vh] -mb-[120vh]"}`}>
 
             {/* Perfect vertical centering locked via transform, avoiding margin/padding jitter */}
             <div className="sticky top-[50vh] -translate-y-1/2 w-full flex justify-center" style={{ zIndex: index, perspective: "1500px" }}>
@@ -256,16 +260,10 @@ const MobileStackCard = ({ index, step, progressRange, progressTotal }: MobileSt
     const scale = useTransform(progressTotal, progressRange, [1, 0.95]);
     const darkenOpacity = useTransform(progressTotal, progressRange, [0, 0.6]);
 
-    // Calculate mid-point for the 60% delay before floating up
-    const start = progressRange[0];
-    const end = progressRange[1];
-    const mid = start + (end - start) * 0.6;
-    const y = useTransform(progressTotal, [start, mid, end], ["0vh", "0vh", "-5vh"]);
-
     return (
         <div className="sticky top-24 pt-4 pb-4" style={{ zIndex: index }}>
             <motion.div
-                style={{ scale, y }}
+                style={{ scale }}
                 className="w-full bg-card border border-border/20 rounded-3xl p-6 flex flex-col gap-6 shadow-2xl relative overflow-hidden will-change-transform"
             >
                 {/* Performance optimized darkening overlay */}
