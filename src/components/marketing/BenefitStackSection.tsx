@@ -72,8 +72,8 @@ export function BenefitStackSection() {
             <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
 
             {/* Editorial Docking Rails extending upwards */}
-            <div className="absolute -top-64 bottom-0 left-[10%] w-px bg-white/[0.05] pointer-events-none hidden lg:block" />
-            <div className="absolute -top-64 bottom-0 right-[10%] w-px bg-white/[0.05] pointer-events-none hidden lg:block" />
+            <div className="absolute -top-[500px] bottom-0 left-[10%] w-px bg-white/[0.05] pointer-events-none hidden lg:block" />
+            <div className="absolute -top-[500px] bottom-0 right-[10%] w-px bg-white/[0.05] pointer-events-none hidden lg:block" />
 
             <div className="container mx-auto px-6 mb-24 relative z-10">
                 <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
