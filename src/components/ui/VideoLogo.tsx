@@ -1,105 +1,34 @@
-import logoVideoWebm from "@/assets/logo-animation.webm";
-import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
-
 interface VideoLogoProps {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'custom';
-  className?: string;
-  onClick?: () => void;
-  style?: React.CSSProperties;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-  isActive?: boolean;
+    size?: 'sm' | 'md' | 'lg' | 'custom';
+    className?: string;
 }
 
-const sizeClasses = {
-  xs: 'w-6 h-6',
-  sm: 'w-8 h-8',
-  md: 'w-10 h-10',
-  lg: 'w-16 h-16',
-  xl: 'w-24 h-24',
-  xxl: 'w-32 h-32',
-  custom: '',
-};
-
-export function VideoLogo({
-  size = 'md',
-  className,
-  onClick,
-  style,
-  onMouseEnter,
-  onMouseLeave,
-  isActive = true
-}: VideoLogoProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [posterUrl, setPosterUrl] = useState<string | undefined>(undefined);
-
-  // Generate poster from first frame of video
-  useEffect(() => {
-    const video = document.createElement('video');
-    video.crossOrigin = 'anonymous';
-    video.muted = true;
-    video.playsInline = true;
-
-    const handleLoadedData = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(video, 0, 0);
-          setPosterUrl(canvas.toDataURL('image/png'));
-        }
-      } catch (e) {
-        // Silently fail - poster is optional
-      }
-      video.remove();
+export function VideoLogo({ size = 'md', className = '' }: VideoLogoProps) {
+    const sizeClasses = {
+        sm: 'w-16 h-auto',
+        md: 'w-24 h-auto',
+        lg: 'w-32 h-auto',
+        custom: className,
     };
 
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.src = logoVideoWebm;
-    video.load();
+    const videoClass = size === 'custom' ? className : sizeClasses[size];
 
-    return () => {
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.remove();
-    };
-  }, []);
-
-  // Class B' Isolation: logo animation is a persistent spectator
-  // in background contexts and must not know scroll exists.
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.play().catch(() => { });
-  }, []);
-
-  return (
-    <video
-      ref={videoRef}
-      poster={posterUrl}
-      autoPlay
-      muted
-      loop
-      playsInline
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className={cn(
-        sizeClasses[size],
-        'object-contain pointer-events-none isolation-isolate contain-paint',
-        className
-      )}
-      style={{
-        willChange: 'transform',
-        transform: 'translateZ(0)',
-        backfaceVisibility: 'hidden',
-        ...style,
-      }}
-    >
-      {/* WebM first - modern browsers with alpha support */}
-      <source src={logoVideoWebm} type="video/webm" />
-    </video>
-  );
+    return (
+        <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className={videoClass}
+            aria-label="Cleland Consultancy Logo"
+        >
+            <source src="/assets/logo-animation.webm" type="video/webm" />
+            {/* Fallback for browsers/devices that don't support the video or fail to load */}
+            <img
+                src="/assets/logo-static.webp"
+                alt="Cleland Consultancy Logo"
+                className={videoClass}
+            />
+        </video>
+    );
 }
