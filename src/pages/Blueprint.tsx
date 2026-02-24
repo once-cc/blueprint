@@ -55,6 +55,12 @@ export default function Blueprint() {
   // Footer pinning state
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLElement>(null);
+  const trackerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress: footerScrollProgress } = useScroll({
+    target: trackerRef,
+    offset: ["start end", "end end"]
+  });
 
   useEffect(() => {
     if (footerRef.current) {
@@ -114,8 +120,7 @@ export default function Blueprint() {
   return (
     <>
       <div
-        className="min-h-screen bg-background text-foreground relative z-10 shadow-2xl"
-        style={{ marginBottom: footerHeight }}
+        className="min-h-screen bg-background text-foreground relative z-10 shadow-[0_50px_100px_40px_rgba(0,0,0,1)]"
       >
         {/* Splash Screen Overlay - Option D: Blur Dissolve */}
         <AnimatePresence>
@@ -255,14 +260,17 @@ export default function Blueprint() {
         </section>
       </div>
 
+      {/* The scrolling mask/runway tracker for the footer */}
+      <div ref={trackerRef} style={{ height: footerHeight }} className="w-full relative z-0 pointer-events-none" />
+
       {/* Final CTA Section (Pinned Reveal Footer) */}
       <footer
         ref={footerRef}
-        className="fixed bottom-0 left-0 w-full bg-muted/30 -z-10 h-[60vh]"
+        className="fixed bottom-0 left-0 w-full bg-muted/30 -z-10 flex flex-col justify-end"
       >
-        <section className="text-foreground w-full h-full flex items-end pb-24">
+        <section className="text-foreground w-full pb-24 md:pb-32 pt-32">
           <div className="container mx-auto px-6">
-            <FooterReveal onCtaClick={scrollToChatbox} />
+            <FooterReveal onCtaClick={scrollToChatbox} scrollProgress={footerScrollProgress} />
           </div>
         </section>
       </footer>
@@ -270,22 +278,18 @@ export default function Blueprint() {
   );
 }
 
-function FooterReveal({ onCtaClick }: { onCtaClick: () => void }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end end"]
-  });
+import { MotionValue } from "framer-motion";
 
+function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () => void, scrollProgress: MotionValue<number> }) {
   // Headline slides up slowly from behind a mask
-  const headlineY = useTransform(scrollYProgress, [0.6, 1], ["100%", "0%"]);
+  const headlineY = useTransform(scrollProgress, [0.3, 1], ["100%", "0%"]);
 
   // Subcopy fades in after headline has moved
-  const subcopyOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
-  const subcopyY = useTransform(scrollYProgress, [0.85, 1], ["20px", "0px"]);
+  const subcopyOpacity = useTransform(scrollProgress, [0.7, 1], [0, 1]);
+  const subcopyY = useTransform(scrollProgress, [0.7, 1], ["20px", "0px"]);
 
   return (
-    <div ref={containerRef} className="max-w-3xl mx-auto text-center space-y-8 py-32 h-[80vh] flex flex-col items-center justify-end overflow-hidden">
+    <div className="max-w-3xl mx-auto text-center space-y-8 flex flex-col items-center justify-end overflow-hidden">
 
       {/* The Masking Container for the Headline */}
       <div className="overflow-hidden pb-4">
