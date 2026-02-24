@@ -6,30 +6,31 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { 
-  Pencil, Building2, MessageCircle, Zap, Palette, Type, 
-  Layers, Rocket, Image, CheckCircle2, User, Mail, ChevronDown
+import {
+  Pencil, Building2, MessageCircle, Zap, Palette, Type,
+  Layers, Rocket, Image, CheckCircle2, User, Mail, ChevronDown, ArrowLeft
 } from 'lucide-react';
 import { z } from 'zod';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ReviewStepProps {
   blueprint: Blueprint;
-  onUpdateUserDetails: (data: { userName?: string; userEmail?: string; businessName?: string }) => void;
+  onUpdateUserDetails: (data: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => void;
   onGoToStep: (step: number) => void;
   onSubmit: () => Promise<boolean>;
   onBack: () => void;
 }
 
 const userDetailsSchema = z.object({
-  userName: z.string().trim().min(1, 'Name is required').max(100, 'Name too long'),
+  firstName: z.string().trim().min(1, 'First name is required').max(50, 'First name too long'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50, 'Last name too long'),
   userEmail: z.string().trim().email('Invalid email').max(255, 'Email too long'),
   businessName: z.string().trim().max(200, 'Business name too long').optional(),
 });
 
 const sections = [
-  { 
-    act: 'Discovery', 
+  {
+    act: 'Discovery',
     icon: Building2,
     steps: [
       { step: 1, title: 'Business Foundations', icon: Building2 },
@@ -37,8 +38,8 @@ const sections = [
       { step: 3, title: 'CTA Energy', icon: Zap },
     ]
   },
-  { 
-    act: 'Design', 
+  {
+    act: 'Design',
     icon: Palette,
     steps: [
       { step: 4, title: 'Visual Style', icon: Palette },
@@ -46,8 +47,8 @@ const sections = [
       { step: 6, title: 'Colour & Imagery', icon: Layers },
     ]
   },
-  { 
-    act: 'Deliver', 
+  {
+    act: 'Deliver',
     icon: Rocket,
     steps: [
       { step: 7, title: 'Functionality & Scope', icon: Layers },
@@ -60,7 +61,7 @@ const sections = [
 // Color swatch component for displaying palette colors
 const ColorSwatch = ({ role, color }: { role: string; color: string }) => (
   <div className="flex items-center gap-2">
-    <div 
+    <div
       className="w-4 h-4 rounded-full border border-border/50 shrink-0"
       style={{ backgroundColor: color }}
     />
@@ -76,19 +77,20 @@ const NotProvided = () => (
 );
 
 export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
-  function ReviewStep({ 
-    blueprint, 
-    onUpdateUserDetails, 
-    onGoToStep, 
-    onSubmit, 
-    onBack 
+  function ReviewStep({
+    blueprint,
+    onUpdateUserDetails,
+    onGoToStep,
+    onSubmit,
+    onBack
   }, ref) {
     const isMobile = useIsMobile();
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [localDetails, setLocalDetails] = useState({
-      userName: blueprint.userName || '',
+      firstName: blueprint.firstName || '',
+      lastName: blueprint.lastName || '',
       userEmail: blueprint.userEmail || '',
       businessName: blueprint.businessName || '',
     });
@@ -164,7 +166,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
           ].filter(Boolean) as string[];
         case 5:
           return [
-            design.typographyStyle && `Typography: ${design.typographyStyle.replace(/_/g, ' ')}`,
+            (design.typography_direction || design.typographyStyle) && `Typography: ${(design.typography_direction || design.typographyStyle)!.replace(/_/g, ' ')}`,
             design.fontWeight && `Weight: ${design.fontWeight}`,
             design.animationIntensity && `Animation: ${design.animationIntensity}/10`,
           ].filter(Boolean) as string[];
@@ -285,7 +287,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
         helperText="Make sure everything looks good, then we'll generate your custom Blueprint."
         onBack={onBack}
         onNext={handleSubmit}
-        canGoNext={!!localDetails.userName && !!localDetails.userEmail}
+        canGoNext={!!localDetails.firstName && !!localDetails.lastName && !!localDetails.userEmail}
         isLoading={isSubmitting}
         nextLabel="Generate Blueprint"
       >
@@ -296,28 +298,47 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             animate={{ opacity: 1, y: 0 }}
             className="p-6 rounded-2xl border-2 border-accent/30 bg-accent/5"
           >
-            <h3 className="text-lg font-display font-semibold text-foreground mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-nohemi font-medium text-foreground mb-4 flex items-center gap-2">
               <User className="w-5 h-5 text-accent" />
               Your Details
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="userName" className="text-sm font-medium">
-                  Your Name <span className="text-destructive">*</span>
+                <Label htmlFor="firstName" className="text-sm font-medium">
+                  First Name <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    id="userName"
-                    value={localDetails.userName}
-                    onChange={(e) => handleDetailChange('userName', e.target.value)}
-                    placeholder="Jane Smith"
-                    className={cn('pl-10', errors.userName && 'border-destructive')}
-                    maxLength={100}
+                    id="firstName"
+                    value={localDetails.firstName}
+                    onChange={(e) => handleDetailChange('firstName', e.target.value)}
+                    placeholder="Jane"
+                    className={cn('pl-10', errors.firstName && 'border-destructive')}
+                    maxLength={50}
                   />
                 </div>
-                {errors.userName && (
-                  <p className="text-xs text-destructive">{errors.userName}</p>
+                {errors.firstName && (
+                  <p className="text-xs text-destructive">{errors.firstName}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-sm font-medium">
+                  Last Name <span className="text-destructive">*</span>
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="lastName"
+                    value={localDetails.lastName}
+                    onChange={(e) => handleDetailChange('lastName', e.target.value)}
+                    placeholder="Smith"
+                    className={cn('pl-10', errors.lastName && 'border-destructive')}
+                    maxLength={50}
+                  />
+                </div>
+                {errors.lastName && (
+                  <p className="text-xs text-destructive">{errors.lastName}</p>
                 )}
               </div>
               <div className="space-y-2">
@@ -388,10 +409,10 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                         <div
                           key={step.step}
                           className={cn(
-                            'p-4 rounded-xl border transition-all',
+                            'p-4 rounded-xl cfg-surface transition-all',
                             hasContent
-                              ? 'border-border/50 bg-card/50'
-                              : 'border-dashed border-border/30 bg-muted/10'
+                              ? 'border border-border/50 bg-card/60 backdrop-blur-sm'
+                              : 'border border-dashed border-border/30 bg-muted/10'
                           )}
                         >
                           <div className="flex items-start justify-between mb-2">
@@ -431,10 +452,10 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                         <div
                           key={step.step}
                           className={cn(
-                            'rounded-xl border transition-all overflow-hidden',
+                            'rounded-xl cfg-surface transition-all overflow-hidden',
                             hasContent
-                              ? 'border-border/50 bg-card/50'
-                              : 'border-dashed border-border/30 bg-muted/10'
+                              ? 'border border-border/50 bg-card/60 backdrop-blur-sm'
+                              : 'border border-dashed border-border/30 bg-muted/10'
                           )}
                         >
                           {/* Collapsible header */}
@@ -452,7 +473,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                                 <CheckCircle2 className="w-3 h-3 text-accent" />
                               )}
                             </div>
-                            <ChevronDown 
+                            <ChevronDown
                               className={cn(
                                 'w-4 h-4 text-muted-foreground transition-transform duration-200',
                                 isExpanded && 'rotate-180'
@@ -496,18 +517,40 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             ))}
           </div>
 
-          {/* Dream Intent Preview */}
-          {blueprint.dreamIntent && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="p-5 rounded-xl border border-accent/20 bg-accent/5"
-            >
-              <p className="text-xs uppercase tracking-wider text-accent mb-2">Your Vision</p>
-              <p className="text-foreground italic">"{blueprint.dreamIntent}"</p>
-            </motion.div>
-          )}
+          {/* Mobile Back Button & Dream Intent Preview */}
+          <div className="space-y-4 pt-2">
+            {/* Mobile Back */}
+            {isMobile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex justify-start w-full sm:hidden"
+              >
+                <Button
+                  onClick={onBack}
+                  size="sm"
+                  className="relative overflow-hidden group gap-2 bg-transparent text-muted-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border-0 px-2 h-8 transition-colors duration-300 -ml-2"
+                >
+                  <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                  <ArrowLeft className="relative z-10 w-3 h-3" />
+                  <span className="relative z-10 text-xs">Back</span>
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Dream Intent Preview */}
+            {blueprint.dreamIntent && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="p-5 rounded-xl border border-accent/20 bg-accent/5 text-center"
+              >
+                <p className="text-xs uppercase tracking-wider text-accent mb-2">Your Vision</p>
+                <p className="text-foreground italic">"{blueprint.dreamIntent}"</p>
+              </motion.div>
+            )}
+          </div>
         </div>
       </StepLayout>
     );
