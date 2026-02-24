@@ -87,9 +87,9 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
 
     const groupScale = useTransform(descendProgress, [0, 1], [1, 0.85]);
     const groupOpacity = useTransform(descendProgress, [0, 0.8, 1], [1, 0, 0]);
-    // Stationary sink for first 60%, then float up -10vh for the remaining 40%
-    const groupY = useTransform(descendProgress, [0, 0.6, 1], ["0vh", "0vh", "-10vh"]);
-    const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "5deg"]);
+    // Stationary sink for first 60%, then float up distinctly for the remaining 40%
+    const groupY = useTransform(descendProgress, [0, 0.6, 1], ["0vh", "0vh", "-20vh"]);
+    const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "0deg"]);
 
     return (
         // Fixed height dictates exactly 1 viewport of entering/leaving, plus 30vh of centered pinning overlap
@@ -256,10 +256,16 @@ const MobileStackCard = ({ index, step, progressRange, progressTotal }: MobileSt
     const scale = useTransform(progressTotal, progressRange, [1, 0.95]);
     const darkenOpacity = useTransform(progressTotal, progressRange, [0, 0.6]);
 
+    // Calculate mid-point for the 60% delay before floating up
+    const start = progressRange[0];
+    const end = progressRange[1];
+    const mid = start + (end - start) * 0.6;
+    const y = useTransform(progressTotal, [start, mid, end], ["0vh", "0vh", "-5vh"]);
+
     return (
         <div className="sticky top-24 pt-4 pb-4" style={{ zIndex: index }}>
             <motion.div
-                style={{ scale }}
+                style={{ scale, y }}
                 className="w-full bg-card border border-border/20 rounded-3xl p-6 flex flex-col gap-6 shadow-2xl relative overflow-hidden will-change-transform"
             >
                 {/* Performance optimized darkening overlay */}
