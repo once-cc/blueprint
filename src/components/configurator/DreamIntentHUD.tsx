@@ -100,13 +100,13 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
       {/* Inline Edit Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="sm:max-w-[550px] border-border/50 bg-background/95 backdrop-blur-xl">
-          <DialogHeader>
+          <DialogHeader className="space-y-0 pb-3">
             <DialogTitle className="text-2xl font-nohemi tracking-tight">Revise Your Vision</DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground/60 mt-1.5 focus:outline-none">
-              What does success look like for this website?
+            <DialogDescription className="text-sm text-muted-foreground/60 focus:outline-none pt-0.5">
+              What does success look like for this project?
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="pb-2">
             <style>{`
               @property --hud-gradient-angle {
                 syntax: "<angle>";
@@ -156,12 +156,12 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
                 className="min-h-[120px] text-lg bg-zinc-950/80 border-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 w-full h-full relative z-10"
-                placeholder="Describe the application you want to build..."
+                placeholder="Use natural language — we'll translate it."
                 autoFocus
               />
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setIsEditing(false)} className="rounded-full px-6 text-sm">
               Cancel
             </Button>
