@@ -100,18 +100,52 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
         <DialogContent className="sm:max-w-[550px] border-border/50 bg-background/95 backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-nohemi tracking-tight">Revise Your Vision</DialogTitle>
-            <DialogDescription className="text-base text-muted-foreground mt-1.5">
+            <DialogDescription className="text-sm text-muted-foreground/60 mt-1.5 focus:outline-none">
               What does success look like for this website?
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Textarea
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="min-h-[120px] text-lg bg-muted/30 border-border/50 focus-visible:ring-accent resize-none p-4"
-              placeholder="Describe the application you want to build..."
-              autoFocus
-            />
+            <style>{`
+              @property --hud-gradient-angle {
+                syntax: "<angle>";
+                initial-value: 0deg;
+                inherits: false;
+              }
+
+              .hud-input-container {
+                --hud-bg: #1a1a1a;
+                --hud-highlight: rgba(245, 166, 35, 0.4); /* Brand Amber, muted */
+                --hud-highlight-bright: rgba(245, 166, 35, 0.8);
+                
+                position: relative;
+                isolation: isolate;
+                border-radius: var(--radius);
+                background: linear-gradient(var(--hud-bg), var(--hud-bg)) padding-box,
+                  conic-gradient(
+                    from var(--hud-gradient-angle),
+                    transparent 40%,
+                    var(--hud-highlight) 80%,
+                    var(--hud-highlight-bright) 100%
+                  ) border-box;
+                border: 1px solid transparent;
+                animation: hud-gradient-spin 4s linear infinite;
+              }
+
+              @keyframes hud-gradient-spin {
+                to {
+                  --hud-gradient-angle: 360deg;
+                }
+              }
+            `}</style>
+            <div className="hud-input-container p-[1px]">
+              <Textarea
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="min-h-[120px] text-lg bg-zinc-950/80 border-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none p-4 w-full h-full relative z-10"
+                placeholder="Describe the application you want to build..."
+                autoFocus
+              />
+            </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setIsEditing(false)}>
