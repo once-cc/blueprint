@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Pencil, Check } from 'lucide-react';
+import { Eye, Pencil, Check, CheckCircle2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,28 @@ interface DreamIntentHUDProps {
   dreamIntent?: string;
   onUpdate: (intent: string) => void;
   isCollapsed?: boolean;
+  isEditing?: boolean;
+  onEditingChange?: (editing: boolean) => void;
 }
 
-export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: DreamIntentHUDProps) {
-  const [isEditing, setIsEditing] = useState(false);
+export function DreamIntentHUD({
+  dreamIntent,
+  onUpdate,
+  isCollapsed = false,
+  isEditing: externalIsEditing,
+  onEditingChange
+}: DreamIntentHUDProps) {
+  // Use external state if provided, otherwise fallback to local
+  const [localIsEditing, setLocalIsEditing] = useState(false);
+  const isEditing = externalIsEditing !== undefined ? externalIsEditing : localIsEditing;
+
+  const setIsEditing = (value: boolean) => {
+    if (onEditingChange) {
+      onEditingChange(value);
+    } else {
+      setLocalIsEditing(value);
+    }
+  };
   const [showSuccess, setShowSuccess] = useState(false);
   const [editValue, setEditValue] = useState(dreamIntent || '');
   const isMobile = useIsMobile();
@@ -57,7 +75,7 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
             duration: 0.7,
           }
         }}
-        className={`fixed top-4 z-50 ${isMobile ? 'left-4' : 'left-1/2 -translate-x-1/2'}`}
+        className="fixed top-4 left-4 z-50"
       >
         <motion.button
           layout
@@ -75,7 +93,7 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <Sparkles className="w-4 h-4 text-accent" />
+          <Eye className="w-4 h-4 text-accent" />
           <AnimatePresence mode="wait">
             {!isCollapsed && (
               <motion.span
@@ -85,12 +103,14 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
                 className="text-sm text-muted-foreground truncate overflow-hidden whitespace-nowrap"
               >
-                {truncatedIntent || 'Set your dream intent...'}
+                {truncatedIntent || 'Set Your Vision..'}
               </motion.span>
             )}
           </AnimatePresence>
           {showSuccess ? (
             <Check className="w-4 h-4 text-accent" />
+          ) : dreamIntent ? (
+            <CheckCircle2 className="w-4 h-4 text-accent" />
           ) : (
             <Pencil className="w-4 h-4 text-muted-foreground" />
           )}
@@ -139,15 +159,28 @@ export function DreamIntentHUD({ dreamIntent, onUpdate, isCollapsed = false }: D
                 animation: hud-gradient-spin 4s linear infinite;
               }
 
-              /* Focused state: static amber border */
+              /* Focused state: glowing amber border with subtle pulse */
               .hud-input-container:focus-within {
                 background: linear-gradient(var(--hud-bg), var(--hud-bg)) padding-box,
                   linear-gradient(var(--hud-highlight-bright), var(--hud-highlight-bright)) border-box;
+                animation: hud-focus-pulse 2.5s ease-in-out infinite;
               }
 
               @keyframes hud-gradient-spin {
                 to {
                   --hud-gradient-angle: 360deg;
+                }
+              }
+
+              @keyframes hud-focus-pulse {
+                0% {
+                  box-shadow: 0 0 0 0 rgba(245, 166, 35, 0%);
+                }
+                50% {
+                  box-shadow: 0 0 15px 1px rgba(245, 166, 35, 0.3);
+                }
+                100% {
+                  box-shadow: 0 0 0 0 rgba(245, 166, 35, 0%);
                 }
               }
             `}</style>
