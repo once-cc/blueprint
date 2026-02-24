@@ -52,6 +52,13 @@ export default function Blueprint() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [forceReveal, setForceReveal] = useState(false);
 
+  const scrollToChatbox = () => {
+    const el = document.getElementById("chatbox-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   // Safety fallback: if video hasn't loaded after 3 seconds, reveal UI anyway
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -169,7 +176,7 @@ export default function Blueprint() {
                   transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
                   className="flex items-center gap-4 flex-wrap mt-2"
                 >
-                  <ShinyButton onClick={() => navigate("/configurator")}>
+                  <ShinyButton onClick={scrollToChatbox}>
                     Get Started
                   </ShinyButton>
                 </motion.div>
@@ -232,7 +239,7 @@ export default function Blueprint() {
                 <Button
                   size="lg"
                   className="gap-2 text-lg px-10 py-7 group"
-                  onClick={() => navigate("/configurator")}
+                  onClick={scrollToChatbox}
                 >
                   Get Your Free Blueprint
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
