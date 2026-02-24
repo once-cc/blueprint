@@ -68,15 +68,13 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
     // This allows useScroll to perfectly map its document position without getting paused/stuck by position: sticky!
     const trackerRef = useRef<HTMLDivElement>(null);
 
-    // Title pops up perfectly exactly as the card hits its sticky docking point
-    const { scrollYProgress: popProgress } = useScroll({
+    // Fade begins slightly before dock and finishes slightly after, ensuring a smooth handoff
+    const { scrollYProgress: fadeProgress } = useScroll({
         target: trackerRef,
-        offset: ["start 22vh", "start 2vh"]
+        offset: ["start 26vh", "start 18vh"]
     });
 
-    const titleY = useTransform(popProgress, [0, 1], ["85%", "40%"]);
-    // Opacity: All cards start hidden and fade/slide up immediately once they stick
-    const titleOpacity = useTransform(popProgress, [0, 0.4, 1], [0, 1, 1]);
+    const titleOpacity = useTransform(fadeProgress, [0, 1], [0, 1]);
 
     // Exit begins the moment this card's top hits -30vh from the viewport top
     // (exactly when the next card's top enters the viewport from the bottom).
@@ -98,6 +96,26 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
         // on non-last cards to preserve the exact same 130vh visual spacing. This guarantees beautifully locked descent!
         <div ref={trackerRef} className={`relative w-full ${isLast ? "h-[180vh]" : "h-[250vh] -mb-[120vh]"}`}>
 
+            {/* The Document-Bound Headline: Scrolled naturally so it exactly follows the upstream section */}
+            <div className="absolute top-0 left-0 w-full flex justify-center pointer-events-none -z-10">
+                <motion.div
+                    style={{ opacity: titleOpacity, clipPath: "inset(-50vh 0 -50vh 0)" }}
+                    className="w-full max-w-[90vw] lg:max-w-[1240px] flex justify-center"
+                >
+                    <span
+                        className="font-nohemi font-bold select-none whitespace-nowrap uppercase text-transparent bg-clip-text bg-[linear-gradient(to_bottom,theme(colors.zinc.100)_0%,theme(colors.zinc.600)_80%,theme(colors.background)_100%)]"
+                        style={{
+                            fontSize: "clamp(3rem, 13vw, 240px)",
+                            lineHeight: 1,
+                            marginTop: "-0.15em", // Snaps the ascender flush against the top boundary
+                            paddingBottom: "10vh" // Safety buffer for gradient clipping
+                        }}
+                    >
+                        {step.title}
+                    </span>
+                </motion.div>
+            </div>
+
             {/* Top aligned natively to ensure layout boundaries perfectly match visual boundaries for flush docking */}
             <div className="sticky top-[22vh] w-full flex justify-center" style={{ zIndex: index, perspective: "1500px" }}>
 
@@ -108,23 +126,6 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                         // Important to ensure the perspective origin behaves well
                         className="relative w-full max-w-[90vw] lg:max-w-[1240px] flex justify-center will-change-transform origin-top"
                     >
-                        <motion.div
-                            style={{ y: titleY, opacity: titleOpacity }}
-                            // Positioned bottom-full so the baseline of the text container rests exactly on top of the card's top border
-                            className="absolute bottom-full w-full flex items-end justify-center pointer-events-none -z-10"
-                        >
-                            <span
-                                // pt-8 pb-4 prevents the text from being prematurely clipped by bg-clip-text's bounds
-                                className="font-nohemi font-bold pt-8 pb-4 select-none whitespace-nowrap uppercase text-transparent bg-clip-text bg-[linear-gradient(to_top,#020817_0%,theme(colors.zinc.900)_50%,theme(colors.zinc.800)_95%,#FFFFF0_100%)]"
-                                style={{
-                                    fontSize: "clamp(3rem, 13vw, 190px)",
-                                    lineHeight: 1
-                                }}
-                            >
-                                {step.title}
-                            </span>
-                        </motion.div>
-
                         <div
                             // Unified width is inherited from the parent motion.div. Relaxing height restrictions to prevent clipping
                             className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden rounded-xl"
