@@ -89,7 +89,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
 
     // Suppress exit animation precisely for the last card so it stays pinned as the next section overlays it
     const groupScale = useTransform(descendProgress, [0, 1], [1, isLast ? 1 : 0.85]);
-    const groupOpacity = useTransform(descendProgress, [0, 0.8, 1], [1, isLast ? 1 : 0]);
+    const groupOpacity = useTransform(descendProgress, [0, 0.8, 1], [1, isLast ? 1 : 0, isLast ? 1 : 0]);
     const groupY = useTransform(descendProgress, [0, 1], ["0vh", "0vh"]); // Strictly stationary, no drift
     const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "0deg"]);
 
