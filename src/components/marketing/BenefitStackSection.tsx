@@ -71,10 +71,6 @@ export function BenefitStackSection() {
             {/* The Editorial Ramp / Central Spine connecting to next section */}
             <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
 
-            {/* Editorial Docking Rails extending upwards */}
-            <div className="absolute -top-[500px] bottom-0 left-[10%] w-px bg-white/[0.05] pointer-events-none hidden lg:block" />
-            <div className="absolute -top-[500px] bottom-0 right-[10%] w-px bg-white/[0.05] pointer-events-none hidden lg:block" />
-
             <div className="container mx-auto px-6 mb-24 relative z-10">
                 <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                     <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2 mb-8">
@@ -117,20 +113,25 @@ export function BenefitStackSection() {
             </div>
 
             {/* Architectural Schematic Grid */}
-            <div className="container mx-auto px-4 md:px-6 relative z-10">
-                <div className="max-w-5xl mx-auto">
+            <div className="container mx-auto px-4 md:px-6 relative z-10 flex justify-center">
+                <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
+
+                    {/* True Edge Docking Rails extending upwards from the grid's literal bounds */}
+                    <div className="absolute -top-[500px] bottom-[100px] md:bottom-0 left-0 w-px bg-white/10 pointer-events-none z-20" />
+                    <div className="absolute -top-[500px] bottom-[100px] md:bottom-0 right-0 w-px bg-white/10 pointer-events-none z-20" />
+
                     {/* The 2x2 Drawn Grid */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="grid grid-cols-1 md:grid-cols-2 bg-background border border-white/5 divide-y divide-white/5 md:divide-y-0 relative shadow-2xl"
+                        className="grid grid-cols-1 md:grid-cols-2 bg-background border-y border-white/10 divide-y divide-white/10 md:divide-y-0 relative shadow-2xl"
                     >
                         {/* Horizontal divider for desktop row 2 */}
-                        <div className="hidden md:absolute md:block top-1/2 left-0 right-0 h-px bg-white/5 z-0 pointer-events-none" />
+                        <div className="hidden md:absolute md:block top-1/2 left-0 right-0 h-px bg-white/10 z-0 pointer-events-none" />
                         {/* Vertical divider for desktop col 2 */}
-                        <div className="hidden md:absolute md:block top-0 bottom-0 left-1/2 w-px bg-white/5 z-0 pointer-events-none" />
+                        <div className="hidden md:absolute md:block top-0 bottom-0 left-1/2 w-px bg-white/10 z-0 pointer-events-none" />
 
                         {benefits.map((benefit, i) => (
                             <div
