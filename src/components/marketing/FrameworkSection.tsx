@@ -8,27 +8,31 @@ const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const ScrambleText = ({ text }: { text: string }) => {
     const ref = useRef<HTMLSpanElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
-    const [display, setDisplay] = useState(text);
 
     useEffect(() => {
-        if (!isInView) return;
+        if (!isInView || !ref.current) return;
 
         let iteration = 0;
         // 1.5s total duration. If interval is 30ms, we need 50 iterations.
         const maxIterations = 50;
         const intervalMs = 30;
 
+        // Set initial text to prevent pop-in delay
+        ref.current.innerText = text;
+
         const interval = setInterval(() => {
-            setDisplay(text.split("").map((char, index) => {
+            if (!ref.current) return;
+
+            ref.current.innerText = text.split("").map((char, index) => {
                 if (index < Math.floor(iteration / (maxIterations / text.length))) {
                     return char;
                 }
                 return CHARS[Math.floor(Math.random() * CHARS.length)];
-            }).join(""));
+            }).join("");
 
             if (iteration >= maxIterations) {
                 clearInterval(interval);
-                setDisplay(text);
+                if (ref.current) ref.current.innerText = text;
             }
             iteration++;
         }, intervalMs);
@@ -36,7 +40,7 @@ const ScrambleText = ({ text }: { text: string }) => {
         return () => clearInterval(interval);
     }, [text, isInView]);
 
-    return <span ref={ref} className="inline-block tabular-nums min-w-[2.2ch]">{display}</span>;
+    return <span ref={ref} className="inline-block tabular-nums min-w-[2.2ch]">{text}</span>;
 };
 
 const processSteps = [
@@ -68,13 +72,16 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
     // This allows useScroll to perfectly map its document position without getting paused/stuck by position: sticky!
     const trackerRef = useRef<HTMLDivElement>(null);
 
-    // Fade begins slightly before dock and finishes slightly after, ensuring a smooth handoff
-    const { scrollYProgress: fadeProgress } = useScroll({
+    // Title pops up perfectly as the card centers into the viewport
+    const { scrollYProgress: popProgress } = useScroll({
         target: trackerRef,
-        offset: ["start 26vh", "start 18vh"]
+        offset: ["start 80%", "start 20%"]
     });
 
-    const titleOpacity = useTransform(fadeProgress, [0, 1], [0, 1]);
+    const titleY = useTransform(popProgress, [0, 1], ["85%", "40%"]);
+    // Opacity: First card starts fully visible instantly, subsequent cards fade in as they pop.
+    // However, the LAST card shouldn't fade back out later.
+    const titleOpacity = useTransform(popProgress, [0, 0.4, 1], [index === 0 ? 1 : 0, 1, 1]);
 
     // Exit begins the moment this card's top hits -30vh from the viewport top
     // (exactly when the next card's top enters the viewport from the bottom).
@@ -96,28 +103,8 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
         // on non-last cards to preserve the exact same 130vh visual spacing. This guarantees beautifully locked descent!
         <div ref={trackerRef} className={`relative w-full ${isLast ? "h-[180vh]" : "h-[250vh] -mb-[120vh]"}`}>
 
-            {/* The Document-Bound Headline: Scrolled naturally so it exactly follows the upstream section */}
-            <div className="absolute top-0 left-0 w-full flex justify-center pointer-events-none -z-10">
-                <motion.div
-                    style={{ opacity: titleOpacity, clipPath: "inset(-50vh 0 -50vh 0)" }}
-                    className="w-full max-w-[90vw] lg:max-w-[1240px] flex justify-center"
-                >
-                    <span
-                        className="font-nohemi font-bold select-none whitespace-nowrap uppercase text-transparent bg-clip-text bg-[linear-gradient(to_bottom,theme(colors.zinc.100)_0%,theme(colors.zinc.600)_80%,theme(colors.background)_100%)]"
-                        style={{
-                            fontSize: "clamp(3rem, 13vw, 240px)",
-                            lineHeight: 1,
-                            marginTop: "-0.15em", // Snaps the ascender flush against the top boundary
-                            paddingBottom: "10vh" // Safety buffer for gradient clipping
-                        }}
-                    >
-                        {step.title}
-                    </span>
-                </motion.div>
-            </div>
-
             {/* Top aligned natively to ensure layout boundaries perfectly match visual boundaries for flush docking */}
-            <div className="sticky top-[22vh] w-full flex justify-center" style={{ zIndex: index, perspective: "1500px" }}>
+            <div className="sticky top-[22vh] w-full flex justify-center will-change-transform" style={{ zIndex: index, perspective: "1500px" }}>
 
                 {/* Removed the -10vh entering pop shift so the card sits perfectly flush against the upstream section boundary */}
                 <div className="w-full flex justify-center">
@@ -126,6 +113,23 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                         // Important to ensure the perspective origin behaves well
                         className="relative w-full max-w-[90vw] lg:max-w-[1240px] flex justify-center will-change-transform origin-top"
                     >
+                        <motion.div
+                            style={{ y: titleY, opacity: titleOpacity }}
+                            // Positioned bottom-full so the baseline of the text container rests exactly on top of the card's top border
+                            className="absolute bottom-full w-full flex items-end justify-center pointer-events-none -z-10 will-change-transform"
+                        >
+                            <span
+                                // pt-8 pb-4 prevents the text from being prematurely clipped
+                                className="font-nohemi font-bold pt-8 pb-4 select-none whitespace-nowrap uppercase text-zinc-900/60 mix-blend-plus-lighter"
+                                style={{
+                                    fontSize: "clamp(3rem, 13vw, 190px)",
+                                    lineHeight: 1
+                                }}
+                            >
+                                {step.title}
+                            </span>
+                        </motion.div>
+
                         <div
                             // Unified width is inherited from the parent motion.div. Relaxing height restrictions to prevent clipping
                             className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden rounded-xl"
@@ -142,7 +146,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                             <div className="grid grid-cols-2 w-full h-full relative z-10">
 
                                 {/* LEFT COLUMN: Data & Copy */}
-                                <div className="flex flex-col border-r border-white/20 p-8 lg:p-12 justify-between bg-background/50 backdrop-blur-sm relative h-full">
+                                <div className="flex flex-col border-r border-white/20 p-8 lg:p-12 justify-between bg-black/40 relative h-full">
                                     {/* Number / Heading */}
                                     <div className="flex flex-col h-full">
                                         <div className="flex flex-col items-start gap-3 mb-8 border-b border-white/10 pb-6 w-full">
@@ -163,7 +167,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                                             <div className="absolute left-[11.5px] top-6 bottom-6 w-[1px] bg-white/10" />
 
                                             {step.bullets.map((bullet, idx) => (
-                                                <li key={idx} className="flex flex-row items-center gap-5 bg-card/30 border border-white/10 p-4 lg:p-5 backdrop-blur-sm">
+                                                <li key={idx} className="flex flex-row items-center gap-5 bg-black/40 border border-white/10 p-4 lg:p-5">
                                                     {/* Glowing sequence indicator */}
                                                     <div className="relative w-6 h-6 shrink-0 flex items-center justify-center z-10">
                                                         {/* Outer faint ring */}
@@ -199,7 +203,7 @@ const DesktopStackCard = ({ index, step, progressRange, progressTotal, isLast }:
                                         <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/30 z-20" />
 
                                         {/* Visual Graphic Image */}
-                                        <img src={step.imageUrl} alt={step.title} className="w-full h-full object-cover rounded-sm" />
+                                        <img src={step.imageUrl} alt={step.title} loading="lazy" className="w-full h-full object-cover rounded-sm" />
                                     </div>
                                 </div>
                             </div>
@@ -262,7 +266,7 @@ const MobileStackCard = ({ index, step, progressRange, progressTotal }: MobileSt
     const darkenOpacity = useTransform(progressTotal, progressRange, [0, 0.6]);
 
     return (
-        <div className="sticky top-24 pt-4 pb-4" style={{ zIndex: index }}>
+        <div className="sticky top-24 pt-4 pb-4 will-change-transform" style={{ zIndex: index }}>
             <motion.div
                 style={{ scale }}
                 className="w-full bg-card border border-border/20 rounded-3xl p-6 flex flex-col gap-6 shadow-2xl relative overflow-hidden will-change-transform"
@@ -288,7 +292,7 @@ const MobileStackCard = ({ index, step, progressRange, progressTotal }: MobileSt
 
                 {/* Image Asset */}
                 <div className="relative w-full aspect-video bg-background/50 border border-border/10 rounded-xl flex items-center justify-center overflow-hidden">
-                    <img src={step.imageUrl} alt={step.title} className="w-full h-full object-cover" />
+                    <img src={step.imageUrl} alt={step.title} loading="lazy" className="w-full h-full object-cover" />
                 </div>
 
                 {/* Bullets */}
