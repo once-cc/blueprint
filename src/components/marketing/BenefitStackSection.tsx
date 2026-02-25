@@ -58,9 +58,10 @@ const Word = ({ children, progress, range }: WordRevealProps) => {
 
 export function BenefitStackSection() {
     const containerRef = useRef<HTMLElement>(null);
+    const textRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start center", "center center"]
+        target: textRef,
+        offset: ["start 85%", "start 35%"] // Start fading in as it enters bottom, finish as it reaches upper-mid screen
     });
 
     const introText = "Why Start With a Blueprint? It eliminates the costly risks of developing blind. A precise architectural map ensuring pixel-perfect execution.";
@@ -72,7 +73,7 @@ export function BenefitStackSection() {
             <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
 
             <div className="container mx-auto px-6 mb-24 relative z-10">
-                <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+                <div ref={textRef} className="max-w-4xl mx-auto text-center flex flex-col items-center">
                     <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2 mb-8">
                         <span className="text-accent/60">//</span> Strategic Intelligence
                     </span>
