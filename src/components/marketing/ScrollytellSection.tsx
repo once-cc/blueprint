@@ -54,7 +54,7 @@ export function ScrollytellSection() {
                         </span>
                     </motion.div>
 
-                    <h2 className="font-nohemi font-medium text-2xl md:text-4xl lg:text-[2.75rem] leading-[1.2] tracking-tight block w-full text-left">
+                    <h2 className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-left">
                         {/* Indent element to push the first line over on desktop */}
                         <div className="hidden md:block float-left w-[160px] lg:w-[200px] h-4" aria-hidden="true" />
 
