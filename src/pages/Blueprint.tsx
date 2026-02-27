@@ -37,7 +37,7 @@ export default function Blueprint() {
   useEffect(() => {
     if (footerRef.current) {
       const resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
+        for (const entry of entries) {
           setFooterHeight(entry.target.getBoundingClientRect().height);
         }
       });
