@@ -1,0 +1,535 @@
+/* ========================================
+   Theme Transition Helper
+   ======================================== */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.5s var(--ease-smooth),
+    color 0.5s var(--ease-smooth),
+    border-color 0.5s var(--ease-smooth),
+    fill 0.5s var(--ease-smooth),
+    stroke 0.5s var(--ease-smooth) !important;
+}
+
+/* ========================================
+   Animated Gradient Background
+   ======================================== */
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-gradient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+  transition: background 0.5s var(--ease-smooth);
+
+  /* Dark mode gradients */
+  background:
+    radial-gradient(ellipse at 20% 30%, hsl(220 40% 12% / 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(260 30% 15% / 0.6) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 80%, hsl(38 50% 15% / 0.5) 0%, transparent 40%),
+    radial-gradient(ellipse at 30% 70%, hsl(220 30% 10% / 0.7) 0%, transparent 50%);
+}
+
+.light .animated-gradient-bg {
+  opacity: 0.35;
+  background:
+    radial-gradient(ellipse at 20% 30%, hsl(45 40% 92% / 0.9) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(200 30% 88% / 0.7) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 80%, hsl(38 60% 85% / 0.6) 0%, transparent 40%),
+    radial-gradient(ellipse at 30% 70%, hsl(45 25% 90% / 0.8) 0%, transparent 50%);
+}
+
+/* Logo band */
+.logo-band {
+  @apply flex items-center gap-16 py-8;
+  animation: drift 40s linear infinite;
+}
+
+.marquee-container {
+  width: 100%;
+}
+
+.marquee-track {
+  animation: marquee 12s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.carousel-paused {
+  animation-play-state: paused !important;
+}
+
+.marquee-track-reverse {
+  animation: marquee-reverse 30s linear infinite;
+}
+
+.marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* Work grid card */
+.work-card {
+  @apply relative overflow-hidden bg-card;
+  @apply transition-transform duration-500;
+}
+
+.work-card:hover {
+  @apply scale-[1.02];
+}
+
+.work-card-overlay {
+  @apply absolute inset-0;
+  background: linear-gradient(to top, hsl(var(--background) / 0.9) 0%, transparent 50%);
+}
+
+@layer utilities {
+
+  /* Animation delay utilities */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  /* Parallax helper */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  /* Text shadow for depth */
+  .text-shadow-hero {
+    text-shadow: 0 4px 40px hsl(var(--background) / 0.8);
+  }
+}
+
+/* ============================================
+   Dual Carousel Animations
+   ============================================ */
+
+@keyframes carousel-marquee-right {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes carousel-marquee-left {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.carousel-marquee-right {
+  animation: carousel-marquee-right var(--carousel-duration, 45s) linear infinite;
+}
+
+.carousel-marquee-left {
+  animation: carousel-marquee-left var(--carousel-duration, 55s) linear infinite;
+}
+
+.carousel-paused {
+  animation-play-state: paused;
+}
+
+/* Edge fade masks for seamless carousel */
+.carousel-edge-mask {
+  mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  .carousel-marquee-right,
+  .carousel-marquee-left {
+    animation: none;
+  }
+
+  /* Disable all CSS animations in reduced motion mode */
+  .animate-light-ray-corner,
+  .animate-light-ray-edge,
+  .animate-crt-sweep,
+  .animate-scanline-flicker {
+    animation: none !important;
+  }
+}
+
+/* Perfect full-sweep shimmer to begin and end completely off-text */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: 250% center;
+  }
+
+  100% {
+    background-position: -250% center;
+  }
+}
+
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ============================================
+   Performance Utilities
+   ============================================ */
+
+/* GPU acceleration hint for static elements */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Containment for isolated rendering */
+.contain-strict {
+  contain: strict;
+}
+
+.contain-layout {
+  contain: layout style paint;
+}
+
+/* Pause animations when offscreen */
+.offscreen-paused {
+  animation-play-state: paused !important;
+}
+
+/* Scrollbar hide utility for reduced motion fallback */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   Dashboard Header Slab
+   ======================================== */
+.dashboard-header-slab {
+  @apply relative w-full;
+  min-height: 200px;
+}
+
+@screen md {
+  .dashboard-header-slab {
+    min-height: 240px;
+  }
+}
+
+@screen lg {
+  .dashboard-header-slab {
+    min-height: 280px;
+  }
+}
+
+/* Status Ring */
+.status-ring {
+  @apply w-12 h-12 rounded-full border-2 border-green-500/50;
+  @apply flex items-center justify-center flex-shrink-0;
+  @apply bg-green-500/10;
+}
+
+/* ========================================
+   Configurator Card Surface System
+   Apple Studio "Cinematic Lift" Effect
+   ======================================== */
+
+/* Base configurator surface - default lift */
+.cfg-surface {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.03);
+}
+
+.cfg-surface:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 6px 16px rgba(0, 0, 0, 0.07),
+    0 16px 40px rgba(0, 0, 0, 0.04);
+}
+
+.cfg-surface:active {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode - inset highlight rim + softer shadows */
+.dark .cfg-surface {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dark .cfg-surface:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .cfg-surface:active {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.02),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* Elevated variant - more pronounced lift */
+.cfg-surface-elevated {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.07),
+    0 20px 48px rgba(0, 0, 0, 0.05);
+}
+
+.cfg-surface-elevated:hover {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.09),
+    0 24px 56px rgba(0, 0, 0, 0.06);
+}
+
+.dark .cfg-surface-elevated {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.25),
+    0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .cfg-surface-elevated:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Subtle variant - minimal lift */
+.cfg-surface-subtle {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.cfg-surface-subtle:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dark .cfg-surface-subtle {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.02),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.dark .cfg-surface-subtle:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Selected state - adds accent glow over lift */
+.cfg-surface-selected {
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--accent) / 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 0 24px hsl(var(--accent) / 0.18);
+}
+
+.dark .cfg-surface-selected {
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--accent) / 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 0 24px hsl(var(--accent) / 0.18);
+}
+
+/* Reduced motion - disable shadow transitions */
+@media (prefers-reduced-motion: reduce) {
+
+  .cfg-surface,
+  .cfg-surface-elevated,
+  .cfg-surface-subtle,
+  .cfg-surface-selected {
+    transition: none !important;
+  }
+}
+
+/* ========================================
+   Glassmorphism Form Controls (#3)
+   ======================================== */
+.cfg-input {
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 0.3);
+  border-radius: 0.75rem;
+  transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
+}
+
+.cfg-input:hover {
+  border-color: hsl(var(--border) / 0.5);
+}
+
+.cfg-input:focus,
+.cfg-input:focus-within {
+  border-color: hsl(var(--accent) / 0.5);
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.1), 0 0 20px hsl(var(--accent) / 0.08);
+  outline: none;
+}
+
+.dark .cfg-input {
+  background: hsl(var(--card) / 0.5);
+  border-color: hsl(var(--border) / 0.25);
+}
+
+.dark .cfg-input:hover {
+  border-color: hsl(var(--border) / 0.45);
+}
+
+.dark .cfg-input:focus,
+.dark .cfg-input:focus-within {
+  border-color: hsl(var(--accent) / 0.4);
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.08), 0 0 24px hsl(var(--accent) / 0.1);
+}
+
+/* Reduced motion — disable input transitions */
+@media (prefers-reduced-motion: reduce) {
+  .cfg-input {
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   Dual Carousel Animations
+   ============================================ */
+
+@keyframes carousel-marquee-right {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes carousel-marquee-left {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.carousel-marquee-right {
+  animation: carousel-marquee-right var(--carousel-duration, 45s) linear infinite;
+}
+
+.carousel-marquee-left {
+  animation: carousel-marquee-left var(--carousel-duration, 55s) linear infinite;
+}
+
+.carousel-paused {
+  animation-play-state: paused;
+}
+
+/* Edge fade masks for seamless carousel */
+.carousel-edge-mask {
+  mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  .carousel-marquee-right,
+  .carousel-marquee-left {
+    animation: none;
+  }
+
+  /* Disable all CSS animations in reduced motion mode */
+  .animate-light-ray-corner,
+  .animate-light-ray-edge,
+  .animate-crt-sweep,
+  .animate-scanline-flicker {
+    animation: none !important;
+  }
+}
+
+/* Perfect full-sweep shimmer to begin and end completely off-text */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: 250% center;
+  }
+
+  100% {
+    background-position: -250% center;
+  }
+}
+
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}

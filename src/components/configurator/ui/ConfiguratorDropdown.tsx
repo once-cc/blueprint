@@ -87,8 +87,8 @@ export function ConfiguratorDropdown({
       {/* Label */}
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-foreground">{label}</span>
-        {required && (
-          <span className="text-xs text-muted-foreground">(required)</span>
+        {required && !hasSelection && (
+          <span className="text-destructive ml-1">*</span>
         )}
         {hasSelection && (
           <motion.div

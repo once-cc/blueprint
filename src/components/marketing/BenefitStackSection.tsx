@@ -1,30 +1,30 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { ShieldCheck, Zap, LineChart, Target } from "lucide-react";
 import { GridSection } from "@/components/ui/grid-section";
 
 const benefits = [
     {
-        title: "Absolute Certainty",
-        description: "Eliminate the guesswork from development. You see exactly what you're getting, how it maps to conversion, and why every decision was made before writing a single line of code.",
+        title: "Total Clarity",
+        description: "See exactly what will be built. How it converts. And why each decision exists — before committing to execution.\nNo ambiguity.\nNo surprises.",
         icon: ShieldCheck,
         color: "hsl(220 12% 40%)" // Muted metallic
     },
     {
-        title: "Accelerated Velocity",
-        description: "Fast-track your project from idea to production-ready design. Clean handoffs mean engineering doesn't pause to ask design questions.",
+        title: "Zero Technical Overload",
+        description: "Everything is defined as one cohesive system.\nNo guesswork.\nNo patchwork.\nNo operational confusion.\nSimply select the strategic direction — so the build begins clean.",
         icon: Zap,
         color: "hsl(38 85% 55%)" // Accent gold
     },
     {
-        title: "Conversion Architecture",
-        description: "We don't just design pretty pages. Every component is audited and structured specifically to guide user intent toward your primary business goals.",
+        title: "Designed for Longevity",
+        description: "The Crafted Blueprint creates assets designed to increase in value as your business grows.\nNot a pretty page.\nBut an appreciating asset.",
         icon: LineChart,
         color: "hsl(142 71% 45%)" // Success green
     },
     {
-        title: "Alignment & Vision",
-        description: "Rally your stakeholders around a unified, interactive prototype rather than abstract concepts. The blueprint acts as your single source of truth.",
+        title: "Decision Confidence",
+        description: "Instead of conveying abstract ideas, you build a clear directional blueprint.\nYou design direction once — not through endless revisions.\nThe Crafted Blueprint becomes your reference point when building your asset that will grow your business for many years to come.",
         icon: Target,
         color: "hsl(221 83% 53%)" // Trust blue
     }
@@ -38,33 +38,39 @@ interface WordRevealProps {
 
 const Word = ({ children, progress, range }: WordRevealProps) => {
     const opacity = useTransform(progress, range, [0.25, 1]);
-    const highlight = useTransform(
-        progress,
-        range,
-        ["hsl(220 12% 50% / 0.25)", "hsl(45 10% 92%)"]
-    );
+    const color = useTransform(progress, range, ["hsla(220, 12%, 50%, 0.25)", "hsl(45, 10%, 92%)"]);
 
     return (
-        <span className="relative">
-            <motion.span
-                style={{ opacity, color: highlight }}
-                className="transition-colors duration-100"
-            >
-                {children}
-            </motion.span>
-        </span>
+        <motion.span className="relative transition-colors duration-100" style={{ opacity, color }}>
+            {children}
+        </motion.span>
+    );
+};
+
+const HighlightedWord = ({ children, progress, range }: WordRevealProps) => {
+    const opacity = useTransform(progress, range, [0.4, 1]);
+
+    return (
+        <motion.span style={{ opacity }}>
+            {children}
+        </motion.span>
     );
 };
 
 export function BenefitStackSection() {
     const containerRef = useRef<HTMLElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
+
     const { scrollYProgress } = useScroll({
         target: textRef,
-        offset: ["start 85%", "start 35%"] // Start fading in as it enters bottom, finish as it reaches upper-mid screen
+        // Start revealing when the text enters the bottom 85% of the screen.
+        // Finish revealing when the BOTTOM of the text reaches 45% of the viewport (just above the center line).
+        // Since there is a mb-24 (96px) gap below the text, the TOP of the cards below 
+        // will be positioned at exactly ~55% of the viewport (just under 50%) when the animation completes.
+        offset: ["start 85%", "end 45%"]
     });
 
-    const introText = "Why Start With a Blueprint? It eliminates the costly risks of developing blind. A precise architectural map ensuring pixel-perfect execution.";
+    const introText = "Why Start With a Blueprint? Because building first and thinking later is expensive. Define it properly once. Build with direction. Avoid the cost of revisions, delays, and fragmented systems. Time saved. Money protected. Momentum preserved.";
     const words = introText.split(" ");
 
     return (
@@ -73,9 +79,9 @@ export function BenefitStackSection() {
             <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
 
             <div className="container mx-auto px-6 mb-24 relative z-10">
-                <div ref={textRef} className="max-w-4xl mx-auto text-center flex flex-col items-center">
+                <div ref={textRef} className="max-w-4xl mx-auto text-center flex flex-col items-center relative">
                     <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2 mb-8">
-                        <span className="text-accent/60">//</span> Strategic Intelligence
+                        <span className="text-accent/60">//</span> STRATEGIC CLARITY
                     </span>
 
                     <h2 className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-center">
@@ -83,19 +89,22 @@ export function BenefitStackSection() {
                             const start = i / words.length;
                             const end = start + 1 / words.length;
 
-                            if (["Blueprint?", "costly", "risks", "pixel-perfect"].some(w => word.includes(w))) {
+                            const isSingleBreak = ["Blueprint?", "once.", "direction.", "saved.", "protected."].some(w => word.includes(w));
+                            const isDoubleBreak = ["expensive.", "systems."].some(w => word.includes(w));
+
+                            const isHighlighted = ["Blueprint?", "expensive.", "direction.", "systems.", "saved.", "protected.", "preserved."].some(w => word.includes(w));
+
+                            if (isHighlighted) {
                                 return (
                                     <span key={i}>
                                         <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pr-1.5">
-                                            <motion.span
-                                                style={{
-                                                    opacity: useTransform(scrollYProgress, [start, end], [0.4, 1])
-                                                }}
-                                            >
+                                            <HighlightedWord progress={scrollYProgress} range={[start, end]}>
                                                 {word}
-                                            </motion.span>
+                                            </HighlightedWord>
                                         </span>
                                         {i !== words.length - 1 && " "}
+                                        {isSingleBreak && <br />}
+                                        {isDoubleBreak && <><br /><br /></>}
                                     </span>
                                 );
                             }
@@ -106,6 +115,8 @@ export function BenefitStackSection() {
                                         {word}
                                     </Word>
                                     {i !== words.length - 1 && " "}
+                                    {isSingleBreak && <br />}
+                                    {isDoubleBreak && <><br /><br /></>}
                                 </span>
                             );
                         })}
@@ -155,7 +166,7 @@ export function BenefitStackSection() {
                                 </div>
 
                                 {/* Annotation copy */}
-                                <p className="font-body type-functional-light text-sm md:text-base text-muted-foreground leading-relaxed max-w-sm">
+                                <p className="font-body type-functional-light text-sm md:text-base text-muted-foreground leading-relaxed max-w-sm whitespace-pre-line">
                                     {benefit.description}
                                 </p>
                             </div>

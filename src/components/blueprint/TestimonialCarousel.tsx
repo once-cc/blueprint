@@ -1,43 +1,60 @@
-import { useRef, useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { motion, useMotionValue, useTransform, useAnimationFrame, MotionValue } from "framer-motion";
 import { testimonials, type Testimonial } from "@/data/testimonials";
 
-// Number of duplicate sets to ensure smooth infinite sweeping
-const MULTIPLIER = 3;
+// Reduced from 12 to 6 — only need enough cards to fill ~3x viewport width
+// for a seamless infinite illusion. 6 × 6 testimonials = 36 cards is plenty.
+const MULTIPLIER = 6;
 const extendedTestimonials = Array.from({ length: MULTIPLIER }).flatMap((_, idx) =>
   testimonials.map(t => ({ ...t, uniqueKey: `${t.id}-${idx}` }))
 );
 
-export function TestimonialCarousel() {
-  const containerRef = useRef<HTMLDivElement>(null);
+// Card width + gap constants (must match the CSS below)
+const CARD_WIDTH_MD = 350;
+const CARD_WIDTH_SM = 280;
+const GAP_MD = 32; // gap-8
+const GAP_SM = 16; // gap-4
 
-  // Track continuous horizontal scroll
+export function TestimonialCarousel() {
+  const isDragging = useRef(false);
+
+  // Track continuous horizontal scroll — this is the single source of truth
   const x = useMotionValue(0);
-  // Add a spring to smooth out the dragging and snapping
-  const animatedX = useSpring(x, { stiffness: 400, damping: 40 });
+
+  // Infinite motion loop ticking on every animation frame
+  useAnimationFrame((_, delta) => {
+    if (!isDragging.current) {
+      x.set(x.get() - delta * 0.05);
+    }
+  });
 
   return (
     <div className="relative w-full overflow-hidden py-24 bg-transparent select-none">
 
       {/* 3D Scene Container */}
       <div
-        ref={containerRef}
         className="flex justify-center items-center relative z-10 w-full"
         style={{ perspective: "1000px" }}
       >
         <motion.div
-          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing px-[50vw]" // Padding ensures cards can reach center
-          style={{ x: animatedX, transformStyle: "preserve-3d" }}
+          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing px-[50vw]"
+          style={{ x, transformStyle: "preserve-3d" }}
           drag="x"
-          dragConstraints={{ left: -3000, right: 3000 }} // Loose constraints, ideally infinite
+          dragConstraints={{ left: -10000, right: 10000 }}
           dragElastic={0.1}
+          onDragStart={() => isDragging.current = true}
+          onDragEnd={() => {
+            setTimeout(() => {
+              isDragging.current = false;
+            }, 500);
+          }}
         >
           {extendedTestimonials.map((testimonial, idx) => (
             <Card
               key={testimonial.uniqueKey}
               testimonial={testimonial}
               index={idx}
-              x={animatedX}
+              x={x}
             />
           ))}
         </motion.div>
@@ -47,46 +64,58 @@ export function TestimonialCarousel() {
   );
 }
 
-// Extract Card to its own component so it can track its individual position
-function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: string }, index: number, x: any }) {
+// Optimized Card — uses pure Framer Motion values, ZERO React state, ZERO getBoundingClientRect
+function Card({ testimonial, index, x }: { testimonial: Testimonial & { uniqueKey: string }, index: number, x: MotionValue<number> }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [centerDistance, setCenterDistance] = useState(0);
 
-  // Track global X motion and calculate this specific card's distance from the absolute viewport center
+  // We compute the card's distance from the viewport center using:
+  // card's visual center = initialOffset + x (the carousel motion value)
+  // This avoids getBoundingClientRect entirely.
+  const initialOffset = useMotionValue(0);
+
+  // Measure once on mount + resize (not per-frame!)
   useEffect(() => {
-    return x.onChange(() => {
+    function measure() {
       if (!cardRef.current) return;
-      // Get card's current bounding box on screen
       const rect = cardRef.current.getBoundingClientRect();
+      // Store the card's initial center position relative to viewport center
+      // We subtract the current x value to get the "native" position
+      const currentX = x.get();
       const cardCenter = rect.left + rect.width / 2;
-      const windowCenter = window.innerWidth / 2;
-      // Distance in pixels from the absolute screen center
-      setCenterDistance(cardCenter - windowCenter);
-    });
-  }, [x]);
+      initialOffset.set(cardCenter - currentX);
+    }
+    // Measure after layout settles
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", measure);
+    };
+  }, [x, initialOffset]);
 
-  // Create a local motion value that updates alongside state, 
-  // to drive smooth Framer useTransforms
-  const distanceMotionValue = useMotionValue(0);
-  useEffect(() => {
-    distanceMotionValue.set(centerDistance);
-  }, [centerDistance, distanceMotionValue]);
+  // Derive the card's live distance from viewport center using motion values only
+  // cardCenter = initialOffset + x, distance = cardCenter - window.innerWidth / 2
+  const centerDistance = useTransform(
+    [initialOffset, x] as MotionValue[],
+    ([offset, xVal]: number[]) => {
+      const windowCenter = typeof window !== "undefined" ? window.innerWidth / 2 : 600;
+      return (offset + xVal) - windowCenter;
+    }
+  );
 
-  // If perfectly centered (0), z is pushed back slightly (-200px). If far left or right (±800px), brought forward gently (100px)
-  // This creates the requested subtle concave effect
-  const z = useTransform(distanceMotionValue, [-800, 0, 800], [100, -200, 100]);
+  // 3D concave effect: centered cards pushed back, edge cards brought forward
+  const z = useTransform(centerDistance, [-800, 0, 800], [100, -200, 100]);
 
-  // Smooth, gentle inward tilt: far left (-800px) tilts right (20deg). Far right (800px), tilts left (-20deg).
-  // CSS 3D rotateY works counter-clockwise viewing from top-down for positive values.
-  const rotateY = useTransform(distanceMotionValue, [-800, 0, 800], [20, 0, -20]);
+  // Gentle inward tilt for 3D perspective
+  const rotateY = useTransform(centerDistance, [-800, 0, 800], [20, 0, -20]);
 
-  // Fade out cards as they get to the absolute edges
-  const opacity = useTransform(distanceMotionValue, [-800, -500, 0, 500, 800], [0, 0.8, 1, 0.8, 0]);
+  // Fade edges
+  const opacity = useTransform(centerDistance, [-1000, -600, 0, 600, 1000], [0, 1, 1, 1, 0]);
 
   return (
     <motion.div
       ref={cardRef}
-      className="flex-shrink-0 w-[280px] md:w-[350px] aspect-[4/5] md:aspect-square relative flex items-center justify-center rounded-3xl overflow-hidden bg-muted border border-border/20 shadow-xl"
+      className="flex-shrink-0 w-[280px] md:w-[350px] aspect-[3/4] relative flex items-center justify-center rounded-xl overflow-hidden bg-muted border border-border/20 shadow-xl"
       style={{
         z,
         rotateY,
@@ -94,7 +123,6 @@ function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: stri
         transformStyle: "preserve-3d"
       }}
     >
-      {/* The Reference image specifically mentions portrait images, clean and minimal */}
       {testimonial.image ? (
         <img
           src={testimonial.image}
@@ -103,7 +131,6 @@ function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: stri
           draggable={false}
         />
       ) : (
-        // Fallback minimal text design if no image is present, staying faithful to the reference vibe
         <div
           className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between bg-gradient-to-br from-card to-background text-foreground"
           style={{ transformStyle: "preserve-3d" }}
@@ -126,7 +153,7 @@ function Card({ testimonial, x }: { testimonial: Testimonial & { uniqueKey: stri
       )}
 
       {/* Subtle inner shadow overlay to give it physical volume */}
-      <div className="absolute inset-0 border border-white/10 rounded-3xl pointer-events-none" />
+      <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
     </motion.div>
   );
 }

@@ -367,6 +367,7 @@ export function BlueprintConfigurator() {
           <ReviewStep
             key="step-10"
             blueprint={blueprint}
+            references={references}
             onUpdateUserDetails={updateUserDetails}
             onGoToStep={goToStep}
             onSubmit={handleSubmit}
@@ -512,14 +513,20 @@ export function BlueprintConfigurator() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="sm:justify-between flex-col-reverse sm:flex-row w-full mt-6 sm:space-x-0 gap-3">
-                <AlertDialogAction
-                  onClick={() => navigate('/blueprint')}
-                  className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300 w-full sm:w-auto"
+                <motion.div
+                  whileHover={{ x: -2, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+                  whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+                  className="w-full sm:w-auto mt-3 sm:mt-0"
                 >
-                  <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-                  <ArrowLeft className="relative z-10 w-4 h-4" />
-                  <span className="relative z-10">Exit to Homepage</span>
-                </AlertDialogAction>
+                  <AlertDialogAction
+                    onClick={() => navigate('/blueprint')}
+                    className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300 w-full"
+                  >
+                    <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                    <ArrowLeft className="relative z-10 w-4 h-4" />
+                    <span className="relative z-10">Exit to Homepage</span>
+                  </AlertDialogAction>
+                </motion.div>
 
                 <AlertDialogCancel
                   className="gap-2 min-w-[140px] bg-primary text-primary-foreground hover:bg-primary/90 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 mt-0 sm:mt-0 w-full sm:w-auto"

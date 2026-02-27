@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 const STORAGE_KEY = 'blueprint_id';
 const SESSION_TOKEN_KEY = 'blueprint_session_token';
 const DREAM_INTENT_KEY = 'dream_intent';
+const LOCAL_DRAFT_KEY = 'blueprint_draft';
 const DEBOUNCE_MS = 1000;
 
 
@@ -72,8 +73,13 @@ export function useBlueprint() {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(SESSION_TOKEN_KEY);
         localStorage.removeItem(DREAM_INTENT_KEY);
+        localStorage.removeItem(LOCAL_DRAFT_KEY);
         // Fall through to create new blueprint
       }
+
+      // Check for local un-sync'd draft
+      const localDraftStr = localStorage.getItem(LOCAL_DRAFT_KEY);
+      const localDraft = localDraftStr ? JSON.parse(localDraftStr) : null;
 
       // Attempt to resume existing blueprint using token-scoped client
       if (storedId && storedToken) {
@@ -87,11 +93,50 @@ export function useBlueprint() {
           .maybeSingle();
 
         if (data && !error) {
-          const hasProgress = (data.current_step as number) > 1 ||
-            (data as Record<string, unknown>).dream_intent ||
+          const dbBlueprint = mapDbToBlueprint(data as Record<string, unknown>, storedDreamIntent);
+          let finalBlueprint = dbBlueprint;
+
+          // Rescue local draft if it's more recent than DB
+          if (localDraft && localDraft.id === dbBlueprint.id) {
+            const localDate = new Date(localDraft.updatedAt).getTime();
+            const dbDate = new Date(dbBlueprint.updatedAt).getTime();
+            if (localDate > dbDate) {
+              finalBlueprint = {
+                ...dbBlueprint,
+                discovery: { ...dbBlueprint.discovery, ...localDraft.discovery },
+                design: { ...dbBlueprint.design, ...localDraft.design },
+                deliver: { ...dbBlueprint.deliver, ...localDraft.deliver },
+                currentStep: Math.max(dbBlueprint.currentStep, localDraft.currentStep),
+                dreamIntent: localDraft.dreamIntent || dbBlueprint.dreamIntent,
+                userEmail: localDraft.userEmail || dbBlueprint.userEmail,
+                firstName: localDraft.firstName || dbBlueprint.firstName,
+                lastName: localDraft.lastName || dbBlueprint.lastName,
+                businessName: localDraft.businessName || dbBlueprint.businessName,
+              };
+              // Resync rescued progress in background
+              setTimeout(() => {
+                const client = getBlueprintClientWithToken(storedToken);
+                client.from('blueprints').update({
+                  discovery: finalBlueprint.discovery,
+                  design: finalBlueprint.design,
+                  deliver: finalBlueprint.deliver,
+                  dream_intent: finalBlueprint.dreamIntent,
+                  current_step: finalBlueprint.currentStep,
+                  user_email: finalBlueprint.userEmail,
+                  first_name: finalBlueprint.firstName,
+                  last_name: finalBlueprint.lastName,
+                  business_name: finalBlueprint.businessName
+                }).eq('id', finalBlueprint.id).then(() => { });
+              }, 1000);
+            }
+          }
+
+          const hasProgress = (finalBlueprint.currentStep > 1) ||
+            Object.keys(finalBlueprint.discovery).length > 0 ||
+            finalBlueprint.dreamIntent ||
             storedDreamIntent;
 
-          setBlueprint(mapDbToBlueprint(data as Record<string, unknown>, storedDreamIntent));
+          setBlueprint(finalBlueprint);
           setSessionStatus({ hasExisting: !!hasProgress, confirmed: !hasProgress });
           await finishLoading();
           return;
@@ -101,6 +146,7 @@ export function useBlueprint() {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(SESSION_TOKEN_KEY);
         localStorage.removeItem(DREAM_INTENT_KEY);
+        localStorage.removeItem(LOCAL_DRAFT_KEY);
       }
 
       // Create new blueprint via RPC (bypasses RLS read-back issue)
@@ -180,13 +226,14 @@ export function useBlueprint() {
     }, DEBOUNCE_MS);
   }, [blueprint?.id]);
 
-  // Update discovery data
   const updateDiscovery = useCallback((updates: Partial<BlueprintDiscovery>) => {
     setBlueprint(prev => {
       if (!prev) return prev;
       const newDiscovery = { ...prev.discovery, ...updates };
+      const newBlueprint = { ...prev, discovery: newDiscovery, updatedAt: new Date() };
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
       saveToDatabase({ discovery: newDiscovery });
-      return { ...prev, discovery: newDiscovery, updatedAt: new Date() };
+      return newBlueprint;
     });
   }, [saveToDatabase]);
 
@@ -195,8 +242,10 @@ export function useBlueprint() {
     setBlueprint(prev => {
       if (!prev) return prev;
       const newDesign = { ...prev.design, ...updates };
+      const newBlueprint = { ...prev, design: newDesign, updatedAt: new Date() };
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
       saveToDatabase({ design: newDesign });
-      return { ...prev, design: newDesign, updatedAt: new Date() };
+      return newBlueprint;
     });
   }, [saveToDatabase]);
 
@@ -205,8 +254,10 @@ export function useBlueprint() {
     setBlueprint(prev => {
       if (!prev) return prev;
       const newDeliver = { ...prev.deliver, ...updates };
+      const newBlueprint = { ...prev, deliver: newDeliver, updatedAt: new Date() };
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
       saveToDatabase({ deliver: newDeliver });
-      return { ...prev, deliver: newDeliver, updatedAt: new Date() };
+      return newBlueprint;
     });
   }, [saveToDatabase]);
 
@@ -215,8 +266,10 @@ export function useBlueprint() {
     localStorage.setItem(DREAM_INTENT_KEY, dreamIntent);
     setBlueprint(prev => {
       if (!prev) return prev;
+      const newBlueprint = { ...prev, dreamIntent, updatedAt: new Date() };
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
       saveToDatabase({ dreamIntent });
-      return { ...prev, dreamIntent, updatedAt: new Date() };
+      return newBlueprint;
     });
   }, [saveToDatabase]);
 
@@ -224,8 +277,10 @@ export function useBlueprint() {
   const setCurrentStep = useCallback((step: number) => {
     setBlueprint(prev => {
       if (!prev) return prev;
+      const newBlueprint = { ...prev, currentStep: step, updatedAt: new Date() };
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
       saveToDatabase({ currentStep: step });
-      return { ...prev, currentStep: step };
+      return newBlueprint;
     });
   }, [saveToDatabase]);
 
@@ -233,8 +288,10 @@ export function useBlueprint() {
   const updateUserDetails = useCallback((details: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => {
     setBlueprint(prev => {
       if (!prev) return prev;
+      const newBlueprint = { ...prev, ...details, updatedAt: new Date() };
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
       saveToDatabase(details);
-      return { ...prev, ...details };
+      return newBlueprint;
     });
   }, [saveToDatabase]);
 
@@ -309,6 +366,7 @@ export function useBlueprint() {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(SESSION_TOKEN_KEY);
       localStorage.removeItem(DREAM_INTENT_KEY);
+      localStorage.removeItem(LOCAL_DRAFT_KEY);
 
       setIsSaving(false);
 
@@ -334,6 +392,7 @@ export function useBlueprint() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SESSION_TOKEN_KEY);
     localStorage.removeItem(DREAM_INTENT_KEY);
+    localStorage.removeItem(LOCAL_DRAFT_KEY);
     setBlueprint(null);
     setIsLoading(true);
     isInitializingRef.current = false;

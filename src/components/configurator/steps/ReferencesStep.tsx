@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ReferenceListItem } from '../ui/ReferenceListItem';
+import { ReferenceGridItem } from '../ui/ReferenceGridItem';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -38,7 +40,7 @@ interface ReferencesStepProps {
   onNext: () => void;
 }
 
-const roleOptions: { id: ReferenceRole; label: string; icon: React.ElementType }[] = [
+const ROLE_OPTIONS: { id: ReferenceRole; label: string; icon: React.ElementType }[] = [
   { id: 'hero_reference', label: 'Hero Inspiration', icon: Layout },
   { id: 'layout_reference', label: 'Layout Reference', icon: Layout },
   { id: 'colour_reference', label: 'Colour Reference', icon: Palette },
@@ -73,7 +75,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
 
     // Local notes state for debounced saving
     const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
-    const [savingNotes, setSavingNotes] = useState<Record<string, 'idle' | 'saving' | 'saved'>>({});
+    const [savingStatus, setSavingStatus] = useState<Record<string, 'idle' | 'saving' | 'saved'>>({});
     const notesTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
     const savedTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
 
@@ -104,6 +106,12 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
               .createSignedUrl(refItem.storagePath, 3600);
             if (data?.signedUrl) {
               urlMap[refItem.id] = data.signedUrl;
+
+              // Preload the image silently for faster thumbnail rendering
+              if (refItem.type === 'image') {
+                const img = document.createElement('img');
+                img.src = data.signedUrl;
+              }
             }
           }
         }
@@ -337,7 +345,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
       }
     };
 
-    const handleRemove = async (ref: BlueprintReference) => {
+    const handleRemoveReference = async (ref: BlueprintReference) => {
       const blueprintClient = getBlueprintClient();
       if (!blueprintClient) {
         toast.error('Session expired. Please refresh the page.');
@@ -401,7 +409,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
       setLocalNotes(prev => ({ ...prev, [refItem.id]: notes }));
 
       // Set saving state
-      setSavingNotes(prev => ({ ...prev, [refItem.id]: 'saving' }));
+      setSavingStatus(prev => ({ ...prev, [refItem.id]: 'saving' }));
 
       // Clear any pending timeouts for this reference
       if (notesTimeoutRef.current[refItem.id]) {
@@ -415,7 +423,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
       notesTimeoutRef.current[refItem.id] = setTimeout(async () => {
         const blueprintClient = getBlueprintClient();
         if (!blueprintClient) {
-          setSavingNotes(prev => ({ ...prev, [refItem.id]: 'idle' }));
+          setSavingStatus(prev => ({ ...prev, [refItem.id]: 'idle' }));
           return;
         }
 
@@ -436,15 +444,15 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
           );
 
           // Set saved state
-          setSavingNotes(prev => ({ ...prev, [refItem.id]: 'saved' }));
+          setSavingStatus(prev => ({ ...prev, [refItem.id]: 'saved' }));
 
           // Reset to idle after 2 seconds
           savedTimeoutRef.current[refItem.id] = setTimeout(() => {
-            setSavingNotes(prev => ({ ...prev, [refItem.id]: 'idle' }));
+            setSavingStatus(prev => ({ ...prev, [refItem.id]: 'idle' }));
           }, 2000);
         } catch (error) {
           toast.error('Failed to update notes');
-          setSavingNotes(prev => ({ ...prev, [refItem.id]: 'idle' }));
+          setSavingStatus(prev => ({ ...prev, [refItem.id]: 'idle' }));
         }
       }, 500);
     }, [references, onReferencesChange]);
@@ -464,6 +472,10 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
       handleFileUpload(e.dataTransfer.files);
     };
 
+    const handleReorder = useCallback((newOrder: BlueprintReference[]) => {
+      onReferencesChange(newOrder);
+    }, [onReferencesChange]);
+
     return (
       <StepLayout
         ref={ref}
@@ -471,7 +483,6 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
         stepNumber={9}
         title="References"
         framing="Share any inspiration or examples you love."
-        helperText="Upload images, PDFs, or paste links to websites that capture the vibe you're going for."
         onBack={onBack}
         onNext={onNext}
       >
@@ -593,7 +604,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
                 </div>
 
                 {/* Drag hint */}
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground hidden sm:block">
                   Drag to reorder • Most important references first
                 </p>
 
@@ -602,268 +613,48 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
                   <Reorder.Group
                     axis="y"
                     values={references}
-                    onReorder={onReferencesChange}
+                    onReorder={handleReorder}
                     className="space-y-3"
                   >
                     {references.map((ref) => (
-                      <Reorder.Item
+                      <ReferenceListItem
                         key={ref.id}
-                        value={ref}
-                        className="cursor-grab active:cursor-grabbing"
-                      >
-                        <motion.div
-                          layout="position"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          className="flex gap-4 p-4 rounded-xl border border-border/50 bg-card/30 group"
-                        >
-                          {/* Drag Handle */}
-                          <div className="flex items-center shrink-0">
-                            <GripVertical className="w-5 h-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-                          </div>
-
-                          {/* Preview */}
-                          <div
-                            className={cn(
-                              "w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-muted/20 flex items-center justify-center relative",
-                              ref.type === 'image' && "cursor-pointer"
-                            )}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (ref.type === 'image') setLightboxImage(ref);
-                            }}
-                          >
-                            {ref.type === 'image' ? (
-                              <>
-                                <img
-                                  src={getDisplayUrl(ref)}
-                                  alt={ref.filename || 'Reference'}
-                                  className="w-full h-full object-cover transition-transform hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center">
-                                  <Maximize2 className="w-5 h-5 text-white opacity-0 hover:opacity-100 transition-opacity" />
-                                </div>
-                              </>
-                            ) : ref.type === 'pdf' ? (
-                              <FileText className="w-8 h-8 text-muted-foreground" />
-                            ) : (
-                              <ExternalLink className="w-8 h-8 text-muted-foreground" />
-                            )}
-                          </div>
-
-                          {/* Details */}
-                          <div className="flex-1 min-w-0 space-y-3">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0">
-                                <p className="text-sm font-medium text-foreground truncate">
-                                  {ref.filename || ref.url}
-                                </p>
-                                {ref.type === 'link' && (
-                                  <a
-                                    href={ref.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="text-xs text-accent hover:underline flex items-center gap-1"
-                                  >
-                                    Open link <ExternalLink className="w-3 h-3" />
-                                  </a>
-                                )}
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRemove(ref);
-                                }}
-                                className="shrink-0 text-muted-foreground hover:text-destructive"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row gap-3">
-                              <div onPointerDownCapture={(e) => e.stopPropagation()}>
-                                <Select
-                                  value={ref.role || 'other'}
-                                  onValueChange={(value) => handleUpdateRole(ref, value as ReferenceRole)}
-                                >
-                                  <SelectTrigger
-                                    className="w-full sm:w-44 h-8 text-xs"
-                                    onClick={(e) => e.stopPropagation()}
-                                    onPointerDown={(e) => e.stopPropagation()}
-                                  >
-                                    <SelectValue placeholder="Select role" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {roleOptions.map((option) => (
-                                      <SelectItem key={option.id} value={option.id}>
-                                        <span className="flex items-center gap-2">
-                                          <option.icon className="w-3 h-3" />
-                                          {option.label}
-                                        </span>
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-
-                              <div
-                                className="flex-1 relative"
-                                onPointerDownCapture={(e) => e.stopPropagation()}
-                              >
-                                <Textarea
-                                  value={localNotes[ref.id] ?? ref.notes ?? ''}
-                                  onChange={(e) => handleNotesChange(ref, e.target.value)}
-                                  onClick={(e) => e.stopPropagation()}
-                                  onPointerDown={(e) => e.stopPropagation()}
-                                  onMouseDown={(e) => e.stopPropagation()}
-                                  onTouchStart={(e) => e.stopPropagation()}
-                                  placeholder="Add notes..."
-                                  className="min-h-[32px] h-8 text-xs resize-none w-full pr-16"
-                                />
-                                {/* Auto-save indicator */}
-                                <AnimatePresence mode="wait">
-                                  {savingNotes[ref.id] === 'saving' && (
-                                    <motion.div
-                                      key="saving"
-                                      initial={{ opacity: 0, x: 4 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      exit={{ opacity: 0 }}
-                                      className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground"
-                                    >
-                                      <Loader2 className="w-3 h-3 animate-spin" />
-                                      <span className="text-[10px]">Saving...</span>
-                                    </motion.div>
-                                  )}
-                                  {savingNotes[ref.id] === 'saved' && (
-                                    <motion.div
-                                      key="saved"
-                                      initial={{ opacity: 0, x: 4 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      exit={{ opacity: 0 }}
-                                      className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-accent"
-                                    >
-                                      <Check className="w-3 h-3" />
-                                      <span className="text-[10px]">Saved</span>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </Reorder.Item>
+                        refItem={ref}
+                        roleOptions={ROLE_OPTIONS}
+                        localNotes={localNotes[ref.id] ?? ref.notes ?? ''}
+                        savingStatus={savingStatus[ref.id]}
+                        getDisplayUrl={getDisplayUrl}
+                        onRemove={handleRemoveReference}
+                        onUpdateRole={handleUpdateRole}
+                        onNotesChange={handleNotesChange}
+                        onLightboxOpen={setLightboxImage}
+                      />
                     ))}
                   </Reorder.Group>
                 )}
 
-                {/* Grid View with Drag & Drop */}
+                {/* Grid View */}
                 {viewMode === 'grid' && (
                   <Reorder.Group
-                    axis="y"
+                    axis="x"
                     values={references}
-                    onReorder={onReferencesChange}
-                    className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
+                    onReorder={handleReorder}
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
                   >
-                    {references.map((ref) => {
-                      const RoleIcon = roleOptions.find(r => r.id === ref.role)?.icon || FileText;
-                      return (
-                        <Reorder.Item
-                          key={ref.id}
-                          value={ref}
-                          className="cursor-grab active:cursor-grabbing"
-                        >
-                          <motion.div
-                            layout="position"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="relative aspect-square rounded-xl border border-border/50 bg-card/30 overflow-hidden group"
-                          >
-                            {/* Thumbnail */}
-                            {ref.type === 'image' ? (
-                              <img
-                                src={getDisplayUrl(ref)}
-                                alt={ref.filename || 'Reference'}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-muted/20">
-                                {ref.type === 'pdf' ? (
-                                  <FileText className="w-10 h-10 text-muted-foreground" />
-                                ) : (
-                                  <ExternalLink className="w-10 h-10 text-muted-foreground" />
-                                )}
-                              </div>
-                            )}
-
-                            {/* Role Badge */}
-                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded px-2 py-0.5 flex items-center gap-1">
-                              <RoleIcon className="w-3 h-3 text-white/80" />
-                              <span className="text-[10px] text-white/80 font-medium truncate max-w-[60px]">
-                                {roleOptions.find(r => r.id === ref.role)?.label || 'Other'}
-                              </span>
-                            </div>
-
-                            {/* Drag Handle */}
-                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <GripVertical className="w-4 h-4 text-white drop-shadow-md" />
-                            </div>
-
-                            {/* Hover Overlay with Actions */}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                              {ref.type === 'image' && (
-                                <Button
-                                  size="icon"
-                                  variant="secondary"
-                                  className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-0"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setLightboxImage(ref);
-                                  }}
-                                >
-                                  <Maximize2 className="w-4 h-4" />
-                                </Button>
-                              )}
-                              {ref.type === 'link' && (
-                                <Button
-                                  size="icon"
-                                  variant="secondary"
-                                  className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-0"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.open(ref.url, '_blank');
-                                  }}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
-                                </Button>
-                              )}
-                              <Button
-                                size="icon"
-                                variant="destructive"
-                                className="h-8 w-8"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRemove(ref);
-                                }}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </div>
-
-                            {/* Filename on hover */}
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                              <p className="text-[10px] text-white/90 truncate">
-                                {ref.filename || new URL(ref.url).hostname}
-                              </p>
-                            </div>
-                          </motion.div>
-                        </Reorder.Item>
-                      );
-                    })}
+                    {references.map((ref) => (
+                      <ReferenceGridItem
+                        key={ref.id}
+                        refItem={ref}
+                        roleOptions={ROLE_OPTIONS}
+                        localNotes={localNotes[ref.id] ?? ref.notes ?? ''}
+                        savingStatus={savingStatus[ref.id]}
+                        getDisplayUrl={getDisplayUrl}
+                        onRemove={handleRemoveReference}
+                        onUpdateRole={handleUpdateRole}
+                        onNotesChange={handleNotesChange}
+                        onLightboxOpen={setLightboxImage}
+                      />
+                    ))}
                   </Reorder.Group>
                 )}
               </motion.div>

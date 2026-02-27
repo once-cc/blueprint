@@ -26,7 +26,7 @@ const zoneToRisk = (zone: string): number => {
   return map[zone] ?? 5;
 };
 
-const riskToZone = (value: number): string => {
+export const riskToZone = (value: number): string => {
   if (value <= 2) return 'Safe';
   if (value <= 4) return 'Cautious';
   if (value <= 6) return 'Balanced';
@@ -88,7 +88,6 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
         stepNumber={8}
         title="Creative Risk"
         framing="How bold should we be with your design?"
-        helperText="This helps us understand how experimental you want us to get."
         onBack={onBack}
         onNext={onNext}
       >

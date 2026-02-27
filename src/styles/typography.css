@@ -1,0 +1,190 @@
+@layer base {
+/* Typography scale */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-editorial {
+    font-family: var(--font-editorial);
+  }
+
+  /* ========================================
+     Typography Hierarchy System
+     ======================================== */
+
+  /* SYNE — Structural / Orientation */
+  .type-structural {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .type-structural-bold {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Large stage numbers */
+  .type-stage-number {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  /* CORMORANT — Editorial / Narrative */
+  .type-editorial {
+    font-family: var(--font-editorial);
+    font-weight: 400;
+    line-height: 1.35;
+  }
+
+  .type-editorial-medium {
+    font-family: var(--font-editorial);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .type-editorial-heading {
+    font-family: var(--font-editorial);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  /* RAELA PRO — Functional / System */
+  .type-functional {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .type-functional-light {
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .type-label {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* Global Mobile Typography Tightening */
+  @media (max-width: 768px) {
+    .type-editorial {
+      line-height: 1.25;
+    }
+
+    .type-editorial-medium {
+      line-height: 1.25;
+    }
+
+    .type-editorial-heading {
+      line-height: 1.1;
+    }
+
+    .type-functional {
+      line-height: 1.4;
+    }
+
+    .type-functional-light {
+      line-height: 1.4;
+    }
+
+    .body-large {
+      line-height: 1.4;
+    }
+
+    .body-regular {
+      line-height: 1.4;
+    }
+  }
+/* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+/* TypeRig - Signature typography animation wrapper */
+  .type-rig {
+    @apply relative;
+  }
+
+  .type-rig-mask {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path var(--duration-slow) var(--ease-cinematic);
+  }
+
+  .type-rig-ghost {
+    @apply absolute inset-0 pointer-events-none select-none;
+    color: hsl(var(--ghost));
+    transform: scale(1.05) translateY(-2px);
+    opacity: 0.15;
+    z-index: -1;
+  }
+/* Editorial typography */
+  .heading-hero {
+    @apply font-display font-bold uppercase tracking-tight leading-none;
+    font-size: clamp(4rem, 15vw, 14rem);
+  }
+
+  .heading-display {
+    @apply font-display font-bold uppercase tracking-tight leading-none;
+    font-size: clamp(2.5rem, 8vw, 7rem);
+  }
+
+  .heading-section {
+    @apply font-display font-semibold uppercase tracking-wide;
+    font-size: clamp(0.75rem, 1vw, 0.875rem);
+    letter-spacing: 0.15em;
+  }
+
+  .body-large {
+    @apply font-serif text-xl md:text-2xl leading-relaxed;
+  }
+
+  .body-regular {
+    @apply text-base leading-relaxed;
+  }
+
+  /* Hero Editorial Typography - Domaine Display Narrow */
+  .heading-editorial {
+    font-family: 'Domaine Display Narrow', 'Cormorant Garamond', Georgia, serif;
+    /* Removed text-transform: uppercase; as Domaine is likely not meant to be forced uppercase based on the design *Crafted* */
+    letter-spacing: 0.02em;
+    line-height: 0.9;
+  }
+
+  .heading-editorial-primary {
+    font-weight: 500;
+  }
+
+  .heading-editorial-secondary {
+    font-weight: 400;
+    opacity: 0.65;
+  }
+
+  /* Ghost text for depth */
+  .text-ghost {
+    color: hsl(var(--ghost));
+  }
+
+  .text-ghost-light {
+    color: hsl(var(--ghost-foreground));
+  }
+}

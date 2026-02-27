@@ -192,7 +192,6 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
         stepNumber={5}
         title="Typography Direction"
         framing="Set the typographic posture for your brand."
-        helperText={!isValid ? "Select a typography direction to continue" : undefined}
         onBack={onBack}
         onNext={onNext}
         canGoNext={isValid}
@@ -214,7 +213,6 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                 typographyStyle: value as BlueprintDesign['typographyStyle'] // Backward compat
               })}
               items={typographyItems}
-              placeholder="Choose a direction..."
               maxHeight={320}
             />
             <p className="text-xs text-muted-foreground leading-relaxed px-1">

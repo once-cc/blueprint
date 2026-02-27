@@ -12,7 +12,7 @@ export const GridSection = forwardRef<HTMLElement, GridSectionProps>(
         return (
             <section ref={ref} className={cn("relative w-full border-y border-white/5", className)} {...props}>
                 {showCrosshairs && (
-                    <div className="absolute inset-0 pointer-events-none flex justify-center h-full w-full">
+                    <div className="absolute inset-0 pointer-events-none flex justify-center h-full w-full z-10">
                         <div className="relative h-full w-full max-w-screen-2xl">
                             {/* Top Crosshairs */}
                             <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40" />

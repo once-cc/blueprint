@@ -138,7 +138,6 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
         stepNumber={7}
         title="Functionality & Scope"
         framing="What does your website need to do?"
-        helperText={!isValid ? "Select at least one page to continue" : "Select pages, features, and tell us about your timeline."}
         onBack={onBack}
         onNext={onNext}
         canGoNext={isValid}
@@ -204,7 +203,6 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
               value={selectedFeatures}
               onChange={handleFeaturesChange}
               items={featureItems}
-              placeholder="Select features..."
               maxHeight={360}
               multiSelect
             />
