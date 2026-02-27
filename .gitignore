@@ -29,3 +29,4 @@ credentials.json
 token.json
 .env
 .vercel
+.env.vercel

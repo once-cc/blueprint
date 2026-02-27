@@ -19,7 +19,7 @@ interface PerformanceMode {
 }
 
 // Singleton to track FPS across the app
-let globalFpsMonitor: {
+const globalFpsMonitor: {
   isRunning: boolean;
   avgFps: number;
   subscribers: Set<(fps: number) => void>;
