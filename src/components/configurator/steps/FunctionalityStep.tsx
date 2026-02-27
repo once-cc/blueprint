@@ -205,6 +205,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
               items={featureItems}
               maxHeight={360}
               multiSelect
+              hideUnselectedHelperText
             />
           </motion.div>
 

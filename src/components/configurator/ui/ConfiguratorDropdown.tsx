@@ -25,6 +25,7 @@ export interface ConfiguratorDropdownProps {
   maxHeight?: number;
   className?: string;
   multiSelect?: boolean;
+  hideUnselectedHelperText?: boolean;
   renderItemContent?: (item: DropdownItem, isSelected: boolean) => React.ReactNode;
 }
 
@@ -40,6 +41,7 @@ export function ConfiguratorDropdown({
   maxHeight = 320,
   className,
   multiSelect = false,
+  hideUnselectedHelperText = false,
   renderItemContent,
 }: ConfiguratorDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -119,9 +121,11 @@ export function ConfiguratorDropdown({
             )}
           >
             <div className="flex flex-col items-start gap-1 min-w-0 flex-1">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                {hasSelection ? (multiSelect ? `${selectedCount} selected` : 'Selected') : placeholder}
-              </span>
+              {(!hideUnselectedHelperText || hasSelection) && (
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                  {hasSelection ? (multiSelect ? `${selectedCount} selected` : 'Selected') : placeholder}
+                </span>
+              )}
               <span
                 className="text-lg text-foreground truncate w-full"
                 style={{
