@@ -80,7 +80,6 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
         stepNumber={3}
         title="CTA Energy"
         framing="How should your website make the first ask?"
-        helperText={!isValid ? "Select a sales personality and CTA label to continue" : undefined}
         onBack={onBack}
         onNext={onNext}
         canGoNext={isValid}
@@ -98,12 +97,8 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               value={discovery.salesPersonality ?? null}
               onChange={handlePersonalitySelect}
               items={salesPersonalityItems}
-              placeholder="Choose a sales personality..."
               maxHeight={400}
             />
-            <p className="text-xs text-muted-foreground mt-2">
-              Choose how your website should invite visitors to take action
-            </p>
           </motion.div>
 
           {/* Primary CTA Label */}
@@ -126,9 +121,6 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               placeholder="e.g., Book a Call, Get Started, Shop Now"
               className="max-w-md"
             />
-            <p className="text-xs text-muted-foreground">
-              Common examples: "Book a Call", "Get Started", "Shop Now", "Learn More"
-            </p>
           </motion.div>
 
           {/* CTA Strategy Notes */}

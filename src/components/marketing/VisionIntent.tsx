@@ -53,9 +53,9 @@ export function VisionIntent() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="w-full max-w-2xl flex flex-col items-center gap-6 pointer-events-auto"
                 >
-                    <h2 className="font-nohemi font-medium text-4xl md:text-5xl lg:text-6xl text-center leading-[1.1] mb-2">
+                    <h2 className="font-nohemi font-medium whitespace-nowrap text-[clamp(1.75rem,8.5vw,6rem)] md:text-6xl lg:text-7xl xl:text-8xl tracking-tight text-center leading-[1.05] mb-4">
                         <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-900 block">
-                            Define Your Vision.
+                            Define the Direction.
                         </span>
                     </h2>
 
@@ -64,7 +64,6 @@ export function VisionIntent() {
                             value={dreamIntent}
                             onChange={setDreamIntent}
                             onSubmit={handleDreamIntentSubmit}
-                            placeholder="What are we building together?"
                             className="w-full"
                         />
                     </div>
@@ -95,8 +94,8 @@ export function VisionIntent() {
                                 <img
                                     src={logo.src}
                                     alt={logo.alt}
-                                    // Static depth effects with opacity fading and grayscale
-                                    className={`w-full h-full object-contain ${getBaseOpacity(logo.depth)} grayscale brightness-150 transition-all duration-300 group-hover:!opacity-100 group-hover:grayscale-0 group-hover:scale-110`}
+                                    // Static depth effects with opacity fading
+                                    className={`w-full h-full object-contain ${getBaseOpacity(logo.depth)} transition-all duration-300 group-hover:opacity-100 group-hover:scale-110`}
                                 />
                             </div>
                         </motion.div>

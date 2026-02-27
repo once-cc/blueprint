@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Syne:wght@400;500;600&display=swap');
+
+/* ========================================
+   Domaine Display Narrow
+   ======================================== */
+@font-face {
+  font-family: 'Domaine Display Narrow';
+  src: url('/fonts/DomaineDispNar-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display Narrow';
+  src: url('/fonts/DomaineDispNar-MediumItalic.woff') format('woff');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ========================================
+   Nohemi (Variable & Medium)
+   ======================================== */
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi/Nohemi-VF.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi/Nohemi-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ========================================
+   Raela Pro — Full Weight Stack
+   ======================================== */
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Thin-Italic.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Extra-Light.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-ExtLt-Ita.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raela Pro';
+  src: url('/fonts/LTS-Raela-Pro-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* Cleland Studio - Cinematic Design System */
+
+@layer base {
+  :root {
+    /* Core palette - Deep cinematic darks */
+    --background: 220 15% 4%;
+    --foreground: 45 10% 92%;
+
+    /* Surface layers */
+    --card: 220 12% 7%;
+    --card-foreground: 45 10% 92%;
+    --popover: 220 12% 6%;
+    --popover-foreground: 45 10% 92%;
+
+    /* Primary - Warm ivory/cream */
+    --primary: 45 20% 90%;
+    --primary-foreground: 220 15% 6%;
+
+    /* Secondary - Mid-gray */
+    --secondary: 220 8% 14%;
+    --secondary-foreground: 45 10% 80%;
+
+    /* Muted - Soft grays */
+    --muted: 220 10% 12%;
+    --muted-foreground: 220 8% 55%;
+
+    /* Accent - Warm amber/gold for CTAs */
+    --accent: 37 91% 55%;
+    --accent-foreground: 220 15% 6%;
+
+    /* Ghost text for depth */
+    --ghost: 220 8% 25%;
+    --ghost-foreground: 220 8% 40%;
+
+    /* Atmosphere layer */
+    --atmosphere: 220 12% 8%;
+    --atmosphere-foreground: 220 8% 30%;
+
+    /* Utility */
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 45 10% 92%;
+    --border: 220 10% 15%;
+    --input: 220 10% 12%;
+    --ring: 37 91% 55%;
+    --radius: 0.375rem;
+
+    /* Sidebar (if needed) */
+    --sidebar-background: 220 15% 5%;
+    --sidebar-foreground: 45 10% 85%;
+    --sidebar-primary: 37 91% 55%;
+    --sidebar-primary-foreground: 220 15% 6%;
+    --sidebar-accent: 220 10% 12%;
+    --sidebar-accent-foreground: 45 10% 85%;
+    --sidebar-border: 220 10% 15%;
+    --sidebar-ring: 37 91% 55%;
+
+    /* Typography */
+    --font-display: 'Syne', sans-serif;
+    --font-editorial: 'Domaine Display Narrow', 'Cormorant Garamond', Georgia, serif;
+    --font-serif: 'Domaine Display Narrow', 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Raela Pro', system-ui, sans-serif;
+    --font-raela: 'Raela Pro', system-ui, sans-serif;
+
+    /* Motion tokens */
+    --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-slow: 0.8s;
+    --duration-medium: 0.5s;
+    --duration-fast: 0.3s;
+
+    /* Depth layer z-indices */
+    --z-atmosphere: 0;
+    --z-background: 10;
+    --z-structural: 20;
+    --z-typography: 30;
+    --z-foreground: 40;
+    --z-overlay: 50;
+
+    /* Parallax ranges */
+    --parallax-subtle: 12px;
+    --parallax-medium: 24px;
+    --parallax-strong: 36px;
+
+    /* Vertical rhythm tokens (#10) */
+    --space-section: 2.5rem;
+    /* 40px — between major regions */
+    --space-group: 1.5rem;
+    /* 24px — between related items */
+    --space-element: 0.75rem;
+    /* 12px — between tightly coupled elements */
+
+    /* Gradient overlays */
+    --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 100%);
+    --gradient-fade-up: linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%);
+    --gradient-fade-down: linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%);
+  }
+
+  .dark {
+    /* Dark mode is the default - same values */
+  }
+
+  .light {
+    /* Light mode - Clean, warm daytime palette */
+    --background: 45 20% 96%;
+    --foreground: 220 15% 15%;
+
+    /* Surface layers */
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    /* Primary - Deep charcoal */
+    --primary: 220 15% 15%;
+    --primary-foreground: 45 20% 96%;
+
+    /* Secondary - Light gray */
+    --secondary: 220 8% 92%;
+    --secondary-foreground: 220 15% 25%;
+
+    /* Muted - Soft warm grays */
+    --muted: 45 10% 92%;
+    --muted-foreground: 220 8% 45%;
+
+    /* Accent - Keep warm amber/gold */
+    --accent: 37 91% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Ghost text */
+    --ghost: 220 8% 85%;
+    --ghost-foreground: 220 8% 60%;
+
+    /* Atmosphere layer */
+    --atmosphere: 45 15% 94%;
+    --atmosphere-foreground: 220 8% 70%;
+
+    /* Utility */
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 10% 88%;
+    --input: 45 10% 94%;
+    --ring: 37 91% 55%;
+
+    /* Sidebar */
+    --sidebar-background: 45 15% 98%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 37 91% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 8% 94%;
+    --sidebar-accent-foreground: 220 15% 20%;
+    --sidebar-border: 220 10% 90%;
+    --sidebar-ring: 37 91% 55%;
+
+    /* Gradient overlays */
+    --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 100%);
+    --gradient-fade-up: linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%);
+    --gradient-fade-down: linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%);
+  }
+
+  /* Portal Dark Theme - Matches main site brand */
+  .portal-theme {
+    /* Use same dark base as main site */
+    --background: 220 15% 4%;
+    --foreground: 45 10% 92%;
+
+    --card: 220 12% 8%;
+    --card-foreground: 45 10% 92%;
+    --popover: 220 12% 6%;
+    --popover-foreground: 45 10% 92%;
+
+    --primary: 45 20% 90%;
+    --primary-foreground: 220 15% 6%;
+
+    --secondary: 220 8% 14%;
+    --secondary-foreground: 45 10% 80%;
+
+    --muted: 220 10% 12%;
+    --muted-foreground: 220 8% 55%;
+
+    --accent: 37 91% 55%;
+    --accent-foreground: 220 15% 6%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 45 10% 92%;
+
+    --border: 220 10% 18%;
+    --input: 220 10% 12%;
+    --ring: 37 91% 55%;
+
+    /* Portal-specific tokens */
+    --portal-gold: 37 91% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    /* Native smooth scroll disabled - Lenis handles this with momentum physics */
+  }
+
+  /* Lenis Smooth Scroll Base Styles */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased font-light;
+    font-family: var(--font-body);
+    overscroll-behavior: none;
+  }
+}

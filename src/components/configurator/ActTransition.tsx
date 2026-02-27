@@ -23,11 +23,20 @@ const getSummaryItems = (
     if (discovery.businessType) {
       items.push({ label: 'Business Type', value: formatValue(discovery.businessType) });
     }
+    if (discovery.primaryPurpose) {
+      items.push({ label: 'Purpose', value: formatValue(discovery.primaryPurpose) });
+    }
+    if (discovery.mainConversionGoal) {
+      items.push({ label: 'Primary Goal', value: formatValue(discovery.mainConversionGoal) });
+    }
     if (discovery.brandArchetype) {
       items.push({ label: 'Brand Archetype', value: formatValue(discovery.brandArchetype) });
     }
     if (discovery.salesPersonality) {
       items.push({ label: 'CTA Style', value: formatValue(discovery.salesPersonality) });
+    }
+    if (discovery.conversionGoals && discovery.conversionGoals.length > 0) {
+      items.push({ label: 'Specific Goals', value: `${discovery.conversionGoals.length} Selected` });
     }
     return items;
   }
@@ -40,6 +49,15 @@ const getSummaryItems = (
     const typography = design.typography_direction || design.typographyStyle;
     if (typography) {
       items.push({ label: 'Typography', value: formatValue(typography) });
+    }
+    if (design.imageryStyle) {
+      items.push({ label: 'Imagery Style', value: formatValue(design.imageryStyle) });
+    }
+    if (design.colourRelationship) {
+      items.push({ label: 'Color Palette', value: formatValue(design.colourRelationship) });
+    }
+    if (design.paletteEnergy) {
+      items.push({ label: 'Color Energy', value: `${design.paletteEnergy}/10` });
     }
     if (design.animationIntensity) {
       items.push({ label: 'Animation', value: `${design.animationIntensity}/10` });
@@ -116,7 +134,7 @@ export function ActTransition({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="relative z-10 grid grid-cols-2 gap-3 mb-10 w-full max-w-md"
+          className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3 mb-10 w-full max-w-2xl"
         >
           {summaryItems.map((item, i) => (
             <motion.div

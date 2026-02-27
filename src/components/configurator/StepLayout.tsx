@@ -86,7 +86,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {/* Act Label */}
           <motion.p
             variants={itemVariants}
-            className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-3"
+            className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-1.5"
           >
             {actLabels[act]}
           </motion.p>
@@ -94,7 +94,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {/* Title — tighter scale on mobile (#9, #16) */}
           <motion.h1
             variants={itemVariants}
-            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-foreground mb-3"
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-foreground mb-1.5"
           >
             {title}
           </motion.h1>
@@ -102,7 +102,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {/* Framing — relaxed leading for readability (#11) */}
           <motion.p
             variants={itemVariants}
-            className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed"
+            className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-snug"
           >
             {framing}
           </motion.p>

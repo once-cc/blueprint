@@ -1,6 +1,6 @@
 import { useState, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Blueprint, BRAND_ARCHETYPES, SALES_PERSONALITIES } from '@/types/blueprint';
+import { Blueprint, BlueprintReference, BRAND_ARCHETYPES, SALES_PERSONALITIES } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -10,12 +10,15 @@ import {
   Pencil, Building2, MessageCircle, Zap, Palette, Type,
   Layers, Rocket, Image, CheckCircle2, User, Mail, ChevronDown, ArrowLeft
 } from 'lucide-react';
+import { UserDetailsForm, UserDetailsData } from '../ui/UserDetailsForm';
 import { z } from 'zod';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { riskToZone } from './CreativeRiskStep';
 
 interface ReviewStepProps {
   blueprint: Blueprint;
-  onUpdateUserDetails: (data: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => void;
+  references: BlueprintReference[];
+  onUpdateUserDetails: (data: Partial<UserDetailsData>) => void;
   onGoToStep: (step: number) => void;
   onSubmit: () => Promise<boolean>;
   onBack: () => void;
@@ -25,7 +28,7 @@ const userDetailsSchema = z.object({
   firstName: z.string().trim().min(1, 'First name is required').max(50, 'First name too long'),
   lastName: z.string().trim().min(1, 'Last name is required').max(50, 'Last name too long'),
   userEmail: z.string().trim().email('Invalid email').max(255, 'Email too long'),
-  businessName: z.string().trim().max(200, 'Business name too long').optional(),
+  businessName: z.string().trim().min(1, 'Business / Brand name is required').max(200, 'Business name too long'),
 });
 
 const sections = [
@@ -79,6 +82,7 @@ const NotProvided = () => (
 export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
   function ReviewStep({
     blueprint,
+    references,
     onUpdateUserDetails,
     onGoToStep,
     onSubmit,
@@ -137,14 +141,20 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             discovery.siteTopic && `Website Focus: ${discovery.siteTopic}`,
             discovery.businessType && `Type: ${discovery.businessType.replace(/_/g, ' ')}`,
             discovery.primaryPurpose && `Purpose: ${discovery.primaryPurpose.replace(/_/g, ' ')}`,
-            discovery.mainConversionGoal && `Goal: ${discovery.mainConversionGoal.replace(/_/g, ' ')}`,
+            discovery.mainConversionGoal && `Primary Goal: ${discovery.mainConversionGoal.replace(/_/g, ' ')}`,
+            discovery.conversionGoals && discovery.conversionGoals.length > 0
+              ? `Specific Goals: ${discovery.conversionGoals.map(g => g.replace(/_/g, ' ')).join(', ')}`
+              : null,
           ].filter(Boolean) as string[];
         case 2:
           const archetype = BRAND_ARCHETYPES.find(a => a.id === discovery.brandArchetype);
+          const brandVoice = discovery.brandVoice || {};
           return [
             archetype && `Archetype: ${archetype.title}`,
-            discovery.tonePrimary && `Tone: ${discovery.tonePrimary}`,
-            discovery.personalityTags?.length && `Tags: ${discovery.personalityTags.slice(0, 3).join(', ')}`,
+            (brandVoice.tone || discovery.tonePrimary) && `Tone: ${brandVoice.tone || discovery.tonePrimary}`,
+            brandVoice.presence && `Presence: ${brandVoice.presence}`,
+            (brandVoice.personality || discovery.personalityTags?.[0]) && `Personality: ${brandVoice.personality || discovery.personalityTags?.[0]}`,
+            (brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]) && `Energy: ${brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}`,
           ].filter(Boolean) as string[];
         case 3:
           const personality = SALES_PERSONALITIES.find(p => p.id === discovery.salesPersonality);
@@ -163,6 +173,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
         case 4:
           return [
             design.visualStyle && `Style: ${design.visualStyle.replace(/_/g, ' ')}`,
+            design.imageryStyle && `Imagery: ${design.imageryStyle}`,
           ].filter(Boolean) as string[];
         case 5:
           return [
@@ -175,9 +186,6 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
           const lines: string[] = [];
           if (design.colourRelationship) {
             lines.push(`Relationship: ${design.colourRelationship}`);
-          }
-          if (design.imageryStyle) {
-            lines.push(`Imagery: ${design.imageryStyle}`);
           }
           if (design.paletteEnergy) {
             lines.push(`Energy: ${design.paletteEnergy}/10`);
@@ -216,10 +224,12 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
           ].filter(Boolean) as string[];
         case 8:
           return [
-            deliver.riskTolerance && `Risk: ${deliver.riskTolerance}/10`,
+            deliver.riskTolerance && `Risk: ${deliver.riskTolerance}/10 (${riskToZone(deliver.riskTolerance)})`,
           ].filter(Boolean) as string[];
         case 9:
-          return ['References uploaded'];
+          return references?.length > 0
+            ? references.map(ref => ref.filename || ref.label || ref.url || 'Unnamed Reference')
+            : ['No references uploaded'];
         default:
           return [];
       }
@@ -284,101 +294,18 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
         stepNumber={10}
         title="Review & Generate"
         framing="Review your Blueprint and bring it to life."
-        helperText="Make sure everything looks good, then we'll generate your custom Blueprint."
         onBack={onBack}
         onNext={handleSubmit}
-        canGoNext={!!localDetails.firstName && !!localDetails.lastName && !!localDetails.userEmail}
+        canGoNext={!!localDetails.firstName && !!localDetails.lastName && !!localDetails.userEmail && !!localDetails.businessName}
         isLoading={isSubmitting}
         nextLabel="Generate Blueprint"
       >
         <div className="space-y-10">
-          {/* User Details Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-6 rounded-2xl border-2 border-accent/30 bg-accent/5"
-          >
-            <h3 className="text-lg font-nohemi font-medium text-foreground mb-4 flex items-center gap-2">
-              <User className="w-5 h-5 text-accent" />
-              Your Details
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-sm font-medium">
-                  First Name <span className="text-destructive">*</span>
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="firstName"
-                    value={localDetails.firstName}
-                    onChange={(e) => handleDetailChange('firstName', e.target.value)}
-                    placeholder="Jane"
-                    className={cn('pl-10', errors.firstName && 'border-destructive')}
-                    maxLength={50}
-                  />
-                </div>
-                {errors.firstName && (
-                  <p className="text-xs text-destructive">{errors.firstName}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName" className="text-sm font-medium">
-                  Last Name <span className="text-destructive">*</span>
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="lastName"
-                    value={localDetails.lastName}
-                    onChange={(e) => handleDetailChange('lastName', e.target.value)}
-                    placeholder="Smith"
-                    className={cn('pl-10', errors.lastName && 'border-destructive')}
-                    maxLength={50}
-                  />
-                </div>
-                {errors.lastName && (
-                  <p className="text-xs text-destructive">{errors.lastName}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="userEmail" className="text-sm font-medium">
-                  Email Address <span className="text-destructive">*</span>
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="userEmail"
-                    type="email"
-                    value={localDetails.userEmail}
-                    onChange={(e) => handleDetailChange('userEmail', e.target.value)}
-                    placeholder="jane@company.com"
-                    className={cn('pl-10', errors.userEmail && 'border-destructive')}
-                    maxLength={255}
-                  />
-                </div>
-                {errors.userEmail && (
-                  <p className="text-xs text-destructive">{errors.userEmail}</p>
-                )}
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="businessName" className="text-sm font-medium">
-                  Business Name <span className="text-muted-foreground">(optional)</span>
-                </Label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="businessName"
-                    value={localDetails.businessName}
-                    onChange={(e) => handleDetailChange('businessName', e.target.value)}
-                    placeholder="Acme Inc."
-                    className="pl-10"
-                    maxLength={200}
-                  />
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <UserDetailsForm
+            details={localDetails}
+            errors={errors}
+            onChange={handleDetailChange}
+          />
 
           {/* Blueprint Summary */}
           <div className="space-y-6">

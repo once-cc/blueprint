@@ -73,16 +73,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
         canGoNext={isValid}
       >
         <div className="space-y-12 max-w-2xl mx-auto">
-          {/* Authority Positioning Helper */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-          >
-            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-              These controls define how your brand communicates, not a personality to perform.
-            </p>
-          </motion.div>
+          {/* Custom controls spacing since authority text was removed */}
 
           {/* Tone Balance Slider */}
           <motion.div
@@ -91,9 +82,9 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.1 }}
             className="space-y-3"
           >
-            <div className="space-y-1">
+            <div className="space-y-1 text-center">
               <h3 className="text-sm font-medium text-foreground">Tone Balance</h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 How should your brand communicate?
               </p>
             </div>
@@ -113,9 +104,9 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.2 }}
             className="space-y-3"
           >
-            <div className="space-y-1">
+            <div className="space-y-1 text-center">
               <h3 className="text-sm font-medium text-foreground">Brand Presence</h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 How visually assertive should your brand feel?
               </p>
             </div>
@@ -135,9 +126,9 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.3 }}
             className="space-y-3"
           >
-            <div className="space-y-1">
+            <div className="space-y-1 text-center">
               <h3 className="text-sm font-medium text-foreground">Brand Personality</h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 What's your dominant character trait?
               </p>
             </div>
@@ -157,9 +148,9 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.4 }}
             className="space-y-6"
           >
-            <div className="space-y-1">
+            <div className="space-y-1 text-center">
               <h3 className="text-sm font-medium text-foreground">Visitor Emotional Outcome</h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 How should visitors feel after experiencing your brand?
               </p>
             </div>
@@ -179,7 +170,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="pt-6 border-t border-border/30"
+              className="pt-6 border-t border-border/30 text-center"
             >
               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
                 Your Brand Voice

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, animate, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, FileText, Compass, Target, Rocket, Sparkles, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence, animate, useScroll, useTransform, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { TestimonialCarousel } from "@/components/blueprint/TestimonialCarousel";
 import { useNavigate } from "react-router-dom";
@@ -9,44 +8,12 @@ import { ScrollytellSection } from "@/components/marketing/ScrollytellSection";
 import { FrameworkSection } from "@/components/marketing/FrameworkSection";
 import { BenefitStackSection } from "@/components/marketing/BenefitStackSection";
 import { VisionIntent } from "@/components/marketing/VisionIntent";
+import { FooterReveal } from "@/components/marketing/FooterReveal";
 import heroVideo from "@/assets/hero2.webm";
 import heroPoster from "@/assets/hero-static.webp";
 import footerBg from "@/assets/footer.webp";
-import { GlobalGrid } from "@/components/ui/global-grid";
-const springConfig = { type: "spring", stiffness: 300, damping: 30 };
 
-const processSteps = [
-  {
-    id: "discovery",
-    icon: Compass,
-    title: "Discovery",
-    description: "We examine your current digital infrastructure to identify where momentum is lost, auditing every touchpoint for clarity and conversion impact.",
-    bullets: ["Strategic gap analysis", "Revenue leak identification", "Audience resonance audit"]
-  },
-  {
-    id: "design",
-    icon: Target,
-    title: "Design",
-    description: "We interpret your unique value into a visual language that commands authority, building a system-level architecture that scales with your ambition.",
-    bullets: ["Brand cosmology development", "System-level interface design", "Cinematic visual production"]
-  },
-  {
-    id: "deliver",
-    icon: Rocket,
-    title: "Deliver",
-    description: "A production-ready ecosystem handed over with complete operational clarity, ensuring you can lead your market without technical overhead.",
-    bullets: ["Full-stack implementation", "Performance optimization", "Operational handoff training"]
-  }
-];
 
-const benefits = [
-  "Eliminate guesswork from the design process",
-  "Reduce costly revisions and back-and-forth",
-  "Fast-track your project from idea to launch",
-  "Align your team with a shared visual reference",
-  "Identify conversion opportunities early",
-  "Build with confidence, not assumptions"
-];
 
 export default function Blueprint() {
   const navigate = useNavigate();
@@ -58,6 +25,9 @@ export default function Blueprint() {
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLElement>(null);
   const trackerRef = useRef<HTMLDivElement>(null);
+  // Hero visibility tracking for video performance
+  const heroRef = useRef<HTMLElement>(null);
+  const isHeroInView = useInView(heroRef, { margin: "0px 0px 500px 0px" }); // Pre-load slightly before scrolling back into view
 
   const { scrollYProgress: footerScrollProgress } = useScroll({
     target: trackerRef,
@@ -105,12 +75,23 @@ export default function Blueprint() {
     return () => clearTimeout(timer);
   }, [isVideoLoaded]);
 
-  // If video is already cached and ready before React mounts
+  // Check if video loaded (cached or 3s fallback)
   useEffect(() => {
     if (videoRef.current && videoRef.current.readyState >= 3) {
       setIsVideoLoaded(true);
     }
   }, []);
+
+  // Performance Optimization: Pause hero video when scrolled out of view
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    if (isHeroInView) {
+      videoRef.current.play().catch(() => { }); // Catch auto-play blocks silently
+    } else {
+      videoRef.current.pause();
+    }
+  }, [isHeroInView]);
 
   const isReady = isVideoLoaded || forceReveal;
 
@@ -136,11 +117,11 @@ export default function Blueprint() {
           )}
         </AnimatePresence>
 
-        {/* Global Grid Overlay (Restored visibility over solid background) */}
-        <GlobalGrid />
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ HERO: VIDEO & HEADLINE ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
 
-        {/* Hero Section */}
-        <section className="relative min-h-screen flex items-center justify-center pt-24 pb-32 overflow-hidden">
+        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center pt-24 pb-32 overflow-hidden">
           {/* Loopable Hero Video Background */}
           <div className="absolute inset-0 z-0 overflow-hidden bg-background">
             <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10 pointer-events-none" /> {/* Dimming overlay for text legibility */}
@@ -212,7 +193,7 @@ export default function Blueprint() {
                   transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
                   className="font-body type-functional-light text-[1rem] md:text-xl text-zinc-300 leading-relaxed drop-shadow-sm max-w-[32ch] mt-[-0.5rem]"
                 >
-                  An architectural foundation for high-performance digital experiences.
+                  A complimentary strategic blueprint that defines what to build — before you invest in building it.
                 </motion.p>
 
                 {/* CTA Group */}
@@ -223,7 +204,7 @@ export default function Blueprint() {
                   className="flex items-center justify-center md:justify-start gap-4 flex-wrap mt-2 w-full md:w-auto"
                 >
                   <ShinyButton onClick={scrollToChatbox}>
-                    Begin My Blueprint
+                    Begin Your Blueprint
                   </ShinyButton>
                 </motion.div>
               </div>
@@ -237,12 +218,22 @@ export default function Blueprint() {
 
         </section >
 
+        {/* Seamless Section Blend Gradient connecting Hero to VisionIntent */}
+        <div className="w-full h-48 bg-gradient-to-b from-transparent via-background/80 to-background relative z-20 -mt-24 pointer-events-none" />
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ MAIN CONTENT: MARKETING SECTIONS ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
         <VisionIntent />
         <ScrollytellSection />
         <FrameworkSection />
         <BenefitStackSection />
 
-        {/* Testimonials Section */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TESTIMONIALS ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
         <section className="py-24 pb-32">
           <div className="container mx-auto px-6">
             <motion.div
@@ -264,6 +255,10 @@ export default function Blueprint() {
           <TestimonialCarousel />
         </section>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══ FOOTER & REVEAL TRACKER ═══ */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
 
       {/* The scrolling mask/runway tracker for the footer */}
       <div ref={trackerRef} style={{ height: footerHeight }} className="w-full relative z-0 pointer-events-none" />
@@ -293,64 +288,3 @@ export default function Blueprint() {
   );
 }
 
-import { MotionValue } from "framer-motion";
-
-function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () => void, scrollProgress: MotionValue<number> }) {
-  // Headline slides up slowly from behind a mask
-  const headlineY = useTransform(scrollProgress, [0.3, 1], ["100%", "0%"]);
-
-  // Subcopy fades in near the very end of the animation (when headline is mostly complete)
-  const subcopyOpacity = useTransform(scrollProgress, [0.85, 1], [0, 1]);
-  const subcopyY = useTransform(scrollProgress, [0.85, 1], ["20px", "0px"]);
-
-  return (
-    <div className="max-w-3xl mx-auto text-center space-y-8 flex flex-col items-center justify-end overflow-hidden">
-
-      {/* The Masking Container for the Headline */}
-      <div className="overflow-hidden pb-4">
-        <motion.h2
-          style={{ y: headlineY }}
-          className="text-5xl md:text-7xl lg:text-[6rem] font-nohemi font-medium tracking-tighter leading-[0.95]"
-        >
-          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 to-zinc-950 block pb-1">
-            <em className="italic pr-2">Clarity</em> Before
-          </span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 to-zinc-950 block">
-            Commitment.
-          </span>
-        </motion.h2>
-      </div>
-
-      <motion.p
-        style={{ opacity: subcopyOpacity, y: subcopyY }}
-        className="text-xl text-muted-foreground"
-      >
-        A complimentary plan for your next site — before you invest in the build.
-      </motion.p>
-
-      {/* Static CTA Container */}
-      <div className="relative z-10 pt-4">
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
-          <ShinyButton
-            size="lg"
-            className="group"
-            onClick={onCtaClick}
-          >
-            <span className="flex items-center gap-2">
-              Begin My Blueprint
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1/4" />
-            </span>
-          </ShinyButton>
-        </motion.div>
-
-        <motion.p
-          style={{ opacity: subcopyOpacity, y: subcopyY }}
-          className="text-sm text-muted-foreground mt-8"
-        >
-          No commitment required • Response within 24 hours
-        </motion.p>
-      </div>
-
-    </div>
-  );
-}
