@@ -97,7 +97,7 @@ export function UserDetailsForm({ details, errors, onChange }: UserDetailsFormPr
                             id="businessName"
                             value={details.businessName}
                             onChange={(e) => onChange('businessName', e.target.value)}
-                            placeholder=""
+                            placeholder="E.g. John Doe Doughnuts Inc."
                             className={cn('pl-10', errors.businessName && 'border-destructive')}
                             maxLength={200}
                         />
