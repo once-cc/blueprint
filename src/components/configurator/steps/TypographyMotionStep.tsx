@@ -214,11 +214,8 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
               })}
               items={typographyItems}
               maxHeight={320}
+              hideUnselectedHelperText
             />
-            <p className="text-xs text-muted-foreground leading-relaxed px-1">
-              Direction, not selection.<br />
-              This helps us understand the typographic posture your site should aim toward — not the exact fonts that will be used.
-            </p>
           </motion.div>
 
           {/* Live Typography Preview */}

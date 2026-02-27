@@ -98,6 +98,7 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               onChange={handlePersonalitySelect}
               items={salesPersonalityItems}
               maxHeight={400}
+              hideUnselectedHelperText
             />
           </motion.div>
 
