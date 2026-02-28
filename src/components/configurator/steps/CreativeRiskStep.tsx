@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BlueprintDeliver } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
+import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 import { cn } from '@/lib/utils';
 import { Shield, Sparkles, Rocket } from 'lucide-react';
 
@@ -158,7 +159,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             </AnimatePresence>
 
             {/* VoiceAxisSlider */}
-            <div className="px-4">
+            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
               <VoiceAxisSlider
                 zones={RISK_ZONES}
                 value={currentZone}
@@ -166,7 +167,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 leftLabel="Conservative"
                 rightLabel="Experimental"
               />
-            </div>
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* What This Means */}

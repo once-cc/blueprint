@@ -504,27 +504,31 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
           >
             <div className="space-y-8">
               {/* Energy Slider */}
-              <div className="space-y-2 text-center">
+              <div className="space-y-4 text-center">
                 <Label className="text-sm font-medium text-foreground">Energy</Label>
-                <VoiceAxisSlider
-                  zones={[...ENERGY_ZONES]}
-                  value={energyToZone(energy)}
-                  onChange={(zone) => onUpdate({ paletteEnergy: zoneToEnergy(zone) })}
-                  leftLabel="Calm"
-                  rightLabel="Energetic"
-                />
+                <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+                  <VoiceAxisSlider
+                    zones={[...ENERGY_ZONES]}
+                    value={energyToZone(energy)}
+                    onChange={(zone) => onUpdate({ paletteEnergy: zoneToEnergy(zone) })}
+                    leftLabel="Calm"
+                    rightLabel="Energetic"
+                  />
+                </ConfiguratorCardSurface>
               </div>
 
               {/* Contrast Slider */}
-              <div className="space-y-2 text-center">
+              <div className="space-y-4 text-center">
                 <Label className="text-sm font-medium text-foreground">Contrast</Label>
-                <VoiceAxisSlider
-                  zones={[...CONTRAST_ZONES]}
-                  value={contrastToZone(contrast)}
-                  onChange={(zone) => onUpdate({ paletteContrast: zoneToContrast(zone) })}
-                  leftLabel="Subtle"
-                  rightLabel="Bold"
-                />
+                <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+                  <VoiceAxisSlider
+                    zones={[...CONTRAST_ZONES]}
+                    value={contrastToZone(contrast)}
+                    onChange={(zone) => onUpdate({ paletteContrast: zoneToContrast(zone) })}
+                    leftLabel="Subtle"
+                    rightLabel="Bold"
+                  />
+                </ConfiguratorCardSurface>
               </div>
             </div>
           </motion.div>
