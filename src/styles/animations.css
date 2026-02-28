@@ -84,6 +84,40 @@ html.theme-transitioning *::after {
   animation-play-state: paused;
 }
 
+/* Vertical Cascading Grid Marquees */
+@keyframes marquee-vertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes marquee-vertical-reverse {
+  0% {
+    transform: translateY(-50%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.marquee-track-vertical {
+  animation: marquee-vertical 24s linear infinite;
+}
+
+.marquee-track-vertical-reverse {
+  animation: marquee-vertical-reverse 24s linear infinite;
+}
+
+.marquee-track-vertical:hover,
+.marquee-track-vertical-reverse:hover {
+  animation-play-state: paused;
+}
+
 /* Work grid card */
 .work-card {
   @apply relative overflow-hidden bg-card;

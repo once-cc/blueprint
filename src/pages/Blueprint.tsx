@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, animate, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, AnimatePresence, animate, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { TestimonialCarousel } from "@/components/blueprint/TestimonialCarousel";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,8 @@ import { FooterReveal } from "@/components/marketing/FooterReveal";
 import heroVideo from "@/assets/hero2.webm";
 import heroPoster from "@/assets/hero-static.webp";
 import footerBg from "@/assets/footer.webp";
+import { GridSection } from "@/components/ui/grid-section";
+import { Crosshair } from "@/components/ui/crosshair";
 
 
 
@@ -27,7 +29,6 @@ export default function Blueprint() {
   const trackerRef = useRef<HTMLDivElement>(null);
   // Hero visibility tracking for video performance
   const heroRef = useRef<HTMLElement>(null);
-  const isHeroInView = useInView(heroRef, { margin: "0px 0px 500px 0px" }); // Pre-load slightly before scrolling back into view
 
   const { scrollYProgress: footerScrollProgress } = useScroll({
     target: trackerRef,
@@ -82,16 +83,27 @@ export default function Blueprint() {
     }
   }, []);
 
-  // Performance Optimization: Pause hero video when scrolled out of view
+  // Performance Optimization: Pause hero video when scrolled out of view natively
+  // bypassing React state to prevent massive scroll-jank re-renders
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !heroRef.current) return;
 
-    if (isHeroInView) {
-      videoRef.current.play().catch(() => { }); // Catch auto-play blocks silently
-    } else {
-      videoRef.current.pause();
-    }
-  }, [isHeroInView]);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          videoRef.current?.play().catch(() => { }); // Catch auto-play blocks silently
+        } else {
+          videoRef.current?.pause();
+        }
+      });
+    }, {
+      rootMargin: "0px 0px 500px 0px"
+    });
+
+    observer.observe(heroRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   const isReady = isVideoLoaded || forceReveal;
 
@@ -140,6 +152,8 @@ export default function Blueprint() {
               muted
               loop
               playsInline
+              disablePictureInPicture
+              preload="auto"
               onCanPlayThrough={() => setIsVideoLoaded(true)}
               className="absolute bottom-[10%] left-[50%] -translate-x-[50%] w-[180%] max-w-none h-auto md:w-full md:h-full md:top-0 md:left-0 md:translate-x-0 md:bottom-auto md:object-cover opacity-80 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_100%)] md:[mask-image:none]"
               style={{ paddingBottom: '2px' }} /* Tiny offset often needed to hide 1px video edge bleed */
@@ -179,7 +193,7 @@ export default function Blueprint() {
                   className="heading-editorial text-[3.5rem] sm:text-[4rem] leading-[1.05] md:text-7xl lg:text-8xl tracking-tight drop-shadow-md pb-1"
                 >
                   <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-600 block">
-                    The <em className="italic font-medium pr-1">Crafted</em>
+                    The <em className="italic font-medium pr-4">Crafted</em>
                   </span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-600 block">
                     Blueprint.
@@ -234,26 +248,66 @@ export default function Blueprint() {
         {/* ═══ TESTIMONIALS ═══ */}
         {/* ═══════════════════════════════════════════════════════════════ */}
 
-        <section className="py-24 pb-32">
-          <div className="container mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-3xl md:text-4xl font-nohemi font-medium tracking-tight mb-4">
-                What Our Clients Say
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Hear from businesses who've transformed their online presence with the Blueprint approach.
-              </p>
-            </motion.div>
+        <GridSection className="py-24 pb-32 bg-background z-20 relative">
+          {/* Faint Global Editorial Grid */}
+          <div className="absolute inset-0 bg-editorial-grid pointer-events-none" />
+
+          {/* Faint Volumetric Atmospheric Light Rays — clipped to section bounds */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <div className="absolute top-[30%] left-[-15%] w-[60%] h-[180%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-50" />
+            <div className="absolute top-[-10%] right-[20%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.03] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-500 opacity-40" />
+          </div>
+
+          {/* True Edge Docking Rails spanning the entire section height */}
+          <div className="absolute inset-0 pointer-events-none z-0 flex justify-center">
+            <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
+              <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
+                <div className="absolute top-0 bottom-0 left-0 w-px bg-white/10" />
+                <div className="absolute top-0 bottom-0 right-0 w-px bg-white/10" />
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonial Banner Block. Uses a bg-background base layer to opaquely cover the global grid underneath, and applies bg-muted/30 over it to match BenefitStackSection. */}
+          <div className="w-full py-16 mb-16 relative z-10 border-y border-white/10">
+            <div className="absolute inset-0 bg-background pointer-events-none" />
+            <div className="absolute inset-0 bg-muted/30 pointer-events-none" />
+
+            {/* Crosshairs intersecting the docking rails on the horizontal banner borders */}
+            <div className="absolute inset-0 pointer-events-none flex justify-center z-20">
+              <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
+                <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
+                  <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40" />
+                  <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/40" />
+                  <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/40" />
+                  <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/40" />
+                </div>
+              </div>
+            </div>
+
+            <div className="container mx-auto px-6 relative z-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <h2 className="font-nohemi font-medium text-[clamp(1.75rem,8.5vw,6rem)] md:text-5xl lg:text-6xl leading-[1.05] tracking-tight mb-4">
+                  {/* We use inline-block so the gradient spans the ENTIRE physical bounding box, rather than recalculating per-line */}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-500 inline-block">
+                    What the Blueprint Makes Possible
+                  </span>
+                </h2>
+                <p className="text-lg md:text-xl font-body text-transparent bg-clip-text bg-gradient-to-b from-zinc-300 to-zinc-600 max-w-2xl mx-auto">
+                  Conversion-led websites, operational dashboards, client portals, booking systems — all engineered from a strategic architecture.
+                </p>
+              </motion.div>
+            </div>
           </div>
 
           {/* Full-width carousel */}
           <TestimonialCarousel />
-        </section>
+        </GridSection>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
@@ -268,6 +322,19 @@ export default function Blueprint() {
         ref={footerRef}
         className="fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden"
       >
+        {/* Architectural Schematic Grid for Footer (Reveals from underneath) */}
+        <div className="absolute inset-0 pointer-events-none flex justify-center h-full w-full z-10">
+          <div className="relative h-full w-full max-w-screen-2xl">
+            {/* Vertical Frame Lines */}
+            <div className="absolute top-0 bottom-0 left-0 w-px bg-white/5" />
+            <div className="absolute top-0 bottom-0 right-0 w-px bg-white/5" />
+
+            {/* Top Crosshairs */}
+            <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40" />
+            <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/40" />
+          </div>
+        </div>
+
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-50 overflow-hidden">
           <img
@@ -279,7 +346,7 @@ export default function Blueprint() {
 
         {/* Content Overlay */}
         <section className="text-foreground w-full pb-24 md:pb-32 pt-32 relative z-10">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-10 md:px-6">
             <FooterReveal onCtaClick={scrollToChatbox} scrollProgress={footerScrollProgress} />
           </div>
         </section>

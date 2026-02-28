@@ -14,6 +14,10 @@ export const GridSection = forwardRef<HTMLElement, GridSectionProps>(
                 {showCrosshairs && (
                     <div className="absolute inset-0 pointer-events-none flex justify-center h-full w-full z-10">
                         <div className="relative h-full w-full max-w-screen-2xl">
+                            {/* Vertical Frame Lines connecting the crosshairs */}
+                            <div className="absolute top-0 bottom-0 left-0 w-px bg-white/5" />
+                            <div className="absolute top-0 bottom-0 right-0 w-px bg-white/5" />
+
                             {/* Top Crosshairs */}
                             <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40" />
                             <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/40" />

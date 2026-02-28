@@ -22,6 +22,8 @@ export function VideoLogo({ size = 'md', className = '' }: VideoLogoProps) {
             loop
             muted
             playsInline
+            disablePictureInPicture
+            preload="auto"
             className={videoClass}
             aria-label="Cleland Consultancy Logo"
         >

@@ -44,17 +44,16 @@ export function DreamInput({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={`What ${typewrittenText}`}
-        className="flex-1 bg-transparent border-none text-white placeholder-white/80 font-body type-functional text-sm sm:text-base md:text-xl py-3 px-6 lg:py-4 lg:px-8 outline-none focus:outline-none focus:ring-0 active:outline-none w-full transition-opacity duration-200"
+        className="flex-1 bg-transparent border-none text-white placeholder-white/80 font-body type-functional text-[13px] xs:text-sm sm:text-base md:text-xl py-3 pl-4 pr-1 sm:px-6 lg:py-4 lg:px-8 outline-none focus:outline-none focus:ring-0 active:outline-none w-full transition-opacity duration-200"
         autoComplete="off"
-        autoFocus
       />
       <button
         onClick={() => value.trim() && onSubmit()}
         disabled={!value.trim()}
-        className="mr-2 lg:mr-3 p-3 lg:p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group-focus-within:bg-zinc-800"
+        className="mr-1.5 sm:mr-2 lg:mr-3 p-2 sm:p-3 lg:p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group-focus-within:bg-zinc-800 shrink-0"
         aria-label="Submit dream intent"
       >
-        <ArrowRight className="w-5 h-5 text-white" />
+        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
       </button>
     </div>
   );

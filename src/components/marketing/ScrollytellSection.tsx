@@ -42,7 +42,17 @@ export function ScrollytellSection() {
 
     return (
         <GridSection ref={containerRef} className="relative py-24 md:py-32 bg-muted/30">
-            <div className="container mx-auto px-6 overflow-hidden">
+            {/* True Edge Docking Rails spanning the entire section height */}
+            <div className="absolute inset-0 pointer-events-none z-0 flex justify-center">
+                <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
+                    <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
+                        <div className="absolute top-0 bottom-0 left-0 w-px bg-white/10" />
+                        <div className="absolute top-0 bottom-0 right-0 w-px bg-white/10" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-10 md:px-6 overflow-hidden relative z-10">
                 <div className="max-w-[90ch] mx-auto text-left relative flex flex-col md:block">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
