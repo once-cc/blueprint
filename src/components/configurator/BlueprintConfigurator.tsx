@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useBlueprint } from '@/hooks/useBlueprint';
 import { useLenisScroll } from '@/hooks/useLenisScroll';
@@ -12,6 +12,7 @@ import { SuccessState } from './SuccessState';
 import { SessionResumeModal } from './SessionResumeModal';
 import { StepLayout } from './StepLayout';
 import { VideoLogo } from '@/components/ui/VideoLogo';
+import { Crosshair } from '@/components/ui/crosshair';
 import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { ConfiguratorAct } from '@/types/blueprint';
 import { useNavigate } from 'react-router-dom';
@@ -32,18 +33,18 @@ import { BusinessFoundationsStep } from './steps/BusinessFoundationsStep';
 import { BrandVoiceStep } from './steps/BrandVoiceStep';
 import { CTAEnergyStep } from './steps/CTAEnergyStep';
 
-// Act II: Expression Steps
-import { VisualStyleStep } from './steps/VisualStyleStep';
-import { TypographyMotionStep } from './steps/TypographyMotionStep';
-import { ColorPaletteStep } from './steps/ColorPaletteStep';
+// Act II: Expression Steps - Lazy Loaded
+const VisualStyleStep = lazy(() => import('./steps/VisualStyleStep').then(m => ({ default: m.VisualStyleStep })));
+const TypographyMotionStep = lazy(() => import('./steps/TypographyMotionStep').then(m => ({ default: m.TypographyMotionStep })));
+const ColorPaletteStep = lazy(() => import('./steps/ColorPaletteStep').then(m => ({ default: m.ColorPaletteStep })));
 
-// Act III: Execution Steps
-import { FunctionalityStep } from './steps/FunctionalityStep';
-import { CreativeRiskStep } from './steps/CreativeRiskStep';
-import { ReferencesStep } from './steps/ReferencesStep';
+// Act III: Execution Steps - Lazy Loaded
+const FunctionalityStep = lazy(() => import('./steps/FunctionalityStep').then(m => ({ default: m.FunctionalityStep })));
+const CreativeRiskStep = lazy(() => import('./steps/CreativeRiskStep').then(m => ({ default: m.CreativeRiskStep })));
+const ReferencesStep = lazy(() => import('./steps/ReferencesStep').then(m => ({ default: m.ReferencesStep })));
 
-// Review Step
-import { ReviewStep } from './steps/ReviewStep';
+// Review Step - Lazy Loaded
+const ReviewStep = lazy(() => import('./steps/ReviewStep').then(m => ({ default: m.ReviewStep })));
 
 import { BlueprintReference, ReferenceRole } from '@/types/blueprint';
 import { supabase } from '@/integrations/supabase/client';
@@ -449,10 +450,29 @@ export function BlueprintConfigurator() {
           initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
           animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-          className="min-h-screen bg-background bg-editorial-grid"
+          className="min-h-screen bg-background bg-editorial-grid relative"
         >
+          {/* Global Editorial Vertical Grid Rails */}
+          <div className="fixed inset-0 pointer-events-none flex justify-center z-10 hidden sm:flex">
+            <div className="relative h-full w-full max-w-screen-2xl">
+              <div className="absolute top-0 bottom-0 left-0 w-px bg-white/5" />
+              <div className="absolute top-0 bottom-0 right-0 w-px bg-white/5" />
+
+              <Crosshair className="absolute top-4 -left-[8.5px] text-white/40" />
+              <Crosshair className="absolute top-4 -right-[8.5px] text-white/40" />
+              <Crosshair className="absolute bottom-4 -left-[8.5px] text-white/40" />
+              <Crosshair className="absolute bottom-4 -right-[8.5px] text-white/40" />
+            </div>
+          </div>
+
           {/* Animated gradient background */}
           <div className="animated-gradient-bg" aria-hidden="true" />
+
+          {/* Environmental Volumetric Light Rays (Global Configurator Illumination) */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+            <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse" />
+            <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700" />
+          </div>
 
           {/* Global Components */}
           <DreamIntentHUD
@@ -499,7 +519,13 @@ export function BlueprintConfigurator() {
 
             <div className="max-w-4xl mx-auto">
               <AnimatePresence mode="wait">
-                {renderStep()}
+                <Suspense fallback={
+                  <div className="min-h-[400px] flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-accent/50" />
+                  </div>
+                }>
+                  {renderStep()}
+                </Suspense>
               </AnimatePresence>
             </div>
           </div>

@@ -84,10 +84,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                     whileTap={{ ...cardTap, transition: springConfig }}
                     onClick={() => onUpdate({ visualStyle: style.value })}
                     className={cn(
-                      'p-3 rounded-lg border text-left transition-all duration-300 group',
+                      'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm text-left group',
                       isSelected
-                        ? 'border-accent bg-accent/10 shadow-[0_0_20px_hsl(var(--accent)/0.2)]'
-                        : 'border-border/50 bg-muted/20 hover:border-border hover:bg-muted/40'
+                        ? 'border-accent/50 cfg-surface-selected shadow-[0_0_20px_hsl(var(--accent)/0.2)]'
+                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
                     )}
                   >
                     <motion.div
@@ -143,10 +143,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                     whileTap={{ ...cardTap, transition: springConfig }}
                     onClick={() => onUpdate({ imageryStyle: style.value })}
                     className={cn(
-                      'p-3 rounded-lg border text-left transition-all duration-300',
+                      'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm text-left group',
                       isSelected
-                        ? 'border-accent bg-accent/10 shadow-[0_0_20px_hsl(var(--accent)/0.2)]'
-                        : 'border-border/50 bg-muted/20 hover:border-border hover:bg-muted/40'
+                        ? 'border-accent/50 cfg-surface-selected shadow-[0_0_20px_hsl(var(--accent)/0.2)]'
+                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
                     )}
                   >
                     <motion.h4

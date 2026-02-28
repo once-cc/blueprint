@@ -1,6 +1,7 @@
-import React, { KeyboardEvent, useRef } from "react";
+import React, { KeyboardEvent, useRef, useState } from "react";
 import { useTypewriter } from "@/hooks/useTypewriter";
-import { ArrowRight } from "lucide-react";
+import { AnimatedButtonIcon } from "@/components/ui/AnimatedButtonIcon";
+import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 
 interface DreamInputProps {
   value: string;
@@ -24,6 +25,7 @@ export function DreamInput({
 }: DreamInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const typewrittenText = useTypewriter(PHRASES, 45, 25, 1200);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && value.trim()) {
@@ -49,11 +51,19 @@ export function DreamInput({
       />
       <button
         onClick={() => value.trim() && onSubmit()}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         disabled={!value.trim()}
-        className="mr-1.5 sm:mr-2 lg:mr-3 p-2 sm:p-3 lg:p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group-focus-within:bg-zinc-800 shrink-0"
+        className="mr-1.5 sm:mr-2 lg:mr-3 p-1.5 sm:p-2 lg:p-3 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group-focus-within:bg-zinc-800 shrink-0 flex items-center justify-center overflow-hidden"
         aria-label="Submit dream intent"
+        style={{ width: "3rem", height: "3rem" }} // Fix container bounds heavily so animation fits well
       >
-        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        <AnimatedButtonIcon
+          animationData={paperplaneAnimation}
+          isActive={isHovered}
+          staticFrame={90}
+          className="w-full h-full text-white"
+        />
       </button>
     </div>
   );

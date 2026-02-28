@@ -317,7 +317,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
             <RadioGroup
               value={design.fontWeight}
               onValueChange={(value) => onUpdate({ fontWeight: value as BlueprintDesign['fontWeight'] })}
-              className="grid grid-cols-2 md:grid-cols-4 gap-2"
+              className="grid grid-cols-2 md:grid-cols-4 gap-3"
             >
               {fontWeights.map((weight, index) => {
                 const isSelected = design.fontWeight === weight.value;
@@ -334,10 +334,10 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                     <Label
                       htmlFor={weight.value}
                       className={cn(
-                        'flex items-center justify-center gap-2 px-3 py-2 rounded-full border cursor-pointer transition-all duration-200 text-center',
+                        'flex items-center justify-center gap-2 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm cursor-pointer text-center group',
                         isSelected
-                          ? 'border-accent bg-accent/10 text-foreground'
-                          : 'border-border/50 bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                          ? 'border-accent/50 cfg-surface-selected text-foreground'
+                          : 'border-border/40 dark:border-border/50 text-muted-foreground hover:text-foreground hover:border-border hover:bg-card/90'
                       )}
                     >
                       <RadioGroupItem value={weight.value} id={weight.value} className="sr-only" />

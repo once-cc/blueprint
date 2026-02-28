@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { ReactNode, forwardRef } from 'react';
+import { ReactNode, forwardRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfiguratorAct } from '@/types/blueprint';
 import { ShinyButton } from '@/components/ui/shiny-button';
+import { AnimatedButtonIcon } from '@/components/ui/AnimatedButtonIcon';
+import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 import { cn } from '@/lib/utils';
 const springConfig = { type: "spring" as const, stiffness: 400, damping: 25 };
 
@@ -65,6 +67,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
     nextLabel = 'Continue',
     hideNavigation = false,
   }, ref) {
+    const [isHovered, setIsHovered] = useState(false);
     return (
       <motion.div
         ref={ref}
@@ -91,10 +94,10 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
             {actLabels[act]}
           </motion.p>
 
-          {/* Title — tighter scale on mobile (#9, #16) */}
+          {/* Title — slightly increased scale on mobile/small viewports */}
           <motion.h1
             variants={itemVariants}
-            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-foreground mb-1.5"
+            className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 mb-1.5 pb-1 drop-shadow-md relative inline-block w-full"
           >
             {title}
           </motion.h1>
@@ -193,17 +196,26 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
                   <ShinyButton
                     onClick={onNext}
                     disabled={!canGoNext || isLoading}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
                     className="flex items-center justify-center gap-3 w-full sm:w-auto sm:min-w-[280px] md:min-w-[320px] relative z-10 text-lg shadow-2xl shadow-accent/20"
                   >
                     {isLoading ? (
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-3">
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Saving...
                       </span>
                     ) : (
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-3">
                         {nextLabel}
-                        <ArrowRight className="w-4 h-4 ml-2" />
+                        <AnimatedButtonIcon
+                          animationData={paperplaneAnimation}
+                          isActive={isHovered}
+                          staticFrame={90}
+                          playOnVisible={true}
+                          playVisibleDelay={1250}
+                          className="w-7 h-7 ml-1"
+                        />
                       </span>
                     )}
                   </ShinyButton>

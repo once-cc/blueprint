@@ -1,31 +1,36 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
-import { ShieldCheck, Zap, LineChart, Target } from "lucide-react";
 import { GridSection } from "@/components/ui/grid-section";
+import { BenefitIconLottie } from "@/components/ui/BenefitIconLottie";
+import clarityAnimation from "@/assets/benefitstack/clarity.json";
+import technicalAnimation from "@/assets/benefitstack/technical.json";
+import longevityAnimation from "@/assets/benefitstack/longevity.json";
+import confidenceAnimation from "@/assets/benefitstack/confidence.json";
 
 const benefits = [
     {
         title: "Total Clarity",
         description: "See exactly what will be built. How it converts. And why each decision exists — before committing to execution.\nNo ambiguity.\nNo surprises.",
-        icon: ShieldCheck,
+        animationData: clarityAnimation,
         color: "hsl(220 12% 40%)" // Muted metallic
     },
     {
         title: "Zero Technical Overload",
-        description: "Everything is defined as one cohesive system.\nNo guesswork.\nNo patchwork.\nNo operational confusion.\nSimply select the strategic direction — so the build begins clean.",
-        icon: Zap,
+        description: "Everything is defined as one cohesive system.\nNo guesswork.\nNo patchwork.\nNo operational confusion.\nWe secure the strategic foundation so the engineering begins flawlessly.",
+        animationData: technicalAnimation,
         color: "hsl(38 85% 55%)" // Accent gold
     },
     {
         title: "Designed for Longevity",
-        description: "The Crafted Blueprint creates assets designed to increase in value as your business grows.\nNot a pretty page.\nBut an appreciating asset.",
-        icon: LineChart,
+        description: "True premium design survives rapid scaling.\nThe Blueprint engineers your digital presence with enterprise-grade foresight, ensuring your platform never outgrows its foundations.",
+        animationData: longevityAnimation,
+        staticFrame: 90,
         color: "hsl(142 71% 45%)" // Success green
     },
     {
         title: "Decision Confidence",
-        description: "Instead of conveying abstract ideas, you build a clear directional blueprint.\nYou design direction once — not through endless revisions.\nThe Crafted Blueprint becomes your reference point when building your asset that will grow your business for many years to come.",
-        icon: Target,
+        description: "Move past abstract ideas and endless revision cycles.\nThe Blueprint provides absolute visual and technical certainty before a single line of code is written.\nYou design the direction once.",
+        animationData: confidenceAnimation,
         color: "hsl(221 83% 53%)" // Trust blue
     }
 ];
@@ -57,9 +62,12 @@ const HighlightedWord = ({ children, progress, range }: WordRevealProps) => {
     );
 };
 
+
+
 export function BenefitStackSection() {
     const containerRef = useRef<HTMLElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
+    const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
 
     const { scrollYProgress } = useScroll({
         target: textRef,
@@ -166,6 +174,8 @@ export function BenefitStackSection() {
                         {benefits.map((benefit, i) => (
                             <div
                                 key={i}
+                                onMouseEnter={() => setHoveredCardIndex(i)}
+                                onMouseLeave={() => setHoveredCardIndex(null)}
                                 // Card is 'group/card'. 
                                 // On grid hover: all cards get a faint white glow.
                                 // On card hover: this card isolates and gets a strong branded radial glow, while others fade back.
@@ -195,19 +205,19 @@ export function BenefitStackSection() {
                                 {/* Technical Header */}
                                 <div className="flex justify-between items-start relative z-10">
                                     <div className="flex flex-col gap-2">
-                                        <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: benefit.color }}>
+                                        <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: "#f5a524" }}>
                                             <span className="opacity-60">//</span> 0{i + 1}
                                         </span>
                                         <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-foreground group-hover/card:text-white transition-colors duration-300">
                                             {benefit.title}
                                         </h3>
                                     </div>
-                                    <div
-                                        className="relative w-12 h-12 rounded bg-background border border-white/10 flex items-center justify-center flex-shrink-0 transition-all duration-500"
-                                        style={{ borderColor: "rgba(255,255,255,0.1)" }}
-                                    >
-                                        <benefit.icon className="w-5 h-5 opacity-80 group-hover/card:opacity-100 transition-opacity" style={{ color: benefit.color }} />
-                                    </div>
+                                    <BenefitIconLottie
+                                        animationData={benefit.animationData}
+                                        color={benefit.color}
+                                        isActive={hoveredCardIndex === i}
+                                        staticFrame={benefit.staticFrame}
+                                    />
                                 </div>
 
                                 {/* Annotation copy */}
