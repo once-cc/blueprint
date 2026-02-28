@@ -361,24 +361,12 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.15 }}
             className="space-y-4"
           >
-            <ConfiguratorCardSurface className="space-y-6 max-w-lg mx-auto p-8 relative overflow-hidden">
-              <div className="flex items-center justify-center relative z-10">
-                <Label className="text-sm font-medium text-foreground">Rotate Base Hue</Label>
-                {isHueCustomized && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleResetHue}
-                    className="absolute right-0 text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-2"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    Reset
-                  </Button>
-                )}
-              </div>
+            <div className="flex items-center justify-center">
+              <Label className="text-sm font-medium text-foreground">Rotate Base Hue</Label>
+            </div>
 
-              <div className="flex items-center justify-center gap-8 py-4 relative z-10">
+            <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 relative overflow-hidden">
+              <div className="flex items-center justify-center gap-8 py-2 relative z-10">
                 <InteractiveColorWheel
                   baseHue={baseHue}
                   relationship={relationship}
@@ -441,6 +429,19 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                   </div>
                 </div>
               </div>
+
+              {isHueCustomized && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResetHue}
+                  className="absolute bottom-4 left-4 text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-2 z-20"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Reset
+                </Button>
+              )}
             </ConfiguratorCardSurface>
           </motion.div>
           <motion.div
