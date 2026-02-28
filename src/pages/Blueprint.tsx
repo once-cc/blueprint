@@ -57,12 +57,23 @@ export default function Blueprint() {
         inputEl.focus({ preventScroll: true });
       }
 
-      // Offset by 100px so it centers comfortably on screen
-      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+      const rect = el.getBoundingClientRect();
+      const elementTop = rect.top + window.scrollY;
 
-      animate(window.scrollY, y, {
-        duration: 1.2,
-        ease: [0.16, 1, 0.3, 1], // Cinematic ease-out curve
+      const isMobile = window.innerWidth < 768; // Based on tailwind md breakpoint
+
+      let targetY;
+      if (isMobile) {
+        // Mobile: Position element in the upper quarter of the screen to leave room for keyboard below
+        targetY = elementTop - (window.innerHeight * 0.25);
+      } else {
+        // Desktop: Center exactly
+        targetY = elementTop - (window.innerHeight / 2) + (rect.height / 2);
+      }
+
+      animate(window.scrollY, targetY, {
+        duration: 1.8,
+        ease: [0.22, 1, 0.36, 1], // Expanded, luxuriously smooth ease-out curve (Custom CSS EaseOutQuart/Quint blend)
         onUpdate: (latest) => window.scrollTo(0, latest)
       });
     }
