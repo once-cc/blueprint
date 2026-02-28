@@ -450,45 +450,49 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.2 }}
             className="space-y-4"
           >
-            <Label className="text-sm font-medium text-foreground flex justify-center">Generated Palette</Label>
+            <div className="flex items-center justify-center">
+              <Label className="text-sm font-medium text-foreground">Generated Palette</Label>
+            </div>
 
-            <div className="flex gap-4 justify-center">
-              {generatedPalette.map((swatch, index) => (
-                <motion.div
-                  key={swatch.role}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
-                  className="flex flex-col items-center gap-2"
-                >
+            <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 space-y-8">
+              <div className="flex gap-4 justify-center">
+                {generatedPalette.map((swatch, index) => (
                   <motion.div
-                    layoutId={`swatch-${swatch.role}`}
-                    className={cn(
-                      'rounded-xl border border-border/30',
-                      swatch.role === 'Primary' ? 'w-16 h-16' :
-                        swatch.role === 'Secondary' ? 'w-14 h-14' :
-                          swatch.role === 'Neutral' ? 'w-12 h-12' : 'w-10 h-10'
-                    )}
+                    key={swatch.role}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 * index }}
+                    className="flex flex-col items-center gap-2"
+                  >
+                    <motion.div
+                      layoutId={`swatch-${swatch.role}`}
+                      className={cn(
+                        'rounded-xl border border-border/30 shadow-sm',
+                        swatch.role === 'Primary' ? 'w-16 h-16' :
+                          swatch.role === 'Secondary' ? 'w-14 h-14' :
+                            swatch.role === 'Neutral' ? 'w-12 h-12' : 'w-10 h-10'
+                      )}
+                      animate={{ backgroundColor: swatch.color }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                    <span className="text-xs font-medium text-muted-foreground">{swatch.role}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Palette Strip */}
+              <div className="flex gap-1 h-10 rounded-xl overflow-hidden shadow-inner border border-white/5">
+                {generatedPalette.map((swatch) => (
+                  <motion.div
+                    key={`strip-${swatch.role}`}
+                    className="flex-1"
                     animate={{ backgroundColor: swatch.color }}
                     transition={{ duration: 0.5, ease: 'easeOut' }}
+                    layout
                   />
-                  <span className="text-xs text-muted-foreground">{swatch.role}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Palette Strip */}
-            <div className="flex gap-1 h-8 rounded-lg overflow-hidden max-w-md mx-auto">
-              {generatedPalette.map((swatch) => (
-                <motion.div
-                  key={`strip-${swatch.role}`}
-                  className="flex-1"
-                  animate={{ backgroundColor: swatch.color }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                  layout
-                />
-              ))}
-            </div>
+                ))}
+              </div>
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* Refinement Sliders */}
