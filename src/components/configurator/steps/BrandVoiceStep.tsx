@@ -88,7 +88,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 How should your brand communicate?
               </p>
             </div>
-            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+            <ConfiguratorCardSurface className="p-6 w-full">
               <VoiceAxisSlider
                 zones={TONE_ZONES}
                 value={brandVoice.tone || discovery.tonePrimary}
@@ -112,7 +112,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 How visually assertive should your brand feel?
               </p>
             </div>
-            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+            <ConfiguratorCardSurface className="p-6 w-full">
               <VoiceAxisSlider
                 zones={PRESENCE_ZONES}
                 value={brandVoice.presence}
@@ -136,7 +136,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 What's your dominant character trait?
               </p>
             </div>
-            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+            <ConfiguratorCardSurface className="p-6 w-full">
               <VoiceAxisSlider
                 zones={PERSONALITY_ZONES}
                 value={brandVoice.personality || discovery.personalityTags?.[0]}
@@ -161,7 +161,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
               </p>
             </div>
 
-            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+            <ConfiguratorCardSurface className="p-6 w-full">
               <VoiceAxisSlider
                 zones={ENERGY_ZONES}
                 value={brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}
