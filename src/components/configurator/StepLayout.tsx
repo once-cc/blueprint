@@ -94,11 +94,11 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
             <span
-              className="font-nohemi font-bold whitespace-nowrap uppercase absolute top-[-0.15em] right-0 opacity-[0.15] text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-background to-[80%]"
+              className="font-nohemi font-bold whitespace-nowrap uppercase absolute top-[0] right-0 text-transparent bg-clip-text bg-gradient-to-b from-white/30 to-background pointer-events-none"
               style={{
-                fontSize: "clamp(6rem, 25vw, 160px)",
+                fontSize: "clamp(6rem, 28vw, 160px)",
                 lineHeight: 0.7,
-                letterSpacing: "-0.05em"
+                letterSpacing: "-0.02em"
               }}
             >
               {title}
