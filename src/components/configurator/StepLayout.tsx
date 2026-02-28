@@ -81,15 +81,33 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
         {/* Step Header - SCROLL ANCHOR · staggered choreography */}
         <motion.div
           id="step-header-anchor"
-          className="mb-6 md:mb-8"
+          className="mb-6 md:mb-8 relative overflow-visible"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
+          {/* Ambient Mobile-Only Backdrop Typography */}
+          <motion.div
+            className="absolute top-0 right-[-10%] w-full h-full pointer-events-none z-0 block md:hidden select-none"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          >
+            <span
+              className="font-nohemi font-bold whitespace-nowrap uppercase absolute top-[-0.15em] right-0 opacity-[0.15] text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-background to-[80%]"
+              style={{
+                fontSize: "clamp(6rem, 25vw, 160px)",
+                lineHeight: 0.7,
+                letterSpacing: "-0.05em"
+              }}
+            >
+              {title}
+            </span>
+          </motion.div>
           {/* Act Label */}
           <motion.p
             variants={itemVariants}
-            className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-1.5"
+            className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-1.5 relative z-10"
           >
             {actLabels[act]}
           </motion.p>
@@ -97,7 +115,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {/* Title — slightly increased scale on mobile/small viewports */}
           <motion.h1
             variants={itemVariants}
-            className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 mb-1.5 pb-1 drop-shadow-md relative inline-block w-full"
+            className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 mb-1.5 pb-1 drop-shadow-md relative inline-block w-full z-10"
           >
             {title}
           </motion.h1>
@@ -105,7 +123,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {/* Framing — relaxed leading for readability (#11) */}
           <motion.p
             variants={itemVariants}
-            className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-snug"
+            className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-snug relative z-10"
           >
             {framing}
           </motion.p>
