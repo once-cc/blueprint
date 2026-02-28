@@ -10,7 +10,7 @@ import { RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ColorWheelDiagram, RelationshipIcon } from '../ui/ColorWheelDiagram';
 import { InteractiveColorWheel } from '../ui/InteractiveColorWheel';
-import { CopyHexButton } from '../ui/ColorWheelDiagram';
+import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 
 // Energy zones and conversion functions
 const ENERGY_ZONES = ['Calm', 'Gentle', 'Balanced', 'Vibrant', 'Energetic'] as const;
@@ -360,84 +360,87 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.15 }}
             className="space-y-4"
           >
-            <div className="flex items-center justify-center relative">
-              <Label className="text-sm font-medium text-foreground">Rotate Base Hue</Label>
-              {isHueCustomized && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleResetHue}
-                  className="text-xs text-muted-foreground hover:text-foreground gap-1.5"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  Reset
-                </Button>
-              )}
-            </div>
+            <ConfiguratorCardSurface className="space-y-6 max-w-lg mx-auto p-8 relative overflow-hidden">
+              <div className="flex items-center justify-center relative z-10">
+                <Label className="text-sm font-medium text-foreground">Rotate Base Hue</Label>
+                {isHueCustomized && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleResetHue}
+                    className="absolute right-0 text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-2"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Reset
+                  </Button>
+                )}
+              </div>
 
-            <div className="flex items-center justify-center gap-8 py-4">
-              <InteractiveColorWheel
-                baseHue={baseHue}
-                relationship={relationship}
-                onChange={handleBaseHueChange}
-              />
-
-              {/* Numeric hue input with color preview */}
-              <div className="flex flex-col items-center gap-4">
-                <Label className="text-xs text-muted-foreground">Base Hue</Label>
-
-                {/* Color preview swatch */}
-                <div
-                  className="w-12 h-12 rounded-lg border-2 border-white/20 shadow-lg transition-colors duration-200"
-                  style={{ backgroundColor: `hsl(${baseHue}, 70%, 50%)` }}
-                  title={`hsl(${Math.round(baseHue)}, 70%, 50%)`}
+              <div className="flex items-center justify-center gap-8 py-4 relative z-10">
+                <InteractiveColorWheel
+                  baseHue={baseHue}
+                  relationship={relationship}
+                  onChange={handleBaseHueChange}
                 />
 
-                {/* Degree input */}
-                <div className="flex flex-col items-center gap-1">
-                  <div className="flex items-center gap-1">
-                    <Input
-                      type="number"
-                      min={0}
-                      max={360}
-                      value={Math.round(baseHue)}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value, 10);
-                        if (!isNaN(value)) {
-                          const normalizedHue = ((value % 360) + 360) % 360;
-                          handleBaseHueChange(normalizedHue);
-                        }
-                      }}
-                      className="w-20 h-10 text-center text-lg font-medium"
-                    />
-                    <span className="text-lg text-muted-foreground">°</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">Degrees</p>
-                </div>
+                {/* Numeric hue input with color preview */}
+                <div className="flex flex-col items-center gap-6">
+                  {/* Color preview swatch */}
+                  <div
+                    className="w-16 h-16 rounded-xl border border-white/10 shadow-lg transition-colors duration-200"
+                    style={{ backgroundColor: `hsl(${baseHue}, 70%, 50%)` }}
+                    title={`hsl(${Math.round(baseHue)}, 70%, 50%)`}
+                  />
 
-                {/* Hex input with copy button */}
-                <div className="flex flex-col items-center gap-1">
-                  <div className="flex items-center gap-1">
-                    <Input
-                      type="text"
-                      placeholder="#FF5500"
-                      defaultValue={hslToHex(baseHue, 70, 50)}
-                      key={Math.round(baseHue)} // Reset when hue changes externally
-                      onChange={(e) => {
-                        const hue = hexToHue(e.target.value);
-                        if (hue !== null) {
-                          handleBaseHueChange(hue);
-                        }
-                      }}
-                      className="w-24 h-9 text-center font-mono text-sm uppercase"
-                    />
-                    <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                  {/* Inputs Container */}
+                  <div className="flex flex-col gap-4">
+                    {/* Degree input */}
+                    <div className="flex items-center justify-between gap-3">
+                      <Label className="text-xs text-muted-foreground w-16 text-right">Degrees</Label>
+                      <div className="flex items-center gap-1 w-24">
+                        <Input
+                          type="number"
+                          min={0}
+                          max={360}
+                          value={Math.round(baseHue)}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value, 10);
+                            if (!isNaN(value)) {
+                              const normalizedHue = ((value % 360) + 360) % 360;
+                              handleBaseHueChange(normalizedHue);
+                            }
+                          }}
+                          className="h-8 text-center text-sm font-medium"
+                        />
+                        <span className="text-sm text-muted-foreground w-3 text-left">°</span>
+                      </div>
+                    </div>
+
+                    {/* Hex input */}
+                    <div className="flex items-center justify-between gap-3">
+                      <Label className="text-xs text-muted-foreground w-16 text-right">Hex</Label>
+                      <div className="flex items-center gap-1 w-24">
+                        <Input
+                          type="text"
+                          placeholder="#FF5500"
+                          defaultValue={hslToHex(baseHue, 70, 50)}
+                          key={Math.round(baseHue)}
+                          onChange={(e) => {
+                            const hue = hexToHue(e.target.value);
+                            if (hue !== null) {
+                              handleBaseHueChange(hue);
+                            }
+                          }}
+                          className="h-8 text-center font-mono text-xs uppercase"
+                        />
+                        <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-muted-foreground">Hex Code</p>
                 </div>
               </div>
-            </div>
+            </ConfiguratorCardSurface>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
