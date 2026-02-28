@@ -1,31 +1,66 @@
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimationFrame, MotionValue } from "framer-motion";
 import { testimonials, type Testimonial } from "@/data/testimonials";
 
-// Reduced from 12 to 6 — only need enough cards to fill ~3x viewport width
-// for a seamless infinite illusion. 6 × 6 testimonials = 36 cards is plenty.
-const MULTIPLIER = 6;
+// We use 4 duplicated sets. Set 0 (offscreen left), Set 1 (main), Set 2, Set 3 (buffer right).
+const MULTIPLIER = 4;
+const SET_LENGTH = testimonials.length; // 9 items per full set
 const extendedTestimonials = Array.from({ length: MULTIPLIER }).flatMap((_, idx) =>
-  testimonials.map(t => ({ ...t, uniqueKey: `${t.id}-${idx}` }))
+  testimonials.map(t => ({ ...t, uniqueKey: `${t.id}-${idx}`, setIndex: idx }))
 );
-
-// Card width + gap constants (must match the CSS below)
-const CARD_WIDTH_MD = 350;
-const CARD_WIDTH_SM = 280;
-const GAP_MD = 32; // gap-8
-const GAP_SM = 16; // gap-4
 
 export function TestimonialCarousel() {
   const isDragging = useRef(false);
 
+  // To track the pixel width of exactly one "Set" of testimonials
+  const setWidth = useMotionValue(0);
+
   // Track continuous horizontal scroll — this is the single source of truth
   const x = useMotionValue(0);
 
+  // Measure the width of a single set dynamically on mount and resize
+  useEffect(() => {
+    function measure() {
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+      // Exact calculation based on Tailwind classes: card width + gap width
+      const width = isDesktop ? (350 + 32) * SET_LENGTH : (280 + 16) * SET_LENGTH;
+      setWidth.set(width);
+
+      // Start the carousel safely anchored one full set in, so dragging right immediately works
+      if (x.get() === 0) {
+        x.set(-width);
+      }
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [x, setWidth]);
+
   // Infinite motion loop ticking on every animation frame
   useAnimationFrame((_, delta) => {
+    let currentX = x.get();
+
+    // Auto scroll left slowly if not dragging
     if (!isDragging.current) {
-      x.set(x.get() - delta * 0.05);
+      currentX -= delta * 0.05;
     }
+
+    // Seamless Snap Logic (the illusion)
+    // If we've scrolled deep enough left past 2 full sets
+    const w = setWidth.get();
+    if (w > 0) {
+      if (currentX <= -(w * 2)) {
+        // Jump exactly one full set right
+        currentX += w;
+      }
+      // Or if we drag right past 0 (meaning we are entering Set 0 territory at the start)
+      else if (currentX >= 0) {
+        // Jump exactly one full set left
+        currentX -= w;
+      }
+    }
+
+    x.set(currentX);
   });
 
   return (
@@ -33,15 +68,35 @@ export function TestimonialCarousel() {
 
       {/* 3D Scene Container */}
       <div
-        className="flex justify-center items-center relative z-10 w-full"
+        className="flex justify-start items-center relative z-10 w-full"
         style={{ perspective: "1000px" }}
       >
+        {/* Architectural Track Rails — Top Pair (3D Curved Illusion) */}
+        <div className="absolute inset-x-[-10vw] top-0 h-[50px] md:h-[70px] pointer-events-none z-0 mix-blend-plus-lighter overflow-visible">
+          <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            {/* Outer Faint Rail */}
+            <path d="M 0 0 Q 500 200 1000 0" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+            {/* Inner Bright Rail */}
+            <path d="M 0 8 Q 500 208 1000 8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" vectorEffect="non-scaling-stroke" style={{ filter: "drop-shadow(0px 1px 8px rgba(255,255,255,0.15))" }} />
+          </svg>
+        </div>
+
+        {/* Architectural Track Rails — Bottom Pair (3D Curved Illusion) */}
+        <div className="absolute inset-x-[-10vw] bottom-0 h-[50px] md:h-[70px] pointer-events-none z-0 mix-blend-plus-lighter overflow-visible">
+          <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            {/* Inner Bright Rail */}
+            <path d="M 0 92 Q 500 -108 1000 92" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" vectorEffect="non-scaling-stroke" style={{ filter: "drop-shadow(0px -1px 8px rgba(255,255,255,0.15))" }} />
+            {/* Outer Faint Rail */}
+            <path d="M 0 100 Q 500 -100 1000 100" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          </svg>
+        </div>
+
         <motion.div
-          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing px-[50vw]"
+          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing px-0 md:px-0"
           style={{ x, transformStyle: "preserve-3d" }}
           drag="x"
-          dragConstraints={{ left: -10000, right: 10000 }}
-          dragElastic={0.1}
+          dragConstraints={{ left: -100000, right: 100000 }} // Arbitrarily large limits; our snapping logic prevents hitting ends
+          dragElastic={0}
           onDragStart={() => isDragging.current = true}
           onDragEnd={() => {
             setTimeout(() => {
@@ -65,13 +120,15 @@ export function TestimonialCarousel() {
 }
 
 // Optimized Card — uses pure Framer Motion values, ZERO React state, ZERO getBoundingClientRect
-function Card({ testimonial, index, x }: { testimonial: Testimonial & { uniqueKey: string }, index: number, x: MotionValue<number> }) {
+const Card = React.memo(({ testimonial, index, x }: { testimonial: Testimonial & { uniqueKey: string }, index: number, x: MotionValue<number> }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   // We compute the card's distance from the viewport center using:
   // card's visual center = initialOffset + x (the carousel motion value)
   // This avoids getBoundingClientRect entirely.
   const initialOffset = useMotionValue(0);
+
+  const [isMobile, setIsMobile] = useState(false);
 
   // Measure once on mount + resize (not per-frame!)
   useEffect(() => {
@@ -83,6 +140,9 @@ function Card({ testimonial, index, x }: { testimonial: Testimonial & { uniqueKe
       const currentX = x.get();
       const cardCenter = rect.left + rect.width / 2;
       initialOffset.set(cardCenter - currentX);
+
+      // Check for mobile breakpoints to dynamically shift 3D intensity
+      setIsMobile(window.innerWidth < 768);
     }
     // Measure after layout settles
     const raf = requestAnimationFrame(measure);
@@ -103,14 +163,23 @@ function Card({ testimonial, index, x }: { testimonial: Testimonial & { uniqueKe
     }
   );
 
+  // Responsive Input Ranges — Smaller viewports hit the edge much faster, so we tighten the math
+  // to make the cards rotate and dip sharply inside a narrower pixel window
+  const distanceLimits = isMobile ? [-400, 0, 400] : [-800, 0, 800];
+
   // 3D concave effect: centered cards pushed back, edge cards brought forward
-  const z = useTransform(centerDistance, [-800, 0, 800], [100, -200, 100]);
+  // On mobile, we push the center cards further back (-250) and pull edge cards closer (150)
+  const zLimits = isMobile ? [150, -250, 150] : [100, -200, 100];
+  const z = useTransform(centerDistance, distanceLimits, zLimits);
 
   // Gentle inward tilt for 3D perspective
-  const rotateY = useTransform(centerDistance, [-800, 0, 800], [20, 0, -20]);
+  // On mobile, we radically increase the maximum tilt angle (35 deg vs 20 deg)
+  const rotLimits = isMobile ? [35, 0, -35] : [20, 0, -20];
+  const rotateY = useTransform(centerDistance, distanceLimits, rotLimits);
 
-  // Fade edges
-  const opacity = useTransform(centerDistance, [-1000, -600, 0, 600, 1000], [0, 1, 1, 1, 0]);
+  // Fade edges — aggressively clip visibility on mobile to prevent cards from overflowing the viewport width
+  const opacityInputs = isMobile ? [-500, -250, 0, 250, 500] : [-1000, -600, 0, 600, 1000];
+  const opacity = useTransform(centerDistance, opacityInputs, [0, 1, 1, 1, 0]);
 
   return (
     <motion.div
@@ -156,4 +225,4 @@ function Card({ testimonial, index, x }: { testimonial: Testimonial & { uniqueKe
       <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
     </motion.div>
   );
-}
+});

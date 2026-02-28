@@ -74,9 +74,30 @@ export function BenefitStackSection() {
     const words = introText.split(" ");
 
     return (
-        <GridSection ref={containerRef} className="py-24 md:py-32 bg-muted/30 z-20 overflow-visible relative">
+        <GridSection ref={containerRef} className="py-24 md:py-32 bg-muted/30 z-20 relative">
             {/* The Editorial Ramp / Central Spine connecting to next section */}
             <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
+
+            {/* Faint Volumetric Atmospheric Light Rays — clipped to section bounds to prevent touch interception on mobile */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-[10%] left-[-10%] w-[50%] h-[120%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-60" />
+                <div className="absolute top-[20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.02] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-1000 opacity-40" />
+            </div>
+
+            {/* True Edge Docking Rails spanning the entire section height */}
+            <div className="absolute inset-0 pointer-events-none z-0 flex justify-center">
+                {/* 
+                    Matches the exact width constraint of the Architectural Grid below 
+                    - On mobile, it's w-full, matching the 16px inset of the grid's padding.
+                    - On desktop, it's constrained by max-w-[90vw] within the 1240px container max.
+                */}
+                <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
+                    <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
+                        <div className="absolute top-0 bottom-[100px] md:bottom-0 left-0 md:left-0 w-px bg-white/10" />
+                        <div className="absolute top-0 bottom-[100px] md:bottom-0 right-0 md:right-0 w-px bg-white/10" />
+                    </div>
+                </div>
+            </div>
 
             <div className="container mx-auto px-6 mb-24 relative z-10">
                 <div ref={textRef} className="max-w-4xl mx-auto text-center flex flex-col items-center relative">
@@ -124,49 +145,73 @@ export function BenefitStackSection() {
                 </div>
             </div>
 
-            {/* Architectural Schematic Grid */}
+            {/* Architectural Schematic Grid - Shared CSS Hover Glow */}
             <div className="container mx-auto px-4 md:px-6 relative z-10 flex justify-center">
                 <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
 
-                    {/* True Edge Docking Rails extending upwards from the grid's literal bounds */}
-                    <div className="absolute -top-[500px] bottom-[100px] md:bottom-0 left-0 w-px bg-white/10 pointer-events-none z-20" />
-                    <div className="absolute -top-[500px] bottom-[100px] md:bottom-0 right-0 w-px bg-white/10 pointer-events-none z-20" />
-
-                    {/* The 2x2 Drawn Grid */}
+                    {/* The 2x2 Drawn Grid — Using 'group/grid' to track hover over the whole section */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="grid grid-cols-1 md:grid-cols-2 bg-background border-y border-white/10 divide-y divide-white/10 md:divide-y-0 relative shadow-2xl"
+                        className="group/grid grid grid-cols-1 md:grid-cols-2 bg-background border-y border-white/10 divide-y divide-white/10 md:divide-y-0 relative shadow-2xl"
                     >
-                        {/* Horizontal divider for desktop row 2 */}
-                        <div className="hidden md:absolute md:block top-1/2 left-0 right-0 h-px bg-white/10 z-0 pointer-events-none" />
-                        {/* Vertical divider for desktop col 2 */}
-                        <div className="hidden md:absolute md:block top-0 bottom-0 left-1/2 w-px bg-white/10 z-0 pointer-events-none" />
+                        {/* Faint Global Editorial Grid behind the cards */}
+                        <div className="absolute inset-0 bg-editorial-grid pointer-events-none z-0" />
+
+                        {/* 1. Global Outline: Visible when idle. Fades out immediately when the grid is hovered (since any hover hits a card) */}
+                        <div className="animated-glow-border opacity-100 group-hover/grid:opacity-0 transition-opacity duration-700 z-10" />
 
                         {benefits.map((benefit, i) => (
                             <div
                                 key={i}
-                                className="group relative p-8 md:p-12 flex flex-col gap-8 transition-colors duration-500 hover:bg-white/[0.02]"
+                                // Card is 'group/card'. 
+                                // On grid hover: all cards get a faint white glow.
+                                // On card hover: this card isolates and gets a strong branded radial glow, while others fade back.
+                                className="group/card relative p-8 md:p-12 flex flex-col gap-8 transition-all duration-500"
                             >
+                                {/* Conditionally render the structural dividing lines inside the cards so the hover glow perfectly traces them */}
+                                {/* Top inner border (for bottom row) */}
+                                {i > 1 && <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-white/10 z-[5]" />}
+                                {/* Left inner border (for right column) */}
+                                {i % 2 !== 0 && <div className="hidden md:block absolute top-0 bottom-0 left-0 w-px bg-white/10 z-[5]" />}
+
+                                {/* Background Hover Illuminations */}
+                                {/* 1. The collective grid glow (faint white, appears when hovering anywhere in the grid, but hides if hovering on THIS card) */}
+                                <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover/grid:opacity-100 group-hover/card:!opacity-0 transition-opacity duration-700 pointer-events-none z-0" />
+
+                                {/* 2. The isolated card glow (branded radial gradient, appears ONLY when hovering on THIS specific card) */}
+                                <div
+                                    className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
+                                    style={{
+                                        background: `radial-gradient(circle at center, ${benefit.color}15 0%, transparent 70%)`
+                                    }}
+                                />
+
+                                {/* 3. The isolated card outline (CSS mask shiny border! isolated strictly to THIS card) */}
+                                <div className="animated-glow-border opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-10" />
+
                                 {/* Technical Header */}
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-start relative z-10">
                                     <div className="flex flex-col gap-2">
                                         <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: benefit.color }}>
                                             <span className="opacity-60">//</span> 0{i + 1}
                                         </span>
-                                        <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-foreground group-hover:text-white transition-colors duration-300">
+                                        <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-foreground group-hover/card:text-white transition-colors duration-300">
                                             {benefit.title}
                                         </h3>
                                     </div>
-                                    <div className="relative w-12 h-12 rounded bg-background border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-white/30 transition-colors duration-500">
-                                        <benefit.icon className="w-5 h-5 opacity-80" style={{ color: benefit.color }} />
+                                    <div
+                                        className="relative w-12 h-12 rounded bg-background border border-white/10 flex items-center justify-center flex-shrink-0 transition-all duration-500"
+                                        style={{ borderColor: "rgba(255,255,255,0.1)" }}
+                                    >
+                                        <benefit.icon className="w-5 h-5 opacity-80 group-hover/card:opacity-100 transition-opacity" style={{ color: benefit.color }} />
                                     </div>
                                 </div>
 
                                 {/* Annotation copy */}
-                                <p className="font-body type-functional-light text-sm md:text-base text-muted-foreground leading-relaxed max-w-sm whitespace-pre-line">
+                                <p className="font-body type-functional-light text-sm md:text-base text-muted-foreground leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-zinc-300 transition-colors duration-500">
                                     {benefit.description}
                                 </p>
                             </div>

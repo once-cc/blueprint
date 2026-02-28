@@ -1,5 +1,6 @@
 @layer components {
-/* Depth layer base styles */
+
+  /* Depth layer base styles */
   .layer-atmosphere {
     z-index: var(--z-atmosphere);
     @apply absolute inset-0;
@@ -40,11 +41,26 @@
 
   /* Editorial Layout Grid */
   .bg-editorial-grid {
-    background-size: 100px 100px;
+    background-size: 50px 50px;
+    /* Mobile: compact grid to display enough columns/rows */
     background-image:
       linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-position: center top;
+  }
+
+  @screen md {
+    .bg-editorial-grid {
+      background-size: 75px 75px;
+      /* Tablet: medium scale */
+    }
+  }
+
+  @screen lg {
+    .bg-editorial-grid {
+      background-size: 100px 100px;
+      /* Desktop: original wide layout */
+    }
   }
 
   .cinematic-sticky {
@@ -53,38 +69,38 @@
 }
 
 @layer utilities {
-/* ============================================
+  /* ============================================
    Performance Utilities
    ============================================ */
 
-/* GPU acceleration hint for static elements */
-.gpu-accelerated {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
+  /* GPU acceleration hint for static elements */
+  .gpu-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
 
-/* Containment for isolated rendering */
-.contain-strict {
-  contain: strict;
-}
+  /* Containment for isolated rendering */
+  .contain-strict {
+    contain: strict;
+  }
 
-.contain-layout {
-  contain: layout style paint;
-}
+  .contain-layout {
+    contain: layout style paint;
+  }
 
-/* Pause animations when offscreen */
-.offscreen-paused {
-  animation-play-state: paused !important;
-}
+  /* Pause animations when offscreen */
+  .offscreen-paused {
+    animation-play-state: paused !important;
+  }
 
-/* Scrollbar hide utility for reduced motion fallback */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+  /* Scrollbar hide utility for reduced motion fallback */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

@@ -328,4 +328,14 @@
     font-family: var(--font-body);
     overscroll-behavior: none;
   }
+
+  /* Prevent Safari iOS from showing a large play button over videos when low power mode blocks autoplay */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+  }
 }

@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { Crosshair } from "@/components/ui/crosshair";
 import { processSteps } from "@/data/blueprint";
-import { ScrambleText } from "@/components/ui/scramble-text";
+
 
 export interface DesktopStackCardProps {
     index: number;
@@ -23,10 +23,11 @@ export const DesktopStackCard = ({ index, step, progressRange, progressTotal, is
         offset: ["start 80%", "start 20%"]
     });
 
-    const titleY = useTransform(popProgress, [0, 1], ["85%", "40%"]);
+    const delayPop = index === 0 ? 0 : 0.65;
+    const titleY = useTransform(popProgress, [delayPop, 1], ["85%", "40%"]);
     // Opacity: First card starts fully visible instantly, subsequent cards fade in as they pop.
     // However, the LAST card shouldn't fade back out later.
-    const titleOpacity = useTransform(popProgress, [0, 0.4, 1], [index === 0 ? 1 : 0, 1, 1]);
+    const titleOpacity = useTransform(popProgress, [delayPop, delayPop + 0.2, 1], [index === 0 ? 1 : 0, 1, 1]);
 
     // Exit begins the moment this card hits its sticky position (top-[22vh]).
     // We extend the tracking distance to -80vh so the animation is slower and the card is visible longer.
@@ -36,9 +37,9 @@ export const DesktopStackCard = ({ index, step, progressRange, progressTotal, is
     });
 
     // Suppress exit animation precisely for the last card so it stays pinned as the next section overlays it
-    // Lowered the drop-off rate on opacity by delaying the fade curve to start dropping more gradually over the longer stretch.
+    // Slowed the drop-off rate on opacity of departing cards so they have a much more lingering, dramatic exit.
     const groupScale = useTransform(descendProgress, [0, 1], [1, isLast ? 1 : 0.85]);
-    const groupOpacity = useTransform(descendProgress, [0, 0.3, 1], [1, isLast ? 1 : 1, isLast ? 1 : 0]);
+    const groupOpacity = useTransform(descendProgress, [0, 0.1, 0.85], [1, isLast ? 1 : 1, isLast ? 1 : 0]);
     const groupY = useTransform(descendProgress, [0, 1], ["0vh", "0vh"]); // Strictly stationary, no drift
     const groupRotateX = useTransform(descendProgress, [0, 1], ["0deg", "0deg"]);
 
@@ -66,29 +67,27 @@ export const DesktopStackCard = ({ index, step, progressRange, progressTotal, is
                         >
                             <span
                                 // pt-8 pb-4 prevents the text from being prematurely clipped
-                                className="font-nohemi font-bold pt-8 pb-4 select-none whitespace-nowrap uppercase text-zinc-600 relative inline-block"
+                                className="font-nohemi font-bold pt-8 pb-4 select-none whitespace-nowrap uppercase relative inline-block text-transparent bg-clip-text bg-gradient-to-t from-black from-[20%] via-zinc-900 to-zinc-700"
                                 style={{
                                     fontSize: "clamp(3rem, 13vw, 190px)",
                                     lineHeight: 1
                                 }}
                             >
                                 {step.title}
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent pointer-events-none" style={{ height: '70%', top: 'auto', bottom: 0 }} />
                             </span>
                         </motion.div>
+
+                        {/* Editorial Outlines on Outer Frame (Placed OUTSIDE overflow-hidden) */}
+                        <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/50 z-20" />
+                        <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/50 z-20" />
+                        <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/50 z-20" />
+                        <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/50 z-20" />
 
                         <div
                             // Unified width is inherited from the parent motion.div. Relaxing height restrictions to prevent clipping
                             className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden rounded-xl"
                         >
                             {/* Darkening overlay removed; group opacity handles the void fade organically */}
-
-                            {/* Editorial Outlines on Outer Frame */}
-                            <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/50 z-20" />
-                            <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/50 z-20" />
-                            <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/50 z-20" />
-                            <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/50 z-20" />
 
                             {/* Content Grid */}
                             <div className="grid grid-cols-2 w-full h-full relative z-10">
@@ -99,9 +98,13 @@ export const DesktopStackCard = ({ index, step, progressRange, progressTotal, is
                                     <div className="flex flex-col h-full">
                                         <div className="flex flex-col items-start gap-3 mb-8 border-b border-white/10 pb-6 w-full">
                                             <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2">
-                                                <span className="text-accent/60">//</span> <ScrambleText text={`0${index + 1}`} />
+                                                <span className="text-accent/60">//</span> 0{index + 1}
                                             </span>
-                                            <h3 className="font-nohemi font-bold text-3xl lg:text-5xl shrink-0 leading-none pb-2">{step.title}</h3>
+                                            <h3 className="font-nohemi font-medium tracking-tight text-3xl lg:text-5xl shrink-0 leading-none pb-2">
+                                                <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-900 inline-block">
+                                                    {step.title}
+                                                </span>
+                                            </h3>
                                         </div>
 
                                         {/* Body Copy */}
