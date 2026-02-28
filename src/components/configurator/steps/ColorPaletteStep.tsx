@@ -506,7 +506,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               {/* Energy Slider */}
               <div className="space-y-4 text-center">
                 <Label className="text-sm font-medium text-foreground">Energy</Label>
-                <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+                <ConfiguratorCardSurface className="p-6 w-full">
                   <VoiceAxisSlider
                     zones={[...ENERGY_ZONES]}
                     value={energyToZone(energy)}
@@ -520,7 +520,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               {/* Contrast Slider */}
               <div className="space-y-4 text-center">
                 <Label className="text-sm font-medium text-foreground">Contrast</Label>
-                <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+                <ConfiguratorCardSurface className="p-6 w-full">
                   <VoiceAxisSlider
                     zones={[...CONTRAST_ZONES]}
                     value={contrastToZone(contrast)}

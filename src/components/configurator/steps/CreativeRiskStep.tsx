@@ -159,7 +159,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             </AnimatePresence>
 
             {/* VoiceAxisSlider */}
-            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+            <ConfiguratorCardSurface className="p-6 w-full">
               <VoiceAxisSlider
                 zones={RISK_ZONES}
                 value={currentZone}
