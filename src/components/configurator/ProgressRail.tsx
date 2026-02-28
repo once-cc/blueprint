@@ -68,7 +68,7 @@ export function ProgressRail({ currentStep, onStepClick, className = '' }: Progr
     <div className={cn('w-full', className)}>
       {/* Desktop Progress Rail */}
       <div className="hidden md:block">
-        <div className="relative flex items-center justify-between max-w-3xl mx-auto">
+        <div className="relative flex items-center justify-between max-w-3xl mx-auto pb-14">
           {/* Background Track */}
           <div className="absolute top-4 left-0 right-0 h-0.5 bg-border/30" />
 
@@ -177,11 +177,11 @@ export function ProgressRail({ currentStep, onStepClick, className = '' }: Progr
               <AnimatePresence>
                 {!isCollapsed && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="mt-3 text-center"
+                    initial={{ opacity: 0, y: -10, x: '-50%' }}
+                    animate={{ opacity: 1, y: 0, x: '-50%' }}
+                    exit={{ opacity: 0, y: -10, x: '-50%' }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    className="absolute top-10 left-1/2 mt-2 text-center w-48 pointer-events-none"
                   >
                     <span className={cn(
                       'text-xs font-medium uppercase tracking-wider',

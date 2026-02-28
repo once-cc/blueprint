@@ -182,16 +182,12 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             design.animationIntensity && `Animation: ${design.animationIntensity}/10`,
           ].filter(Boolean) as string[];
         case 6:
-          // Updated to use new color palette fields
           const lines: string[] = [];
-          if (design.colourRelationship) {
-            lines.push(`Relationship: ${design.colourRelationship}`);
+          if (design.imageryStyle) {
+            lines.push(`Imagery: ${design.imageryStyle}`);
           }
-          if (design.paletteEnergy) {
-            lines.push(`Energy: ${design.paletteEnergy}/10`);
-          }
-          if (design.paletteContrast) {
-            lines.push(`Contrast: ${design.paletteContrast}/10`);
+          if (design.colourPaletteStyle) {
+            lines.push(`Palette: ${design.colourPaletteStyle}`);
           }
           return lines;
         default:
@@ -335,12 +331,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                       return (
                         <div
                           key={step.step}
-                          className={cn(
-                            'p-4 rounded-xl cfg-surface transition-all',
-                            hasContent
-                              ? 'border border-border/50 bg-card/60 backdrop-blur-sm'
-                              : 'border border-dashed border-border/30 bg-muted/10'
-                          )}
+                          className="p-4 rounded-xl border border-border/40 dark:border-border/50 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm group hover:border-border hover:bg-card/90"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
@@ -378,12 +369,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                       return (
                         <div
                           key={step.step}
-                          className={cn(
-                            'rounded-xl cfg-surface transition-all overflow-hidden',
-                            hasContent
-                              ? 'border border-border/50 bg-card/60 backdrop-blur-sm'
-                              : 'border border-dashed border-border/30 bg-muted/10'
-                          )}
+                          className="rounded-xl border border-border/40 dark:border-border/50 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm overflow-hidden group hover:border-border hover:bg-card/90"
                         >
                           {/* Collapsible header */}
                           <button
@@ -470,7 +456,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="p-5 rounded-xl border border-accent/20 bg-accent/5 text-center"
+              className="p-5 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-accent/50 bg-card/80 backdrop-blur-sm text-center"
             >
               <p className="text-xs uppercase tracking-wider text-accent mb-2">Your Vision</p>
               <p className={cn("italic", blueprint.dreamIntent ? "text-foreground" : "text-muted-foreground")}>

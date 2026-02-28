@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
+import { useState, useRef, useEffect, useCallback, forwardRef, memo } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +10,7 @@ interface VoiceAxisSliderProps {
   rightLabel: string;
 }
 
-export const VoiceAxisSlider = forwardRef<HTMLDivElement, VoiceAxisSliderProps>(
+export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderProps>(
   function VoiceAxisSlider({ zones, value, onChange, leftLabel, rightLabel }, ref) {
     const trackRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -246,4 +246,5 @@ export const VoiceAxisSlider = forwardRef<HTMLDivElement, VoiceAxisSliderProps>(
         </div>
       </div>
     );
-  });
+  }
+));

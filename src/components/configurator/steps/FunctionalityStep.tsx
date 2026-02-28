@@ -167,10 +167,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                     whileTap={{ ...cardTap, transition: springConfig }}
                     onClick={() => togglePage(page)}
                     className={cn(
-                      'flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all duration-200',
+                      'flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm group',
                       isSelected
-                        ? 'border-accent bg-accent/10 text-accent shadow-[0_0_20px_hsl(var(--accent)/0.15)]'
-                        : 'border-border/50 bg-card/50 hover:border-accent/50 text-muted-foreground hover:text-foreground'
+                        ? 'border-accent/50 cfg-surface-selected text-accent shadow-[0_0_20px_hsl(var(--accent)/0.15)]'
+                        : 'border-border/40 dark:border-border/50 text-muted-foreground hover:text-foreground hover:border-border hover:bg-card/90'
                     )}
                   >
                     <motion.div
@@ -245,10 +245,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleDomainClick(domain.id)}
                     className={cn(
-                      'p-4 rounded-lg border text-left transition-all duration-200',
+                      'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm text-left group',
                       isAcknowledged
-                        ? 'border-accent/50 bg-accent/5 shadow-[0_0_12px_hsl(var(--accent)/0.08)]'
-                        : 'border-border/50 bg-card/30 hover:border-accent/30 hover:bg-card/50'
+                        ? 'border-accent/50 cfg-surface-selected shadow-[0_0_12px_hsl(var(--accent)/0.08)]'
+                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
                     )}
                   >
                     {/* Header with Icon */}
@@ -341,10 +341,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                   <div
                     key={option.id}
                     className={cn(
-                      'flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer',
+                      'flex items-center gap-3 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm cursor-pointer group',
                       deliver.timeline === option.id
-                        ? 'border-accent bg-accent/10'
-                        : 'border-border/50 hover:border-accent/50'
+                        ? 'border-accent/50 cfg-surface-selected'
+                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
                     )}
                     onClick={() => onUpdate({ timeline: option.id as BlueprintDeliver['timeline'] })}
                   >
@@ -372,10 +372,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                   <div
                     key={option.id}
                     className={cn(
-                      'flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer',
+                      'flex items-center gap-3 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm cursor-pointer group',
                       deliver.budget === option.id
-                        ? 'border-accent bg-accent/10'
-                        : 'border-border/50 hover:border-accent/50'
+                        ? 'border-accent/50 cfg-surface-selected'
+                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
                     )}
                     onClick={() => onUpdate({ budget: option.id as BlueprintDeliver['budget'] })}
                   >

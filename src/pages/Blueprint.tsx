@@ -14,6 +14,8 @@ import heroPoster from "@/assets/hero-static.webp";
 import footerBg from "@/assets/footer.webp";
 import { GridSection } from "@/components/ui/grid-section";
 import { Crosshair } from "@/components/ui/crosshair";
+import { AnimatedButtonIcon } from "@/components/ui/AnimatedButtonIcon";
+import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 
 
 
@@ -22,6 +24,7 @@ export default function Blueprint() {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [forceReveal, setForceReveal] = useState(false);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
 
   // Footer pinning state
   const [footerHeight, setFooterHeight] = useState(0);
@@ -203,10 +206,10 @@ export default function Blueprint() {
                   transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
                   className="heading-editorial text-[3.5rem] sm:text-[4rem] leading-[1.05] md:text-7xl lg:text-8xl tracking-tight drop-shadow-md pb-1"
                 >
-                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-600 block">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
                     The <em className="italic font-medium pr-4">Crafted</em>
                   </span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[50%] to-zinc-600 block">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
                     Blueprint.
                   </span>
                 </motion.h1>
@@ -228,8 +231,22 @@ export default function Blueprint() {
                   transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
                   className="flex items-center justify-center md:justify-start gap-4 flex-wrap mt-2 w-full md:w-auto"
                 >
-                  <ShinyButton onClick={scrollToChatbox}>
-                    Begin Your Blueprint
+                  <ShinyButton
+                    onClick={scrollToChatbox}
+                    onMouseEnter={() => setIsHeroHovered(true)}
+                    onMouseLeave={() => setIsHeroHovered(false)}
+                  >
+                    <span className="flex items-center gap-3">
+                      Begin Your Blueprint
+                      <AnimatedButtonIcon
+                        animationData={paperplaneAnimation}
+                        isActive={isHeroHovered}
+                        staticFrame={90}
+                        playOnVisible={true}
+                        playVisibleDelay={1250}
+                        className="w-7 h-7 ml-1 text-white"
+                      />
+                    </span>
                   </ShinyButton>
                 </motion.div>
               </div>

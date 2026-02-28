@@ -37,7 +37,7 @@ export const riskToZone = (value: number): string => {
 const riskLevels = [
   {
     min: 1,
-    max: 3,
+    max: 2,
     label: 'Play It Safe',
     zone: 'Safe',
     description: 'Clean, conventional design that feels familiar and trustworthy. Proven patterns, minimal surprises.',
@@ -46,24 +46,44 @@ const riskLevels = [
     borderColor: 'border-blue-500/50',
   },
   {
-    min: 4,
+    min: 3,
+    max: 4,
+    label: 'Cautious',
+    zone: 'Cautious',
+    description: 'Tested design concepts with slight modern embellishments. Reliable but not completely rigid.',
+    icon: Shield,
+    gradient: 'from-violet-500/20 to-purple-500/20',
+    borderColor: 'border-violet-500/50',
+  },
+  {
+    min: 5,
     max: 6,
     label: 'Balanced',
     zone: 'Balanced',
     description: 'Modern and professional with tasteful creative touches. Stand out without being polarizing.',
     icon: Sparkles,
-    gradient: 'from-violet-500/20 to-purple-500/20',
-    borderColor: 'border-violet-500/50',
+    gradient: 'from-emerald-500/20 to-green-500/20',
+    borderColor: 'border-emerald-500/50',
   },
   {
     min: 7,
+    max: 8,
+    label: 'Bold',
+    zone: 'Bold',
+    description: 'Striking visuals and engaging micro-interactions. A confident stance that captures attention.',
+    icon: Rocket,
+    gradient: 'from-accent/20 to-accent/10',
+    borderColor: 'border-accent/50',
+  },
+  {
+    min: 9,
     max: 10,
     label: 'Push Boundaries',
     zone: 'Experimental',
     description: 'Bold, experimental, memorable. Unconventional layouts, surprising interactions, statement design.',
     icon: Rocket,
-    gradient: 'from-orange-500/20 to-red-500/20',
-    borderColor: 'border-orange-500/50',
+    gradient: 'from-red-500/20 to-rose-500/20',
+    borderColor: 'border-red-500/50',
   },
 ];
 
@@ -107,7 +127,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 className={cn(
-                  'p-4 rounded-xl border bg-gradient-to-br',
+                  'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border backdrop-blur-sm bg-gradient-to-br',
                   currentLevel.gradient,
                   currentLevel.borderColor
                 )}
@@ -154,7 +174,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="p-4 rounded-lg border border-border/50 bg-muted/10"
+            className="p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-border/40 dark:border-border/50 bg-card/80 backdrop-blur-sm"
           >
             <h4 className="text-sm font-medium text-foreground mb-2">What This Means</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">

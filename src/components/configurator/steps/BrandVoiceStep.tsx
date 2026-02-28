@@ -67,7 +67,6 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
         stepNumber={2}
         title="Brand Voice"
         framing="Tune your brand's emotional signature."
-        helperText={!isValid ? "Adjust the sliders to define your brand voice" : undefined}
         onBack={onBack}
         onNext={onNext}
         canGoNext={isValid}

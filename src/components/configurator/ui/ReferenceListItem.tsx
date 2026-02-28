@@ -43,8 +43,7 @@ export function ReferenceListItem({
                 layout="position"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="flex gap-4 p-4 rounded-xl border border-border/50 bg-card/30 group"
+                className="flex gap-4 p-4 rounded-xl border border-border/40 dark:border-border/50 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm group hover:border-border hover:bg-card/90"
             >
                 {/* Drag Handle */}
                 <div

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { motion, useTransform, MotionValue } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { springConfig } from "@/data/blueprint";
+import { AnimatedButtonIcon } from "@/components/ui/AnimatedButtonIcon";
+import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 
 export function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () => void, scrollProgress: MotionValue<number> }) {
     // Headline slides up slowly from behind a mask
@@ -10,6 +12,8 @@ export function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () =>
     // Subcopy fades in near the very end of the animation (when headline is mostly complete)
     const subcopyOpacity = useTransform(scrollProgress, [0.85, 1], [0, 1]);
     const subcopyY = useTransform(scrollProgress, [0.85, 1], ["20px", "0px"]);
+
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
         <div className="max-w-3xl mx-auto text-center space-y-8 flex flex-col items-center justify-end overflow-hidden">
@@ -38,15 +42,28 @@ export function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () =>
 
             {/* Static CTA Container */}
             <div className="relative z-10 pt-4">
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
+                <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={springConfig}
+                    onHoverStart={() => setIsHovered(true)}
+                    onHoverEnd={() => setIsHovered(false)}
+                >
                     <ShinyButton
                         size="lg"
                         className="group"
                         onClick={onCtaClick}
                     >
-                        <span className="flex items-center gap-2">
+                        <span className="flex items-center gap-3">
                             Begin My Blueprint
-                            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1/4" />
+                            <AnimatedButtonIcon
+                                animationData={paperplaneAnimation}
+                                isActive={isHovered}
+                                staticFrame={90}
+                                playOnVisible={true}
+                                playVisibleDelay={1250}
+                                className="w-7 h-7 ml-1"
+                            />
                         </span>
                     </ShinyButton>
                 </motion.div>

@@ -44,8 +44,7 @@ export function ReferenceGridItem({
                 layout="position"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="relative aspect-square rounded-xl border border-border/50 bg-card/30 overflow-hidden group"
+                className="relative aspect-square rounded-xl transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90 overflow-hidden group"
             >
                 {/* Thumbnail */}
                 {refItem.type === 'image' ? (
