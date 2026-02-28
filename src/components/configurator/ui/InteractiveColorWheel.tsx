@@ -140,7 +140,7 @@ export function InteractiveColorWheel({
             ref={wheelRef}
             viewBox={`0 0 ${size} ${size}`}
             className={cn(
-                "w-48 h-48 cursor-grab select-none",
+                "w-48 h-48 cursor-grab select-none touch-none",
                 isDragging && "cursor-grabbing"
             )}
             initial={{ opacity: 0, scale: 0.9 }}
