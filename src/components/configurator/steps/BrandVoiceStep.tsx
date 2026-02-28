@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { BlueprintDiscovery } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
+import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 
 interface BrandVoiceStepProps {
   discovery: BlueprintDiscovery;
@@ -87,13 +88,15 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 How should your brand communicate?
               </p>
             </div>
-            <VoiceAxisSlider
-              zones={TONE_ZONES}
-              value={brandVoice.tone || discovery.tonePrimary}
-              onChange={handleToneChange}
-              leftLabel="Formal"
-              rightLabel="Friendly"
-            />
+            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+              <VoiceAxisSlider
+                zones={TONE_ZONES}
+                value={brandVoice.tone || discovery.tonePrimary}
+                onChange={handleToneChange}
+                leftLabel="Formal"
+                rightLabel="Friendly"
+              />
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* Brand Presence Slider */}
@@ -109,13 +112,15 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 How visually assertive should your brand feel?
               </p>
             </div>
-            <VoiceAxisSlider
-              zones={PRESENCE_ZONES}
-              value={brandVoice.presence}
-              onChange={handlePresenceChange}
-              leftLabel="Minimal"
-              rightLabel="Bold"
-            />
+            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+              <VoiceAxisSlider
+                zones={PRESENCE_ZONES}
+                value={brandVoice.presence}
+                onChange={handlePresenceChange}
+                leftLabel="Minimal"
+                rightLabel="Bold"
+              />
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* Brand Personality Slider */}
@@ -131,13 +136,15 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 What's your dominant character trait?
               </p>
             </div>
-            <VoiceAxisSlider
-              zones={PERSONALITY_ZONES}
-              value={brandVoice.personality || discovery.personalityTags?.[0]}
-              onChange={handlePersonalityChange}
-              leftLabel="Reserved"
-              rightLabel="Expressive"
-            />
+            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+              <VoiceAxisSlider
+                zones={PERSONALITY_ZONES}
+                value={brandVoice.personality || discovery.personalityTags?.[0]}
+                onChange={handlePersonalityChange}
+                leftLabel="Reserved"
+                rightLabel="Expressive"
+              />
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* Visitor Emotional Outcome */}
@@ -154,13 +161,15 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
               </p>
             </div>
 
-            <VoiceAxisSlider
-              zones={ENERGY_ZONES}
-              value={brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}
-              onChange={handleEnergyChange}
-              leftLabel="Calm"
-              rightLabel="Energized"
-            />
+            <ConfiguratorCardSurface className="p-6 max-w-lg mx-auto">
+              <VoiceAxisSlider
+                zones={ENERGY_ZONES}
+                value={brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}
+                onChange={handleEnergyChange}
+                leftLabel="Calm"
+                rightLabel="Energized"
+              />
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* Summary Preview */}
