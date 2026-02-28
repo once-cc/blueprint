@@ -266,7 +266,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             </Label>
 
             {/* Arc Selector */}
-            <div className="relative flex flex-col items-center py-8">
+            <ConfiguratorCardSurface className="relative flex flex-col items-center py-6 max-w-lg mx-auto overflow-hidden">
               <div className="relative w-[384px] h-[180px] overflow-visible">
                 {/* Arc Background */}
                 <svg
@@ -332,7 +332,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               </div>
 
               {/* Center Label - positioned below the arc */}
-              <div className="text-center mt-4 w-[384px]">
+              <div className="text-center w-[384px]">
                 <motion.p
                   key={relationship}
                   initial={{ opacity: 0, y: 5 }}
@@ -351,7 +351,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                   {colourRelationships.find(r => r.value === relationship)?.description}
                 </motion.p>
               </div>
-            </div>
+            </ConfiguratorCardSurface>
           </motion.div>
 
           {/* Interactive Color Wheel for Base Hue */}
