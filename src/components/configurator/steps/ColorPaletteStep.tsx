@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { ColorWheelDiagram, RelationshipIcon } from '../ui/ColorWheelDiagram';
 import { InteractiveColorWheel } from '../ui/InteractiveColorWheel';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
+import { CopyHexButton } from '../ui/ColorWheelDiagram';
 
 // Energy zones and conversion functions
 const ENERGY_ZONES = ['Calm', 'Gentle', 'Balanced', 'Vibrant', 'Energetic'] as const;
