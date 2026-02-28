@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { ColorWheelDiagram, RelationshipIcon } from '../ui/ColorWheelDiagram';
 import { InteractiveColorWheel } from '../ui/InteractiveColorWheel';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
+import { ConfiguratorSectionHeader } from '../ui/ConfiguratorSectionHeader';
 import { CopyHexButton } from '../ui/ColorWheelDiagram';
 
 // Energy zones and conversion functions
@@ -261,9 +262,12 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.1 }}
             className="space-y-6"
           >
-            <Label className="text-sm font-medium text-foreground flex items-center justify-center gap-2">
-              Colour Relationship <span className="text-destructive">*</span>
-            </Label>
+            <div className="flex flex-col items-center justify-center">
+              <ConfiguratorSectionHeader title="Relationship" />
+              <Label className="text-sm font-medium text-foreground -mt-6 mb-6 flex items-center gap-2 relative z-10">
+                Colour Relationship <span className="text-destructive">*</span>
+              </Label>
+            </div>
 
             {/* Arc Selector */}
             <ConfiguratorCardSurface className="relative flex flex-col items-center py-6 max-w-lg mx-auto overflow-hidden">
@@ -361,8 +365,9 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.15 }}
             className="space-y-4"
           >
-            <div className="flex items-center justify-center">
-              <Label className="text-sm font-medium text-foreground">Rotate Base Hue</Label>
+            <div className="flex flex-col items-center justify-center">
+              <ConfiguratorSectionHeader title="Base Hue" />
+              <Label className="text-sm font-medium text-foreground -mt-6 mb-4 relative z-10">Rotate Base Hue</Label>
             </div>
 
             <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 relative overflow-hidden">
@@ -450,8 +455,8 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.2 }}
             className="space-y-4"
           >
-            <div className="flex items-center justify-center">
-              <Label className="text-sm font-medium text-foreground">Generated Palette</Label>
+            <div className="flex flex-col items-center justify-center">
+              <ConfiguratorSectionHeader title="Palette" />
             </div>
 
             <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 space-y-8">
@@ -502,6 +507,10 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.3 }}
             className="space-y-8"
           >
+            <div className="flex flex-col items-center justify-center">
+              <ConfiguratorSectionHeader title="Refinements" />
+            </div>
+
             <div className="space-y-8">
               {/* Energy Slider */}
               <div className="space-y-4 text-center">
