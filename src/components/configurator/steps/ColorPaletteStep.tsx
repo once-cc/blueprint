@@ -262,12 +262,6 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.1 }}
             className="space-y-6"
           >
-            <div className="flex flex-col items-center justify-center">
-              <Label className="text-sm font-medium text-foreground mb-6 flex items-center gap-2 relative z-10">
-                Colour Relationship <span className="text-destructive">*</span>
-              </Label>
-            </div>
-
             {/* Arc Selector */}
             <ConfiguratorCardSurface className="relative flex flex-col items-center py-6 max-w-lg mx-auto overflow-hidden">
               <ConfiguratorEdgeMarkers label="SYS.RELATION" delay={0.1} />
@@ -365,10 +359,6 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.15 }}
             className="space-y-4"
           >
-            <div className="flex flex-col items-center justify-center">
-              <Label className="text-sm font-medium text-foreground mb-4 relative z-10">Rotate Base Hue</Label>
-            </div>
-
             <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 relative overflow-hidden">
               <ConfiguratorEdgeMarkers label="SYS.BASE_HUE" delay={0.15} />
               <div className="flex items-center justify-center gap-8 py-2 relative z-10">
@@ -455,10 +445,6 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.2 }}
             className="space-y-4"
           >
-            <div className="flex flex-col items-center justify-center">
-              <Label className="text-sm font-medium text-foreground mb-4 relative z-10">Generated Palette</Label>
-            </div>
-
             <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 space-y-8 relative overflow-hidden">
               <ConfiguratorEdgeMarkers label="SYS.PALETTE" delay={0.2} />
               <div className="flex gap-4 justify-center">
@@ -510,9 +496,8 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
           >
             <div className="space-y-8">
               {/* Energy Slider */}
-              <div className="space-y-4 text-center">
-                <Label className="text-sm font-medium text-foreground">Energy</Label>
-                <ConfiguratorCardSurface className="p-6 w-full relative overflow-hidden">
+              <div className="w-full text-center">
+                <ConfiguratorCardSurface className="p-8 w-full relative overflow-hidden">
                   <ConfiguratorEdgeMarkers label="REFINE.ENERGY" delay={0.3} />
                   <VoiceAxisSlider
                     zones={[...ENERGY_ZONES]}
@@ -525,9 +510,8 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               </div>
 
               {/* Contrast Slider */}
-              <div className="space-y-4 text-center">
-                <Label className="text-sm font-medium text-foreground">Contrast</Label>
-                <ConfiguratorCardSurface className="p-6 w-full relative overflow-hidden">
+              <div className="w-full text-center">
+                <ConfiguratorCardSurface className="p-8 w-full relative overflow-hidden">
                   <ConfiguratorEdgeMarkers label="REFINE.CONTRAST" delay={0.35} />
                   <VoiceAxisSlider
                     zones={[...CONTRAST_ZONES]}
