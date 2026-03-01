@@ -137,13 +137,22 @@ export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderPr
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Extruded Track Background */}
-          <div className={cn(
-            "absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 h-[2px] rounded-full",
-            "bg-gradient-to-r from-black/40 via-white/5 to-black/40",
-            "shadow-[inset_0_1px_2px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.05)]",
-            "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          )} />
+          {/* Machined Channel Track Background */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 h-[1px] rounded-full"
+            style={{
+              backgroundColor: 'hsl(220 12% 16%)',
+              backgroundImage: 'linear-gradient(to right, hsl(220 12% 14%), hsl(220 12% 18%), hsl(220 12% 14%))'
+            }}
+          >
+            {/* Top Specular Highlight */}
+            <div
+              className="absolute -top-[1px] left-0 right-0 h-[1px]"
+              style={{
+                background: 'linear-gradient(to bottom, hsl(45 10% 92% / 0.05), transparent 60%)'
+              }}
+            />
+          </div>
 
           {/* Zone Markers with bounce animation */}
           <div className="absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 pointer-events-none">
@@ -208,7 +217,7 @@ export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderPr
                 }}
               >
                 {/* Dimensional Darker Core */}
-                <div className="absolute inset-[3px] rounded-full bg-black/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]" />
+                <div className="absolute inset-[3px] rounded-full bg-black/50 shadow-[inset_0_3px_6px_rgba(0,0,0,0.6)]" />
               </motion.div>
             </motion.div>
           </div>
