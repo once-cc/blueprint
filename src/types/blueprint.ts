@@ -77,13 +77,52 @@ export interface BlueprintDiscovery {
 
 // ============= Design Section (Act II) =============
 
+export type BrandAssetType = 'headshot' | 'product' | 'portfolio' | 'lifestyle' | 'campaign' | 'logo' | 'background' | 'texture' | 'other' | 'unassigned';
+
+export interface BrandAsset {
+  id: string;
+  fileUrl: string;
+  filename: string;
+  size: number;
+  type: BrandAssetType;
+  notes: string;
+  isPrimary: boolean;
+  order: number;
+}
+
 export interface BlueprintDesign {
   // Step 4: Visual Style
   visualStyle?: 'minimal' | 'dark_cinematic' | 'urban' | 'luxury' | 'playful' | 'tech';
   imageryStyle?: 'photography' | 'illustrations' | 'product' | 'cinematic' | 'minimal' | 'mixed';
 
+  // Brand Imagery Intake (Upload Mode)
+  brandImageryMode?: 'direction' | 'upload';
+  brandAssets?: BrandAsset[];
+
+
   // Step 5: Typography & Motion
-  // Typography Direction: directional signal only, not final font selection
+  typographyMode?: 'direction' | 'upload';
+
+  // Custom Fonts (Upload Mode)
+  customFonts?: {
+    files: Array<{
+      id: string;
+      fileData: string;
+      filename: string;
+      weight: string;
+      style: string;
+    }>;
+    roles: {
+      h1?: string;      // ID of the mapped file
+      h2?: string;
+      h3?: string;
+      eyebrow?: string;
+      body?: string;
+      button?: string;
+    };
+  };
+
+  // Typography Direction: directional signal only, not final font selection (Direction Mode)
   typography_direction?: 'modern_minimal' | 'elegant_premium' | 'bold_expressive' | 'tech_sans' | 'editorial' | 'display';
   /** @deprecated Use typography_direction instead */
   typographyStyle?: 'modern_minimal' | 'elegant_premium' | 'bold_expressive' | 'tech_sans' | 'editorial' | 'display';
