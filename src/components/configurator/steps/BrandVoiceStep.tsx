@@ -4,6 +4,7 @@ import { BlueprintDiscovery } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
+import { ConfiguratorCardHeader } from '../ui/ConfiguratorCardHeader';
 
 interface BrandVoiceStepProps {
   discovery: BlueprintDiscovery;
@@ -80,22 +81,19 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-3"
+            className="w-full text-center"
           >
-            <div className="space-y-1 text-center">
-              <h3 className="text-sm font-medium text-foreground">Tone Balance</h3>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                How should your brand communicate?
-              </p>
-            </div>
-            <ConfiguratorCardSurface className="p-6 w-full">
-              <VoiceAxisSlider
-                zones={TONE_ZONES}
-                value={brandVoice.tone || discovery.tonePrimary}
-                onChange={handleToneChange}
-                leftLabel="Formal"
-                rightLabel="Friendly"
-              />
+            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+              <ConfiguratorCardHeader title="Tone Balance" actLabel="ACT I" delay={0.1} />
+              <div className="w-full h-full p-8 mt-6">
+                <VoiceAxisSlider
+                  zones={TONE_ZONES}
+                  value={brandVoice.tone || discovery.tonePrimary}
+                  onChange={handleToneChange}
+                  leftLabel="Formal"
+                  rightLabel="Friendly"
+                />
+              </div>
             </ConfiguratorCardSurface>
           </motion.div>
 
@@ -104,22 +102,19 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="space-y-3"
+            className="w-full text-center"
           >
-            <div className="space-y-1 text-center">
-              <h3 className="text-sm font-medium text-foreground">Brand Presence</h3>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                How visually assertive should your brand feel?
-              </p>
-            </div>
-            <ConfiguratorCardSurface className="p-6 w-full">
-              <VoiceAxisSlider
-                zones={PRESENCE_ZONES}
-                value={brandVoice.presence}
-                onChange={handlePresenceChange}
-                leftLabel="Minimal"
-                rightLabel="Bold"
-              />
+            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+              <ConfiguratorCardHeader title="Brand Presence" actLabel="ACT I" delay={0.2} />
+              <div className="w-full h-full p-8 mt-6">
+                <VoiceAxisSlider
+                  zones={PRESENCE_ZONES}
+                  value={brandVoice.presence}
+                  onChange={handlePresenceChange}
+                  leftLabel="Minimal"
+                  rightLabel="Bold"
+                />
+              </div>
             </ConfiguratorCardSurface>
           </motion.div>
 
@@ -128,22 +123,19 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="space-y-3"
+            className="w-full text-center"
           >
-            <div className="space-y-1 text-center">
-              <h3 className="text-sm font-medium text-foreground">Brand Personality</h3>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                What's your dominant character trait?
-              </p>
-            </div>
-            <ConfiguratorCardSurface className="p-6 w-full">
-              <VoiceAxisSlider
-                zones={PERSONALITY_ZONES}
-                value={brandVoice.personality || discovery.personalityTags?.[0]}
-                onChange={handlePersonalityChange}
-                leftLabel="Reserved"
-                rightLabel="Expressive"
-              />
+            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+              <ConfiguratorCardHeader title="Brand Personality" actLabel="ACT I" delay={0.3} />
+              <div className="w-full h-full p-8 mt-6">
+                <VoiceAxisSlider
+                  zones={PERSONALITY_ZONES}
+                  value={brandVoice.personality || discovery.personalityTags?.[0]}
+                  onChange={handlePersonalityChange}
+                  leftLabel="Reserved"
+                  rightLabel="Expressive"
+                />
+              </div>
             </ConfiguratorCardSurface>
           </motion.div>
 
@@ -152,23 +144,19 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="space-y-6"
+            className="w-full text-center"
           >
-            <div className="space-y-1 text-center">
-              <h3 className="text-sm font-medium text-foreground">Visitor Emotional Outcome</h3>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                How should visitors feel after experiencing your brand?
-              </p>
-            </div>
-
-            <ConfiguratorCardSurface className="p-6 w-full">
-              <VoiceAxisSlider
-                zones={ENERGY_ZONES}
-                value={brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}
-                onChange={handleEnergyChange}
-                leftLabel="Calm"
-                rightLabel="Energized"
-              />
+            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+              <ConfiguratorCardHeader title="Emotional Outcome" actLabel="ACT I" delay={0.4} />
+              <div className="w-full h-full p-8 mt-6">
+                <VoiceAxisSlider
+                  zones={ENERGY_ZONES}
+                  value={brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}
+                  onChange={handleEnergyChange}
+                  leftLabel="Calm"
+                  rightLabel="Energized"
+                />
+              </div>
             </ConfiguratorCardSurface>
           </motion.div>
 
