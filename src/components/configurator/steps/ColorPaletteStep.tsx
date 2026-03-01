@@ -264,7 +264,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
           >
             {/* Arc Selector */}
             <ConfiguratorCardSurface className="relative max-w-lg mx-auto overflow-hidden">
-              <ConfiguratorCardHeader title="Color Logic" actLabel="ACT II" delay={0.1} />
+              <ConfiguratorCardHeader title="Color Logic" metaLabel="SYS.RELATION" delay={0.1} />
               <div className="w-full h-full flex flex-col items-center pt-16 pb-6 px-6">
                 <div className="relative w-[384px] h-[180px] overflow-visible">
                   {/* Arc Background */}
@@ -362,7 +362,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             className="space-y-4"
           >
             <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
-              <ConfiguratorCardHeader title="Base Hue" actLabel="ACT II" delay={0.15} />
+              <ConfiguratorCardHeader title="Base Hue" metaLabel="SYS.BASE_HUE" delay={0.15} />
               <div className="w-full h-full pt-16 pb-6 px-6">
                 <div className="flex items-center justify-center gap-8 py-2 relative z-10">
                   <InteractiveColorWheel
@@ -450,7 +450,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             className="space-y-4"
           >
             <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
-              <ConfiguratorCardHeader title="Generated Palette" actLabel="ACT II" delay={0.2} />
+              <ConfiguratorCardHeader title="Generated Palette" metaLabel="SYS.PALETTE" delay={0.2} />
               <div className="w-full h-full pt-20 pb-6 px-6 space-y-8">
                 <div className="flex gap-4 justify-center">
                   {generatedPalette.map((swatch, index) => (
@@ -504,7 +504,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               {/* Energy Slider */}
               <div className="w-full text-center">
                 <ConfiguratorCardSurface className="w-full relative overflow-hidden">
-                  <ConfiguratorCardHeader title="Energy" actLabel="ACT II" delay={0.3} />
+                  <ConfiguratorCardHeader title="Energy" metaLabel="SYS.ENERGY" delay={0.3} />
                   <div className="w-full h-full pt-16 pb-8 px-8">
                     <VoiceAxisSlider
                       zones={[...ENERGY_ZONES]}
@@ -520,7 +520,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               {/* Contrast Slider */}
               <div className="w-full text-center">
                 <ConfiguratorCardSurface className="w-full relative overflow-hidden">
-                  <ConfiguratorCardHeader title="Contrast" actLabel="ACT II" delay={0.35} />
+                  <ConfiguratorCardHeader title="Contrast" metaLabel="SYS.CONTRAST" delay={0.35} />
                   <div className="w-full h-full pt-16 pb-8 px-8">
                     <VoiceAxisSlider
                       zones={[...CONTRAST_ZONES]}
