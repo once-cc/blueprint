@@ -4,6 +4,7 @@ import { BlueprintDeliver } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
+import { ConfiguratorCardHeader } from '../ui/ConfiguratorCardHeader';
 import { cn } from '@/lib/utils';
 import { Shield, Sparkles, Rocket } from 'lucide-react';
 
@@ -159,14 +160,17 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             </AnimatePresence>
 
             {/* VoiceAxisSlider */}
-            <ConfiguratorCardSurface className="p-6 w-full">
-              <VoiceAxisSlider
-                zones={RISK_ZONES}
-                value={currentZone}
-                onChange={handleZoneChange}
-                leftLabel="Conservative"
-                rightLabel="Experimental"
-              />
+            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+              <ConfiguratorCardHeader title="Creative Risk" actLabel="ACT III" delay={0.1} />
+              <div className="w-full h-full p-8 mt-6">
+                <VoiceAxisSlider
+                  zones={RISK_ZONES}
+                  value={currentZone}
+                  onChange={handleZoneChange}
+                  leftLabel="Conservative"
+                  rightLabel="Experimental"
+                />
+              </div>
             </ConfiguratorCardSurface>
           </motion.div>
 
