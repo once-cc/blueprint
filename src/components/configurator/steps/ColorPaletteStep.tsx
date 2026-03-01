@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { ColorWheelDiagram, RelationshipIcon } from '../ui/ColorWheelDiagram';
 import { InteractiveColorWheel } from '../ui/InteractiveColorWheel';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
-import { ConfiguratorSectionHeader } from '../ui/ConfiguratorSectionHeader';
+import { ConfiguratorEdgeMarkers } from '../ui/ConfiguratorEdgeMarkers';
 import { CopyHexButton } from '../ui/ColorWheelDiagram';
 
 // Energy zones and conversion functions
@@ -270,7 +270,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
 
             {/* Arc Selector */}
             <ConfiguratorCardSurface className="relative flex flex-col items-center py-6 max-w-lg mx-auto overflow-hidden">
-              <ConfiguratorSectionHeader title="Relationship" />
+              <ConfiguratorEdgeMarkers label="SYS.RELATION" delay={0.1} />
               <div className="relative w-[384px] h-[180px] overflow-visible">
                 {/* Arc Background */}
                 <svg
@@ -370,7 +370,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             </div>
 
             <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 relative overflow-hidden">
-              <ConfiguratorSectionHeader title="Base Hue" />
+              <ConfiguratorEdgeMarkers label="SYS.BASE_HUE" delay={0.15} />
               <div className="flex items-center justify-center gap-8 py-2 relative z-10">
                 <InteractiveColorWheel
                   baseHue={baseHue}
@@ -460,7 +460,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             </div>
 
             <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 space-y-8 relative overflow-hidden">
-              <ConfiguratorSectionHeader title="Palette" />
+              <ConfiguratorEdgeMarkers label="SYS.PALETTE" delay={0.2} />
               <div className="flex gap-4 justify-center">
                 {generatedPalette.map((swatch, index) => (
                   <motion.div
@@ -513,7 +513,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               <div className="space-y-4 text-center">
                 <Label className="text-sm font-medium text-foreground">Energy</Label>
                 <ConfiguratorCardSurface className="p-6 w-full relative overflow-hidden">
-                  <ConfiguratorSectionHeader title="Energy" />
+                  <ConfiguratorEdgeMarkers label="REFINE.ENERGY" delay={0.3} />
                   <VoiceAxisSlider
                     zones={[...ENERGY_ZONES]}
                     value={energyToZone(energy)}
@@ -528,7 +528,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               <div className="space-y-4 text-center">
                 <Label className="text-sm font-medium text-foreground">Contrast</Label>
                 <ConfiguratorCardSurface className="p-6 w-full relative overflow-hidden">
-                  <ConfiguratorSectionHeader title="Contrast" />
+                  <ConfiguratorEdgeMarkers label="REFINE.CONTRAST" delay={0.35} />
                   <VoiceAxisSlider
                     zones={[...CONTRAST_ZONES]}
                     value={contrastToZone(contrast)}
