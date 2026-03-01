@@ -385,7 +385,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                       {/* Degree input */}
                       <div className="flex items-center justify-between gap-3">
                         <Label className="text-xs text-muted-foreground w-16 text-right">Degrees</Label>
-                        <div className="flex items-center gap-1 w-24">
+                        <div className="flex items-center gap-2 w-[115px]">
                           <Input
                             type="number"
                             min={0}
@@ -398,7 +398,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                                 handleBaseHueChange(normalizedHue);
                               }
                             }}
-                            className="h-8 text-center text-sm font-medium"
+                            className="h-8 text-center text-sm font-medium w-full"
                           />
                           <span className="text-sm text-muted-foreground w-3 text-left">°</span>
                         </div>
@@ -407,7 +407,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                       {/* Hex input */}
                       <div className="flex items-center justify-between gap-3">
                         <Label className="text-xs text-muted-foreground w-16 text-right">Hex</Label>
-                        <div className="flex items-center gap-1 w-24">
+                        <div className="flex items-center gap-2 w-[115px]">
                           <Input
                             type="text"
                             placeholder="#FF5500"
@@ -419,9 +419,11 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                                 handleBaseHueChange(hue);
                               }
                             }}
-                            className="h-8 text-center font-mono text-xs uppercase"
+                            className="h-8 text-center font-mono text-xs uppercase min-w-[8ch] whitespace-nowrap overflow-visible px-1 w-full"
                           />
-                          <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                          <div className="shrink-0 flex items-center justify-center">
+                            <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                          </div>
                         </div>
                       </div>
                     </div>
