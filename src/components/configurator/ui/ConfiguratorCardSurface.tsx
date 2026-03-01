@@ -32,14 +32,15 @@ export function ConfiguratorCardSurface({
   const prefersReducedMotion = useReducedMotion();
 
   const baseClasses = cn(
-    // Base surface
-    'relative bg-card/80 backdrop-blur-sm rounded-xl',
+    // Base surface - Machined Inset Plate Effect
+    'relative bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm rounded-xl',
+    'shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] dark:shadow-[inset_0_2px_15px_rgba(0,0,0,0.5)]',
 
     // Border - quiet, theme-aware
     'border',
     isSelected
       ? 'border-accent/50'
-      : 'border-border/40 dark:border-border/50',
+      : 'border-white/10 dark:border-white/5',
 
     // Transitions (disabled for reduced motion)
     !prefersReducedMotion && 'transition-[box-shadow,transform,border-color,background-color] duration-[220ms] ease-out',
