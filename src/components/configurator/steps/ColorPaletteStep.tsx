@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, forwardRef } from 'react';
+import { useEffect, useMemo, useState, forwardRef, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { BlueprintDesign } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
@@ -6,13 +6,14 @@ import { Label } from '@/components/ui/label';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ColorWheelDiagram, RelationshipIcon } from '../ui/ColorWheelDiagram';
 import { InteractiveColorWheel } from '../ui/InteractiveColorWheel';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 import { ConfiguratorCardHeader } from '../ui/ConfiguratorCardHeader';
 import { CopyHexButton } from '../ui/ColorWheelDiagram';
+import { AnimatedLockIcon } from '../ui/AnimatedLockIcon';
 
 // Energy zones and conversion functions
 const ENERGY_ZONES = ['Calm', 'Gentle', 'Balanced', 'Vibrant', 'Energetic'] as const;
@@ -145,6 +146,32 @@ function hexToHue(hex: string): number | null {
   return hue;
 }
 
+function hexToHslData(hex: string): { h: number, s: number, l: number } | null {
+  const cleanHex = hex.replace('#', '').trim();
+  if (!/^[0-9A-Fa-f]{6}$/.test(cleanHex) && !/^[0-9A-Fa-f]{3}$/.test(cleanHex)) return null;
+
+  const fullHex = cleanHex.length === 3 ? cleanHex.split('').map(c => c + c).join('') : cleanHex;
+  const r = parseInt(fullHex.slice(0, 2), 16) / 255;
+  const g = parseInt(fullHex.slice(2, 4), 16) / 255;
+  const b = parseInt(fullHex.slice(4, 6), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let h = 0, s = 0, l = (max + min) / 2;
+
+  if (delta !== 0) {
+    s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+    if (max === r) h = ((g - b) / delta) + (g < b ? 6 : 0);
+    else if (max === g) h = (b - r) / delta + 2;
+    else h = (r - g) / delta + 4;
+    h /= 6;
+  }
+
+  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
 function generatePalette(
   relationship: string,
   customBaseHue: number,
@@ -208,15 +235,43 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
     const defaultHue = aestheticBaseHues[design.visualStyle || 'minimal'] || 0;
     const baseHue = design.baseHue ?? defaultHue;
 
+    const [paletteMode, setPaletteMode] = useState<'system' | 'manual'>('system');
+    const [lockedColors, setLockedColors] = useState<Record<string, string>>({});
+
     // Generate palette whenever inputs change
-    const generatedPalette = useMemo(() => {
+    const systemPalette = useMemo(() => {
       return generatePalette(relationship, baseHue, energy, contrast);
     }, [relationship, baseHue, energy, contrast]);
 
+    const activePalette = useMemo(() => {
+      return systemPalette.map(sys => {
+        if (lockedColors[sys.role]) {
+          return { ...sys, color: lockedColors[sys.role] };
+        }
+        return sys;
+      });
+    }, [systemPalette, lockedColors]);
+
     // Update generated palette when it changes
     useEffect(() => {
-      onUpdate({ generatedPalette });
-    }, [generatedPalette]);
+      onUpdate({ generatedPalette: activePalette });
+    }, [activePalette]);
+
+    const handleManualHexChange = (role: string, hex: string) => {
+      setLockedColors(prev => ({ ...prev, [role]: hex }));
+    };
+
+    const toggleLock = (role: string, currentColor: string) => {
+      setLockedColors(prev => {
+        const next = { ...prev };
+        if (next[role]) {
+          delete next[role];
+        } else {
+          next[role] = currentColor;
+        }
+        return next;
+      });
+    };
 
     // Initialize with defaults if not set
     useEffect(() => {
@@ -230,6 +285,44 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
       }
     }, []);
 
+    const advisoryMetrics = useMemo(() => {
+      if (paletteMode !== 'manual') return null;
+
+      const hslArr = activePalette.map(p => hexToHslData(p.color)).filter(Boolean) as { h: number, s: number, l: number }[];
+      if (hslArr.length < 4) return { relationship: 'CUSTOM', energy: 'N/A', contrast: 'N/A' };
+
+      const hues = hslArr.map(hsl => hsl.h);
+      const hueDiffs = [
+        Math.abs(hues[0] - hues[1]),
+        Math.abs(hues[0] - hues[2]),
+        Math.abs(hues[0] - hues[3])
+      ].map(diff => diff > 180 ? 360 - diff : diff);
+
+      let rel = 'CUSTOM';
+      const avgDiff = hueDiffs.reduce((a, b) => a + b, 0) / 3;
+      if (avgDiff < 15) rel = 'MONOCHROME';
+      else if (hueDiffs.every(d => d > 15 && d < 60)) rel = 'ANALOGOUS';
+      else if (hueDiffs.some(d => d > 150)) rel = 'COMPLEMENTARY';
+      else if (hueDiffs.some(d => d > 90 && d < 150) || hueDiffs.every(d => d > 30)) rel = 'TRIADIC';
+
+      const avgS = hslArr.reduce((sum, val) => sum + val.s, 0) / 4;
+      let energyStr = 'BALANCED';
+      if (avgS < 20) energyStr = 'CALM';
+      else if (avgS < 40) energyStr = 'GENTLE';
+      else if (avgS > 80) energyStr = 'ENERGETIC';
+      else if (avgS > 60) energyStr = 'VIBRANT';
+
+      const light = hslArr.map(hsl => hsl.l);
+      const Ldiff = Math.max(...light) - Math.min(...light);
+      let contrastStr = 'BALANCED';
+      if (Ldiff < 20) contrastStr = 'SUBTLE';
+      else if (Ldiff < 40) contrastStr = 'SOFT';
+      else if (Ldiff > 70) contrastStr = 'BOLD';
+      else if (Ldiff > 50) contrastStr = 'STRONG';
+
+      return { relationship: rel, energy: energyStr, contrast: contrastStr };
+    }, [activePalette, paletteMode]);
+
     const handleRelationshipSelect = (value: typeof relationship) => {
       onUpdate({ colourRelationship: value });
     };
@@ -240,6 +333,35 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
 
     const handleResetHue = () => {
       onUpdate({ baseHue: defaultHue });
+    };
+
+    const hueDragRef = useRef<{ startX: number; startHue: number } | null>(null);
+
+    const handleHueDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.button !== 0) return; // Only left click / main touch
+      e.currentTarget.setPointerCapture(e.pointerId);
+      hueDragRef.current = {
+        startX: e.clientX,
+        startHue: baseHue
+      };
+    };
+
+    const handleHueDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!hueDragRef.current) return;
+
+      const deltaX = e.clientX - hueDragRef.current.startX;
+      // 1 degree per 2 pixels dragged for fine control
+      const deltaHue = Math.round(deltaX / 2);
+
+      let newHue = (hueDragRef.current.startHue + deltaHue) % 360;
+      if (newHue < 0) newHue += 360;
+
+      handleBaseHueChange(newHue);
+    };
+
+    const handleHueDragEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      hueDragRef.current = null;
     };
 
     const isHueCustomized = design.baseHue !== undefined && design.baseHue !== defaultHue;
@@ -383,8 +505,14 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                     {/* Inputs Container */}
                     <div className="flex flex-col gap-4">
                       {/* Degree input */}
-                      <div className="flex items-center justify-between gap-3">
-                        <Label className="text-xs text-muted-foreground w-16 text-right">Degrees</Label>
+                      <div
+                        className="flex items-center justify-between gap-3 cursor-ew-resize touch-none select-none group"
+                        onPointerDown={handleHueDragStart}
+                        onPointerMove={handleHueDragMove}
+                        onPointerUp={handleHueDragEnd}
+                        onPointerCancel={handleHueDragEnd}
+                      >
+                        <Label className="text-xs text-muted-foreground w-16 text-right cursor-ew-resize group-hover:text-foreground transition-colors pointer-events-none">Degrees</Label>
                         <div className="flex items-center gap-2 w-[115px]">
                           <Input
                             type="number"
@@ -398,9 +526,9 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                                 handleBaseHueChange(normalizedHue);
                               }
                             }}
-                            className="h-8 text-center text-sm font-medium w-full"
+                            className="h-8 text-center text-sm font-medium w-full cursor-ew-resize focus:cursor-text"
                           />
-                          <span className="text-sm text-muted-foreground w-3 text-left">°</span>
+                          <span className="text-sm text-muted-foreground w-3 text-left pointer-events-none">°</span>
                         </div>
                       </div>
 
@@ -452,36 +580,88 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             className="space-y-4"
           >
             <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
-              <ConfiguratorCardHeader title="Generated Palette" metaLabel="SYS.PALETTE" delay={0.2} />
+              <ConfiguratorCardHeader
+                title="Generated Palette"
+                metaLabel="SYS.PALETTE"
+                delay={0.2}
+                modeSwitch={{
+                  mode: paletteMode,
+                  onChange: setPaletteMode
+                }}
+              />
               <div className="w-full h-full pt-20 pb-6 px-6 space-y-8">
                 <div className="flex gap-4 justify-center">
-                  {generatedPalette.map((swatch, index) => (
+                  {activePalette.map((swatch, index) => (
                     <motion.div
                       key={swatch.role}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.1 * index }}
-                      className="flex flex-col items-center gap-2"
+                      className="flex flex-col items-center gap-2 relative min-h-[105px]"
                     >
                       <motion.div
                         layoutId={`swatch-${swatch.role}`}
                         className={cn(
-                          'rounded-xl border border-border/30 shadow-sm',
+                          'rounded-xl border border-border/30 shadow-sm relative group',
                           swatch.role === 'Primary' ? 'w-16 h-16' :
                             swatch.role === 'Secondary' ? 'w-14 h-14' :
                               swatch.role === 'Neutral' ? 'w-12 h-12' : 'w-10 h-10'
                         )}
                         animate={{ backgroundColor: swatch.color }}
                         transition={{ duration: 0.5, ease: 'easeOut' }}
-                      />
+                      >
+                        {/* Native color picker explicitly hidden but clickable over the entire swatch */}
+                        {paletteMode === 'manual' && (
+                          <input
+                            type="color"
+                            value={swatch.color}
+                            onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                        )}
+                        {/* Lock Icon */}
+                        {paletteMode === 'manual' && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleLock(swatch.role, swatch.color);
+                            }}
+                            className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10"
+                          >
+                            <AnimatedLockIcon
+                              isLocked={!!lockedColors[swatch.role]}
+                              className="w-3 h-3"
+                            />
+                          </button>
+                        )}
+                      </motion.div>
                       <span className="text-xs font-medium text-muted-foreground">{swatch.role}</span>
+
+                      {/* Interactive Hex Input in Manual Mode */}
+                      {paletteMode === 'manual' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
+                          className="relative -mt-1 w-full"
+                        >
+                          <Input
+                            value={swatch.color}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              handleManualHexChange(swatch.role, val);
+                            }}
+                            className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[8ch] whitespace-nowrap overflow-visible bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none"
+                          />
+                        </motion.div>
+                      )}
                     </motion.div>
                   ))}
                 </div>
 
                 {/* Palette Strip */}
                 <div className="flex gap-1 h-10 rounded-xl overflow-hidden shadow-inner border border-white/5 relative z-10">
-                  {generatedPalette.map((swatch) => (
+                  {activePalette.map((swatch) => (
                     <motion.div
                       key={`strip-${swatch.role}`}
                       className="flex-1"
@@ -493,6 +673,20 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                 </div>
               </div>
             </ConfiguratorCardSurface>
+
+            {/* Advisory Feedback for Manual Mode */}
+            {paletteMode === 'manual' && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-lg mx-auto pt-2 px-4 text-center pointer-events-none"
+              >
+                <p className="font-mono text-[10px] sm:text-[11px] text-muted-foreground/30 uppercase tracking-widest leading-loose">
+                  Suggested Relationship: {advisoryMetrics?.relationship}<br />
+                  Energy: {advisoryMetrics?.energy} | Contrast: {advisoryMetrics?.contrast}
+                </p>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Refinement Sliders */}
