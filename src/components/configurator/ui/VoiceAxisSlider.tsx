@@ -137,8 +137,13 @@ export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderPr
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Track Background */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 h-[2px] bg-border/30 rounded-full" />
+          {/* Extruded Track Background */}
+          <div className={cn(
+            "absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 h-[2px] rounded-full",
+            "bg-gradient-to-r from-black/40 via-white/5 to-black/40",
+            "shadow-[inset_0_1px_2px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.05)]",
+            "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          )} />
 
           {/* Zone Markers with bounce animation */}
           <div className="absolute top-1/2 -translate-y-1/2 left-2.5 right-2.5 pointer-events-none">
@@ -186,25 +191,24 @@ export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderPr
               </motion.div>
             )}
 
-            {/* Animated Thumb with haptic effects */}
+            {/* Animated Thumb with Machined Depth */}
             <motion.div
               className="absolute top-1/2 w-5 h-5 -translate-y-1/2 -translate-x-1/2 pointer-events-none"
               style={{ left: thumbLeft }}
             >
               <motion.div
                 className={cn(
-                  "w-full h-full rounded-full transition-shadow duration-200 pointer-events-none",
-                  isDragging
-                    ? "bg-accent shadow-[0_0_20px_hsl(var(--accent)/0.6)]"
-                    : "bg-accent/80 shadow-[0_0_12px_hsl(var(--accent)/0.4)]"
+                  "relative w-full h-full rounded-full transition-shadow duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none",
+                  "border border-white/10 shadow-[0_0_3px_rgba(0,0,0,0.5)]",
+                  isDragging ? "bg-accent" : "bg-accent/80"
                 )}
                 style={{
                   scale: scaleSpring,
                   x: shakeSpring,
                 }}
               >
-                {/* Inner glow */}
-                <div className="absolute inset-1 rounded-full bg-accent-foreground/20" />
+                {/* Dimensional Darker Core */}
+                <div className="absolute inset-[3px] rounded-full bg-black/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]" />
               </motion.div>
             </motion.div>
           </div>
