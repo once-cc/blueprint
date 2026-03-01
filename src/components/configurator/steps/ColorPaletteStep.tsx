@@ -263,91 +263,93 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             className="space-y-6"
           >
             {/* Arc Selector */}
-            <ConfiguratorCardSurface className="relative flex flex-col items-center py-6 max-w-lg mx-auto overflow-hidden">
+            <ConfiguratorCardSurface className="relative max-w-lg mx-auto overflow-hidden">
               <ConfiguratorEdgeMarkers label="SYS.RELATION" delay={0.1} />
-              <div className="relative w-[384px] h-[180px] overflow-visible">
-                {/* Arc Background */}
-                <svg
-                  viewBox="0 0 384 180"
-                  className="absolute inset-0 w-full h-full"
-                >
-                  {/* Arc path */}
-                  <path
-                    d="M 52 170 A 140 140 0 0 1 332 170"
-                    fill="none"
-                    stroke="hsl(var(--border))"
-                    strokeWidth="40"
-                    strokeLinecap="round"
-                    className="opacity-30"
-                  />
-                </svg>
+              <div className="w-full h-full flex flex-col items-center py-6">
+                <div className="relative w-[384px] h-[180px] overflow-visible">
+                  {/* Arc Background */}
+                  <svg
+                    viewBox="0 0 384 180"
+                    className="absolute inset-0 w-full h-full"
+                  >
+                    {/* Arc path */}
+                    <path
+                      d="M 52 170 A 140 140 0 0 1 332 170"
+                      fill="none"
+                      stroke="hsl(var(--border))"
+                      strokeWidth="40"
+                      strokeLinecap="round"
+                      className="opacity-30"
+                    />
+                  </svg>
 
-                {/* Relationship Options */}
-                {colourRelationships.map((rel, index) => {
-                  const isSelected = relationship === rel.value;
-                  // Symmetric arc positioning: apex (-90°) between icons 2 and 3
-                  const startAngle = -160;
-                  const endAngle = -20;
-                  const totalSpan = endAngle - startAngle;
-                  const spacing = totalSpan / (colourRelationships.length - 1);
-                  const arcAngle = startAngle + (index * spacing);
+                  {/* Relationship Options */}
+                  {colourRelationships.map((rel, index) => {
+                    const isSelected = relationship === rel.value;
+                    // Symmetric arc positioning: apex (-90°) between icons 2 and 3
+                    const startAngle = -160;
+                    const endAngle = -20;
+                    const totalSpan = endAngle - startAngle;
+                    const spacing = totalSpan / (colourRelationships.length - 1);
+                    const arcAngle = startAngle + (index * spacing);
 
-                  const radius = 140;
-                  const centerX = 192;
-                  const centerY = 170;
-                  const x = centerX + radius * Math.cos((arcAngle * Math.PI) / 180);
-                  const y = centerY + radius * Math.sin((arcAngle * Math.PI) / 180);
+                    const radius = 140;
+                    const centerX = 192;
+                    const centerY = 170;
+                    const x = centerX + radius * Math.cos((arcAngle * Math.PI) / 180);
+                    const y = centerY + radius * Math.sin((arcAngle * Math.PI) / 180);
 
-                  // Convert to percentages based on the 384x180 viewBox
-                  const xPercent = (x / 384) * 100;
-                  const yPercent = (y / 180) * 100;
+                    // Convert to percentages based on the 384x180 viewBox
+                    const xPercent = (x / 384) * 100;
+                    const yPercent = (y / 180) * 100;
 
-                  return (
-                    <motion.button
-                      key={rel.value}
-                      type="button"
-                      onClick={() => handleRelationshipSelect(rel.value as typeof relationship)}
-                      className="absolute z-10"
-                      style={{
-                        left: `${xPercent}%`,
-                        top: `${yPercent}%`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                    >
-                      <div className={cn(
-                        'w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300',
-                        'border-2',
-                        isSelected
-                          ? 'border-accent bg-accent/20 shadow-[0_0_24px_hsl(var(--accent)/0.4)]'
-                          : 'border-border/50 bg-muted/40 hover:border-border hover:bg-muted/60'
-                      )}>
-                        {/* Mini color wheel indicator */}
-                        <RelationshipIcon type={rel.value} isSelected={isSelected} />
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
+                    return (
+                      <motion.button
+                        key={rel.value}
+                        type="button"
+                        onClick={() => handleRelationshipSelect(rel.value as typeof relationship)}
+                        className="absolute z-10"
+                        style={{
+                          left: `${xPercent}%`,
+                          top: `${yPercent}%`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                      >
+                        <div className={cn(
+                          'w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300',
+                          'border-2',
+                          isSelected
+                            ? 'border-accent bg-accent/20 shadow-[0_0_24px_hsl(var(--accent)/0.4)]'
+                            : 'border-border/50 bg-muted/40 hover:border-border hover:bg-muted/60'
+                        )}>
+                          {/* Mini color wheel indicator */}
+                          <RelationshipIcon type={rel.value} isSelected={isSelected} />
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
 
-              {/* Center Label - positioned below the arc */}
-              <div className="text-center w-[384px]">
-                <motion.p
-                  key={relationship}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-lg font-medium text-foreground"
-                >
-                  {colourRelationships.find(r => r.value === relationship)?.label}
-                </motion.p>
-                <motion.p
-                  key={`${relationship}-desc`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-sm text-muted-foreground max-w-[280px] mx-auto"
-                >
-                  {colourRelationships.find(r => r.value === relationship)?.description}
-                </motion.p>
+                {/* Center Label - positioned below the arc */}
+                <div className="text-center w-[384px]">
+                  <motion.p
+                    key={relationship}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-lg font-medium text-foreground"
+                  >
+                    {colourRelationships.find(r => r.value === relationship)?.label}
+                  </motion.p>
+                  <motion.p
+                    key={`${relationship}-desc`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-sm text-muted-foreground max-w-[280px] mx-auto"
+                  >
+                    {colourRelationships.find(r => r.value === relationship)?.description}
+                  </motion.p>
+                </div>
               </div>
             </ConfiguratorCardSurface>
           </motion.div>
@@ -359,84 +361,86 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.15 }}
             className="space-y-4"
           >
-            <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 relative overflow-hidden">
+            <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
               <ConfiguratorEdgeMarkers label="SYS.BASE_HUE" delay={0.15} />
-              <div className="flex items-center justify-center gap-8 py-2 relative z-10">
-                <InteractiveColorWheel
-                  baseHue={baseHue}
-                  relationship={relationship}
-                  onChange={handleBaseHueChange}
-                />
-
-                {/* Numeric hue input with color preview */}
-                <div className="flex flex-col items-center gap-6">
-                  {/* Color preview swatch */}
-                  <div
-                    className="w-16 h-16 rounded-xl border border-white/10 shadow-lg transition-colors duration-200"
-                    style={{ backgroundColor: `hsl(${baseHue}, 70%, 50%)` }}
-                    title={`hsl(${Math.round(baseHue)}, 70%, 50%)`}
+              <div className="w-full h-full p-6">
+                <div className="flex items-center justify-center gap-8 py-2 relative z-10">
+                  <InteractiveColorWheel
+                    baseHue={baseHue}
+                    relationship={relationship}
+                    onChange={handleBaseHueChange}
                   />
 
-                  {/* Inputs Container */}
-                  <div className="flex flex-col gap-4">
-                    {/* Degree input */}
-                    <div className="flex items-center justify-between gap-3">
-                      <Label className="text-xs text-muted-foreground w-16 text-right">Degrees</Label>
-                      <div className="flex items-center gap-1 w-24">
-                        <Input
-                          type="number"
-                          min={0}
-                          max={360}
-                          value={Math.round(baseHue)}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value, 10);
-                            if (!isNaN(value)) {
-                              const normalizedHue = ((value % 360) + 360) % 360;
-                              handleBaseHueChange(normalizedHue);
-                            }
-                          }}
-                          className="h-8 text-center text-sm font-medium"
-                        />
-                        <span className="text-sm text-muted-foreground w-3 text-left">°</span>
-                      </div>
-                    </div>
+                  {/* Numeric hue input with color preview */}
+                  <div className="flex flex-col items-center gap-6">
+                    {/* Color preview swatch */}
+                    <div
+                      className="w-16 h-16 rounded-xl border border-white/10 shadow-lg transition-colors duration-200"
+                      style={{ backgroundColor: `hsl(${baseHue}, 70%, 50%)` }}
+                      title={`hsl(${Math.round(baseHue)}, 70%, 50%)`}
+                    />
 
-                    {/* Hex input */}
-                    <div className="flex items-center justify-between gap-3">
-                      <Label className="text-xs text-muted-foreground w-16 text-right">Hex</Label>
-                      <div className="flex items-center gap-1 w-24">
-                        <Input
-                          type="text"
-                          placeholder="#FF5500"
-                          defaultValue={hslToHex(baseHue, 70, 50)}
-                          key={Math.round(baseHue)}
-                          onChange={(e) => {
-                            const hue = hexToHue(e.target.value);
-                            if (hue !== null) {
-                              handleBaseHueChange(hue);
-                            }
-                          }}
-                          className="h-8 text-center font-mono text-xs uppercase"
-                        />
-                        <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                    {/* Inputs Container */}
+                    <div className="flex flex-col gap-4">
+                      {/* Degree input */}
+                      <div className="flex items-center justify-between gap-3">
+                        <Label className="text-xs text-muted-foreground w-16 text-right">Degrees</Label>
+                        <div className="flex items-center gap-1 w-24">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={360}
+                            value={Math.round(baseHue)}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value, 10);
+                              if (!isNaN(value)) {
+                                const normalizedHue = ((value % 360) + 360) % 360;
+                                handleBaseHueChange(normalizedHue);
+                              }
+                            }}
+                            className="h-8 text-center text-sm font-medium"
+                          />
+                          <span className="text-sm text-muted-foreground w-3 text-left">°</span>
+                        </div>
+                      </div>
+
+                      {/* Hex input */}
+                      <div className="flex items-center justify-between gap-3">
+                        <Label className="text-xs text-muted-foreground w-16 text-right">Hex</Label>
+                        <div className="flex items-center gap-1 w-24">
+                          <Input
+                            type="text"
+                            placeholder="#FF5500"
+                            defaultValue={hslToHex(baseHue, 70, 50)}
+                            key={Math.round(baseHue)}
+                            onChange={(e) => {
+                              const hue = hexToHue(e.target.value);
+                              if (hue !== null) {
+                                handleBaseHueChange(hue);
+                              }
+                            }}
+                            className="h-8 text-center font-mono text-xs uppercase"
+                          />
+                          <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {isHueCustomized && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleResetHue}
-                  className="absolute bottom-4 left-4 text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-2 z-20"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  Reset
-                </Button>
-              )}
+                {isHueCustomized && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleResetHue}
+                    className="absolute bottom-4 left-4 text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-2 z-20"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Reset
+                  </Button>
+                )}
+              </div>
             </ConfiguratorCardSurface>
           </motion.div>
           <motion.div
@@ -445,44 +449,46 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.2 }}
             className="space-y-4"
           >
-            <ConfiguratorCardSurface className="max-w-lg mx-auto p-6 space-y-8 relative overflow-hidden">
+            <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
               <ConfiguratorEdgeMarkers label="SYS.PALETTE" delay={0.2} />
-              <div className="flex gap-4 justify-center">
-                {generatedPalette.map((swatch, index) => (
-                  <motion.div
-                    key={swatch.role}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 * index }}
-                    className="flex flex-col items-center gap-2"
-                  >
+              <div className="w-full h-full p-6 space-y-8">
+                <div className="flex gap-4 justify-center">
+                  {generatedPalette.map((swatch, index) => (
                     <motion.div
-                      layoutId={`swatch-${swatch.role}`}
-                      className={cn(
-                        'rounded-xl border border-border/30 shadow-sm',
-                        swatch.role === 'Primary' ? 'w-16 h-16' :
-                          swatch.role === 'Secondary' ? 'w-14 h-14' :
-                            swatch.role === 'Neutral' ? 'w-12 h-12' : 'w-10 h-10'
-                      )}
+                      key={swatch.role}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * index }}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <motion.div
+                        layoutId={`swatch-${swatch.role}`}
+                        className={cn(
+                          'rounded-xl border border-border/30 shadow-sm',
+                          swatch.role === 'Primary' ? 'w-16 h-16' :
+                            swatch.role === 'Secondary' ? 'w-14 h-14' :
+                              swatch.role === 'Neutral' ? 'w-12 h-12' : 'w-10 h-10'
+                        )}
+                        animate={{ backgroundColor: swatch.color }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                      />
+                      <span className="text-xs font-medium text-muted-foreground">{swatch.role}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Palette Strip */}
+                <div className="flex gap-1 h-10 rounded-xl overflow-hidden shadow-inner border border-white/5 relative z-10">
+                  {generatedPalette.map((swatch) => (
+                    <motion.div
+                      key={`strip-${swatch.role}`}
+                      className="flex-1"
                       animate={{ backgroundColor: swatch.color }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
+                      layout
                     />
-                    <span className="text-xs font-medium text-muted-foreground">{swatch.role}</span>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Palette Strip */}
-              <div className="flex gap-1 h-10 rounded-xl overflow-hidden shadow-inner border border-white/5">
-                {generatedPalette.map((swatch) => (
-                  <motion.div
-                    key={`strip-${swatch.role}`}
-                    className="flex-1"
-                    animate={{ backgroundColor: swatch.color }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                    layout
-                  />
-                ))}
+                  ))}
+                </div>
               </div>
             </ConfiguratorCardSurface>
           </motion.div>
@@ -497,29 +503,33 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             <div className="space-y-8">
               {/* Energy Slider */}
               <div className="w-full text-center">
-                <ConfiguratorCardSurface className="p-8 w-full relative overflow-hidden">
+                <ConfiguratorCardSurface className="w-full relative overflow-hidden">
                   <ConfiguratorEdgeMarkers label="REFINE.ENERGY" delay={0.3} />
-                  <VoiceAxisSlider
-                    zones={[...ENERGY_ZONES]}
-                    value={energyToZone(energy)}
-                    onChange={(zone) => onUpdate({ paletteEnergy: zoneToEnergy(zone) })}
-                    leftLabel="Calm"
-                    rightLabel="Energetic"
-                  />
+                  <div className="w-full h-full p-8">
+                    <VoiceAxisSlider
+                      zones={[...ENERGY_ZONES]}
+                      value={energyToZone(energy)}
+                      onChange={(zone) => onUpdate({ paletteEnergy: zoneToEnergy(zone) })}
+                      leftLabel="Calm"
+                      rightLabel="Energetic"
+                    />
+                  </div>
                 </ConfiguratorCardSurface>
               </div>
 
               {/* Contrast Slider */}
               <div className="w-full text-center">
-                <ConfiguratorCardSurface className="p-8 w-full relative overflow-hidden">
+                <ConfiguratorCardSurface className="w-full relative overflow-hidden">
                   <ConfiguratorEdgeMarkers label="REFINE.CONTRAST" delay={0.35} />
-                  <VoiceAxisSlider
-                    zones={[...CONTRAST_ZONES]}
-                    value={contrastToZone(contrast)}
-                    onChange={(zone) => onUpdate({ paletteContrast: zoneToContrast(zone) })}
-                    leftLabel="Subtle"
-                    rightLabel="Bold"
-                  />
+                  <div className="w-full h-full p-8">
+                    <VoiceAxisSlider
+                      zones={[...CONTRAST_ZONES]}
+                      value={contrastToZone(contrast)}
+                      onChange={(zone) => onUpdate({ paletteContrast: zoneToContrast(zone) })}
+                      leftLabel="Subtle"
+                      rightLabel="Bold"
+                    />
+                  </div>
                 </ConfiguratorCardSurface>
               </div>
             </div>
