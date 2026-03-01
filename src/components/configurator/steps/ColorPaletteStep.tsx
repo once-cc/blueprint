@@ -336,7 +336,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                     key={relationship}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-sm font-medium text-foreground"
+                    className="text-lg font-medium text-foreground"
                   >
                     {colourRelationships.find(r => r.value === relationship)?.label}
                   </motion.p>
@@ -345,7 +345,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="text-xs text-muted-foreground max-w-[280px] mx-auto"
+                    className="text-sm text-muted-foreground max-w-[280px] mx-auto"
                   >
                     {colourRelationships.find(r => r.value === relationship)?.description}
                   </motion.p>

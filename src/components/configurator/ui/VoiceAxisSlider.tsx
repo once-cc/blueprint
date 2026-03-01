@@ -224,36 +224,42 @@ export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderPr
         </div>
 
         {/* Zone Labels */}
-        <div className="flex justify-between items-start">
+        <div className="relative h-14 mt-2 mx-[10px]">
           {zones.map((zone, i) => {
             const isActive = zone === value || (value === undefined && i === Math.floor(zones.length / 2));
+            const percentage = (i / (zones.length - 1)) * 100;
             return (
-              <button
+              <div
                 key={zone}
-                type="button"
-                onClick={() => onChange(zone)}
-                className={cn(
-                  "flex-1 text-center transition-all duration-300 min-h-[44px] py-3 -mx-0.5 rounded-md",
-                  "active:bg-accent/10",
-                  isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground/50 hover:text-muted-foreground"
-                )}
+                className="absolute top-0 -translate-x-1/2 w-[80px] text-center z-10"
+                style={{ left: `${percentage}%` }}
               >
-                <motion.span
+                <button
+                  type="button"
+                  onClick={() => onChange(zone)}
                   className={cn(
-                    "text-xs font-medium block",
-                    isActive && "text-accent"
+                    "inline-block w-full transition-all duration-300 min-h-[44px] py-2 rounded-md",
+                    "active:bg-accent/10",
+                    isActive
+                      ? "text-foreground"
+                      : "text-muted-foreground/50 hover:text-muted-foreground"
                   )}
-                  animate={{
-                    scale: isActive ? 1.1 : 1,
-                    opacity: isActive ? 1 : 0.5,
-                  }}
-                  transition={{ duration: 0.2 }}
                 >
-                  {zone}
-                </motion.span>
-              </button>
+                  <motion.span
+                    className={cn(
+                      "text-xs font-medium block",
+                      isActive && "text-accent"
+                    )}
+                    animate={{
+                      scale: isActive ? 1.1 : 1,
+                      opacity: isActive ? 1 : 0.5,
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {zone}
+                  </motion.span>
+                </button>
+              </div>
             );
           })}
         </div>
