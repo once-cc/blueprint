@@ -161,7 +161,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
 
             {/* VoiceAxisSlider */}
             <ConfiguratorCardSurface className="w-full relative overflow-hidden">
-              <ConfiguratorCardHeader title="Creative Risk" actLabel="ACT III" delay={0.1} />
+              <ConfiguratorCardHeader title="Creative Risk" metaLabel="SYS.RISK" delay={0.1} />
               <div className="w-full h-full p-8 mt-6">
                 <VoiceAxisSlider
                   zones={RISK_ZONES}
