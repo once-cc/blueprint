@@ -1,81 +1,66 @@
-export interface Testimonial {
+export interface CapabilityShowcase {
   id: string;
-  name: string;
-  role: string;
-  company: string;
-  quote: string;
-  fullTestimonial: string;
-  projectTitle: string;
-  projectDescription: string;
-  image?: string;
-  results?: string[];
+  category: string;
+  systemName: string;
+  headline: string;
+  description: string;
+  features: string[];
+  image: string;
 }
 
-export const testimonials: Testimonial[] = [
+export const capabilityShowcase: CapabilityShowcase[] = [
   {
-    id: "1",
-    name: "Sarah Mitchell",
-    role: "Founder & CEO",
-    company: "Bloom Wellness",
-    quote: "The blueprint transformed our entire approach to our digital presence.",
-    fullTestimonial: "Working with Cleland was a game-changer for Bloom Wellness. The Website Blueprint they created gave us complete clarity on how to structure our site for maximum conversions. Before, we were just guessing — now every page has a purpose. The blueprint process revealed user journey insights we never would have discovered on our own. Our bookings increased by 340% within three months of launching the new site.",
-    projectTitle: "Complete Brand & Web Overhaul",
-    projectDescription: "A comprehensive digital transformation including brand strategy, website redesign, and booking system integration.",
-    results: ["340% increase in bookings", "65% reduction in bounce rate", "4.2s faster load time"]
+    id: "portal-hub",
+    category: "Client Experience",
+    systemName: "Portal Hub",
+    headline: "Structured project environments out of the box.",
+    description: "Every client gets a dedicated, secure portal. A single source of truth for assets, deliverables, and communication that elevates the standard of service and eliminates email chaos.",
+    features: ["Real-time stage tracking", "Asset management", "Secure credential vault"],
+    image: "/src/assets/carousel-images/hero_creator_v3_1772506437184_optimized.jpg"
   },
   {
-    id: "2",
-    name: "James Chen",
-    role: "Marketing Director",
-    company: "Altitude Properties",
-    quote: "Finally, a process that eliminates the guesswork from web design.",
-    fullTestimonial: "As someone who's worked with multiple agencies, Cleland's blueprint approach stands out. They didn't just ask what we wanted — they mapped out exactly what our customers needed at every stage of their journey. The level of strategic thinking that went into our blueprint was exceptional. It became the foundation that guided every design decision, and the results speak for themselves.",
-    projectTitle: "Lead Generation Platform",
-    projectDescription: "High-converting real estate platform designed to capture and nurture qualified leads through strategic user journeys.",
-    results: ["180% more qualified leads", "52% higher conversion rate", "Reduced cost per acquisition by 40%"]
+    id: "observatory",
+    category: "Internal Operations",
+    systemName: "The Observatory",
+    headline: "Operational intelligence, engineered in-house.",
+    description: "A centralized command centre that aggregates every client signal, message, and milestone into a single sorted feed, allowing operators to prioritize action over administration.",
+    features: ["Urgency-sorted signals", "Cross-portal aggregation", "Live status markers"],
+    image: "/src/assets/carousel-images/hero_creator_v1_1772506343751_optimized.jpg"
   },
   {
-    id: "3",
-    name: "Emma Richardson",
-    role: "Creative Director",
-    company: "Lumina Studios",
-    quote: "The most strategic web project we've ever been part of.",
-    fullTestimonial: "What impressed me most about the blueprint process was how deeply they understood our creative vision while grounding it in solid strategy. Every element had a reason. Every interaction was intentional. The result wasn't just a beautiful website — it was a powerful business tool that actually delivers results. Our portfolio inquiries have tripled since launch.",
-    projectTitle: "Creative Portfolio & Inquiry System",
-    projectDescription: "Immersive portfolio experience with integrated client inquiry and project management systems.",
-    results: ["3x portfolio inquiries", "28% higher average project value", "Streamlined client onboarding"]
+    id: "client-portal",
+    category: "Client Experience",
+    systemName: "Client Dashboard",
+    headline: "Clarity and momentum at a glance.",
+    description: "The welcome dashboard sets the tone from day one. Clients see exactly where their project stands, what's expected of them, and what happens next — reducing friction and anxiety.",
+    features: ["Milestone progression", "Analog time/location sync", "Clear next actions"],
+    image: "/src/assets/carousel-images/hero_consultant_v1_1772506298532_optimized.jpg"
   },
   {
-    id: "4",
-    name: "David Thompson",
-    role: "Co-Founder",
-    company: "Verde Sustainable",
-    quote: "They mapped our entire customer journey before writing a single line of code.",
-    fullTestimonial: "Sustainability is complex, and we needed a website that could educate while converting. The Cleland team spent weeks understanding our audience before presenting the blueprint. When we saw it, everything clicked. They had mapped customer psychology, objection handling, and trust-building into every scroll. It's not just a website — it's our 24/7 sales team.",
-    projectTitle: "Sustainability SaaS Platform",
-    projectDescription: "Enterprise sustainability tracking platform with comprehensive reporting and compliance features.",
-    results: ["89% demo request rate", "Enterprise clients onboarded 60% faster", "4.9/5 user satisfaction"]
+    id: "ops-calendar",
+    category: "Internal Operations",
+    systemName: "Ops Console",
+    headline: "Capacity and scheduling, visualized.",
+    description: "A scheduling interface built specifically for high-ticket service delivery, integrating strategic milestones directly into the operational calendar alongside key performance metrics.",
+    features: ["Capacity KPIs", "Service-tier color coding", "Integrated booking"],
+    image: "/src/assets/carousel-images/hero_creator_v3_1772506437184_optimized.jpg"
   },
   {
-    id: "5",
-    name: "Olivia Martins",
-    role: "Head of Growth",
-    company: "Fintrek",
-    quote: "The blueprint paid for itself within the first week of launch.",
-    fullTestimonial: "In fintech, trust is everything. The blueprint process identified exactly where we were losing potential customers and mapped out a journey that builds confidence at every touchpoint. The strategic thinking behind the structure was brilliant — from the way information unfolds to how social proof is integrated. Our sign-up rate jumped 127% immediately after launch.",
-    projectTitle: "Financial Platform Redesign",
-    projectDescription: "Complete redesign of a B2B financial platform focused on trust-building and conversion optimization.",
-    results: ["127% increase in sign-ups", "Reduced churn by 34%", "Average session duration up 89%"]
+    id: "automation",
+    category: "Systems & Automation",
+    systemName: "Automation Engine",
+    headline: "Sophisticated communication at scale.",
+    description: "Our infrastructure includes pre-built, variable-driven email templates and automation sequences that trigger based on client lifecycle stages, ensuring nothing falls through the cracks.",
+    features: ["Dynamic merge variables", "Live client preview", "Stage-based triggers"],
+    image: "/src/assets/carousel-images/hero_creator_v1_1772506343751_optimized.jpg"
   },
   {
-    id: "6",
-    name: "Michael O'Brien",
-    role: "Founder",
-    company: "Atlas Coaching",
-    quote: "I've never felt so confident about a website before it was even designed.",
-    fullTestimonial: "The blueprint gave me something I'd never had before: certainty. Before a single design was shown, I could see exactly how my website would work, where clients would come from, and how they'd be guided to book. It eliminated all the anxiety of 'will this work?' because the strategy was so solid. Best investment I've made in my business.",
-    projectTitle: "Executive Coaching Platform",
-    projectDescription: "Premium coaching platform with automated scheduling, content delivery, and client management.",
-    results: ["Fully booked within 6 weeks", "45% higher package values", "80% reduction in admin time"]
+    id: "framework",
+    category: "Strategic Foundation",
+    systemName: "C.R.A.F.T. Framework",
+    headline: "Driven by a rigorous methodology.",
+    description: "The technology is just the vehicle; the strategic framework is the engine. Every piece of infrastructure we deploy is rooted in a tested process for digital excellence and growth.",
+    features: ["Clarify & Research", "Architect & Align", "Form & Test"],
+    image: "/src/assets/carousel-images/hero_consultant_v1_1772506298532_optimized.jpg"
   }
 ];
