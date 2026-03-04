@@ -45,17 +45,17 @@ export function VisionIntent() {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center p-8 mt-32 z-20 pointer-events-none">
+            <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-8 mt-32 z-20 pointer-events-none">
                 {/* Central Text & Dream Input */}
-                <div className="w-full flex flex-col items-center justify-center px-6 sm:px-10 md:px-8">
+                <div className="w-full flex flex-col items-center justify-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="w-full max-w-2xl flex flex-col items-center gap-6 pointer-events-auto"
+                        className="w-full max-w-2xl flex flex-col items-center gap-3 pointer-events-auto"
                     >
-                        <h2 className="font-nohemi font-medium whitespace-nowrap text-[clamp(1.75rem,8.5vw,6rem)] md:text-6xl lg:text-7xl xl:text-8xl tracking-tight text-center leading-[1.05] mb-4">
+                        <h2 className="font-nohemi font-medium whitespace-nowrap text-[clamp(1.75rem,8.5vw,6rem)] md:text-6xl lg:text-7xl xl:text-8xl tracking-tight text-center leading-[1.05] mb-1">
                             <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-900 block">
                                 Define the Direction.
                             </span>
