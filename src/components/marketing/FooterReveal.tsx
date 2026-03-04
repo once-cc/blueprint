@@ -54,7 +54,7 @@ export function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () =>
                         className="group"
                         onClick={onCtaClick}
                     >
-                        <span className="flex items-center gap-3">
+                        <span className="flex items-center gap-3 whitespace-nowrap">
                             Begin My Blueprint
                             <AnimatedButtonIcon
                                 animationData={paperplaneAnimation}

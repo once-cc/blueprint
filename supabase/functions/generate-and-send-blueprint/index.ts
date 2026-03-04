@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 /* ──────────────────────────────────────────────
    ENV
@@ -77,9 +77,8 @@ function logError(step: string, message: string, error?: unknown) {
 /* ──────────────────────────────────────────────
    STEP 0: Generate Access Tokens
 ────────────────────────────────────────────── */
-// deno-lint-ignore no-explicit-any
 async function generateAccessTokens(
-  supabase: any,
+  supabase: SupabaseClient,
   blueprintId: string
 ): Promise<{ previewToken: string; downloadToken: string; internalToken: string }> {
   log("TOKENS", "Generating access tokens", { blueprintId });
@@ -131,7 +130,7 @@ async function generateAccessTokens(
     throw new Error(`Failed to create access tokens: ${tokenError.message}`);
   }
 
-  log("TOKENS", "Access tokens generated", { 
+  log("TOKENS", "Access tokens generated", {
     previewExpiry: sevenDaysFromNow.toISOString(),
     internalExpiry: fiveMinutesFromNow.toISOString()
   });
@@ -177,27 +176,25 @@ async function generatePdf(blueprintId: string, internalToken: string): Promise<
 
   const pdfBuffer = await response.arrayBuffer();
   log("PDF", "Generated successfully", { size: pdfBuffer.byteLength });
-  
+
   return new Uint8Array(pdfBuffer);
 }
 
 /* ──────────────────────────────────────────────
    STEP 2: Upload PDF to Storage (with randomized path)
 ────────────────────────────────────────────── */
-// deno-lint-ignore no-explicit-any
 async function uploadPdf(
-  supabase: any,
+  supabase: SupabaseClient,
   blueprintId: string,
   pdfBuffer: Uint8Array
 ): Promise<{ storagePath: string; signedUrl: string }> {
   // Generate non-guessable filename
   const randomSuffix = crypto.randomUUID().slice(0, 8);
   const storagePath = `${blueprintId}/${randomSuffix}-crafted-blueprint.pdf`;
-  
+
   log("UPLOAD", "Uploading to storage", { path: storagePath, size: pdfBuffer.byteLength });
 
-  // deno-lint-ignore no-explicit-any
-  const { error: uploadError } = await (supabase as any).storage
+  const { error: uploadError } = await supabase.storage
     .from("blueprint-uploads")
     .upload(storagePath, pdfBuffer, {
       contentType: "application/pdf",
@@ -209,8 +206,7 @@ async function uploadPdf(
   }
 
   // Generate signed URL for studio access (bucket is now private)
-  // deno-lint-ignore no-explicit-any
-  const { data: signedData, error: signedError } = await (supabase as any).storage
+  const { data: signedData, error: signedError } = await supabase.storage
     .from("blueprint-uploads")
     .createSignedUrl(storagePath, 3600); // 1 hour for studio notification email
 
@@ -219,24 +215,22 @@ async function uploadPdf(
   }
 
   log("UPLOAD", "Upload complete", { storagePath });
-  
+
   return { storagePath, signedUrl: signedData.signedUrl };
 }
 
 /* ──────────────────────────────────────────────
    STEP 3: Update Blueprint Record
 ────────────────────────────────────────────── */
-// deno-lint-ignore no-explicit-any
 async function updateBlueprintRecord(
-  supabase: any,
+  supabase: SupabaseClient,
   blueprintId: string,
   storagePath: string,
   signedUrl: string
 ): Promise<void> {
   log("UPDATE", "Updating blueprint record", { blueprintId, storagePath });
 
-  // deno-lint-ignore no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("blueprints")
     .update({
       pdf_url: signedUrl, // Store signed URL (will expire, but for reference)
@@ -279,7 +273,7 @@ async function sendEmails(
 
   // Build secure preview URL with time-limited token
   const securePreviewUrl = `${APP_BASE_URL}/blueprint-preview/${blueprint.id}?token=${previewToken}`;
-  
+
   const clientEmailHtml = `
     <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 24px; background: #0a0a0f; color: #f5f3ee;">
       <h1 style="font-size: 28px; font-weight: 300; margin-bottom: 24px;">
@@ -362,7 +356,7 @@ async function sendEmails(
 
   // Send client email with PDF attachment
   log("EMAIL", "Sending to client", { email: recipientEmail });
-  
+
   const clientEmailResponse = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -412,7 +406,7 @@ async function sendEmails(
     `;
 
     log("EMAIL", "Sending to studio", { email: STUDIO_EMAIL });
-    
+
     const studioEmailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -478,10 +472,10 @@ serve(async (req: Request): Promise<Response> => {
       throw new Error(`Blueprint status must be 'submitted', got '${blueprint.status}'`);
     }
 
-    log("FETCH", "Blueprint fetched", { 
+    log("FETCH", "Blueprint fetched", {
       businessName: blueprint.business_name,
       userEmail: blueprint.user_email,
-      status: blueprint.status 
+      status: blueprint.status
     });
 
     // Step 0: Generate access tokens (revokes old ones first)
@@ -500,15 +494,15 @@ serve(async (req: Request): Promise<Response> => {
     await sendEmails(blueprint as BlueprintRecord, pdfBuffer, previewToken, signedUrl);
 
     const duration = Date.now() - startTime;
-    log("COMPLETE", "Delivery pipeline finished", { 
-      blueprint_id, 
-      duration_ms: duration 
+    log("COMPLETE", "Delivery pipeline finished", {
+      blueprint_id,
+      duration_ms: duration
     });
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        duration_ms: duration 
+      JSON.stringify({
+        success: true,
+        duration_ms: duration
       }),
       {
         status: 200,
@@ -520,9 +514,9 @@ serve(async (req: Request): Promise<Response> => {
     logError("FAILED", errorMessage, error);
 
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: errorMessage 
+      JSON.stringify({
+        success: false,
+        error: errorMessage
       }),
       {
         status: 500,

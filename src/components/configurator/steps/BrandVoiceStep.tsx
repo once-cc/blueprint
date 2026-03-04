@@ -59,8 +59,8 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
       });
     };
 
-    // Validation - at least tone must be set
-    const isValid = !!(brandVoice.tone || discovery.tonePrimary);
+    // Validation - Relaxed UX to allow defaults
+    const isValid = true;
 
     return (
       <StepLayout

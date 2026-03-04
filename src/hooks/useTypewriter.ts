@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 
 type Phase = "typing" | "waiting" | "deleting";
 
-export function useTypewriter(phrases: string[], typeSpeed = 50, deleteSpeed = 30, pauseDuration = 1200) {
+export function useTypewriter(phrases: string[], typeSpeed = 50, deleteSpeed = 30, pauseDuration = 1200, isActive = true) {
     const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
     const [currentText, setCurrentText] = useState("");
     const [phase, setPhase] = useState<Phase>("typing");
 
     useEffect(() => {
-        if (phrases.length === 0) return;
+        if (phrases.length === 0 || !isActive) return;
 
         let timeoutId: NodeJS.Timeout;
         const currentFullText = phrases[currentPhraseIndex];
@@ -57,7 +57,7 @@ export function useTypewriter(phrases: string[], typeSpeed = 50, deleteSpeed = 3
         }
 
         return () => clearTimeout(timeoutId);
-    }, [currentText, phase, currentPhraseIndex, phrases, typeSpeed, deleteSpeed, pauseDuration]);
+    }, [currentText, phase, currentPhraseIndex, phrases, typeSpeed, deleteSpeed, pauseDuration, isActive]);
 
     return currentText;
 }

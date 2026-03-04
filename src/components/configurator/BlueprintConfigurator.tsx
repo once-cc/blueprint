@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect, Suspense, lazy, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useBlueprint } from '@/hooks/useBlueprint';
 import { useLenisScroll } from '@/hooks/useLenisScroll';
@@ -28,23 +28,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-// Act I: Discovery Steps
-import { BusinessFoundationsStep } from './steps/BusinessFoundationsStep';
-import { BrandVoiceStep } from './steps/BrandVoiceStep';
-import { CTAEnergyStep } from './steps/CTAEnergyStep';
-
-// Act II: Expression Steps - Lazy Loaded
-const VisualStyleStep = lazy(() => import('./steps/VisualStyleStep').then(m => ({ default: m.VisualStyleStep })));
-const TypographyMotionStep = lazy(() => import('./steps/TypographyMotionStep').then(m => ({ default: m.TypographyMotionStep })));
-const ColorPaletteStep = lazy(() => import('./steps/ColorPaletteStep').then(m => ({ default: m.ColorPaletteStep })));
-
-// Act III: Execution Steps - Lazy Loaded
-const FunctionalityStep = lazy(() => import('./steps/FunctionalityStep').then(m => ({ default: m.FunctionalityStep })));
-const CreativeRiskStep = lazy(() => import('./steps/CreativeRiskStep').then(m => ({ default: m.CreativeRiskStep })));
-const ReferencesStep = lazy(() => import('./steps/ReferencesStep').then(m => ({ default: m.ReferencesStep })));
-
-// Review Step - Lazy Loaded
-const ReviewStep = lazy(() => import('./steps/ReviewStep').then(m => ({ default: m.ReviewStep })));
+import { StepRenderer } from './StepRenderer';
 
 import { BlueprintReference, ReferenceRole } from '@/types/blueprint';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,6 +64,7 @@ export function BlueprintConfigurator() {
   const [showExitDialog, setShowExitDialog] = useState(false);
   const navigate = useNavigate();
   const { scrollTo } = useLenisScroll();
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Preload all typography fonts on mount
   useEffect(() => {
@@ -206,8 +191,16 @@ export function BlueprintConfigurator() {
     );
   }
 
-  const currentStep = blueprint?.currentStep ?? 1;
+  // Helper to determine which act a step belongs to
+  const getActForStep = (stepNumber: number): ConfiguratorAct => {
+    if (stepNumber <= 3) return 'discovery';
+    if (stepNumber <= 6) return 'design';
+    if (stepNumber <= 9) return 'deliver';
+    return 'review';
+  };
 
+  const currentStep = blueprint?.currentStep ?? 1;
+  const act = getActForStep(currentStep);
   const goToStep = (step: number) => {
     // Check for act transitions
     const fromAct = getActForStep(currentStep);
@@ -218,12 +211,6 @@ export function BlueprintConfigurator() {
     } else {
       setCurrentStep(step);
     }
-    // Scroll to step header anchor on step change
-    setTimeout(() => {
-      if (document.getElementById('step-header-anchor')) {
-        scrollTo('#step-header-anchor', { duration: 0.8, offset: -120 });
-      }
-    }, 50);
   };
 
   const handleTransitionContinue = () => {
@@ -231,11 +218,6 @@ export function BlueprintConfigurator() {
       const nextStep = activeTransition.to === 'design' ? 4 : 7;
       setCurrentStep(nextStep);
       setActiveTransition(null);
-      setTimeout(() => {
-        if (document.getElementById('step-header-anchor')) {
-          scrollTo('#step-header-anchor', { duration: 0.8, offset: -120 });
-        }
-      }, 50);
     }
   };
 
@@ -248,138 +230,6 @@ export function BlueprintConfigurator() {
     return result.success;
   };
 
-
-  // Render step content
-  const renderStep = () => {
-    // Intercept with transition screen if active
-    if (activeTransition) {
-      return (
-        <ActTransition
-          key={`transition-${activeTransition.from}-${activeTransition.to}`}
-          completedAct={activeTransition.from}
-          nextAct={activeTransition.to}
-          onContinue={handleTransitionContinue}
-          discovery={blueprint.discovery}
-          design={blueprint.design}
-        />
-      );
-    }
-
-    switch (currentStep) {
-      // Act I: Discovery
-      case 1:
-        return (
-          <BusinessFoundationsStep
-            key="step-1"
-            discovery={blueprint.discovery}
-            onUpdate={updateDiscovery}
-            onNext={() => goToStep(2)}
-          />
-        );
-      case 2:
-        return (
-          <BrandVoiceStep
-            key="step-2"
-            discovery={blueprint.discovery}
-            onUpdate={updateDiscovery}
-            onBack={() => goToStep(1)}
-            onNext={() => goToStep(3)}
-          />
-        );
-      case 3:
-        return (
-          <CTAEnergyStep
-            key="step-3"
-            discovery={blueprint.discovery}
-            onUpdate={updateDiscovery}
-            onBack={() => goToStep(2)}
-            onNext={() => goToStep(4)}
-          />
-        );
-
-      // Act II: Design
-      case 4:
-        return (
-          <VisualStyleStep
-            key="step-4"
-            design={blueprint.design}
-            onUpdate={updateDesign}
-            onBack={() => goToStep(3)}
-            onNext={() => goToStep(5)}
-          />
-        );
-      case 5:
-        return (
-          <TypographyMotionStep
-            key="step-5"
-            design={blueprint.design}
-            onUpdate={updateDesign}
-            onBack={() => goToStep(4)}
-            onNext={() => goToStep(6)}
-          />
-        );
-      case 6:
-        return (
-          <ColorPaletteStep
-            key="step-6"
-            design={blueprint.design}
-            onUpdate={updateDesign}
-            onBack={() => goToStep(5)}
-            onNext={() => goToStep(7)}
-          />
-        );
-
-      // Act III: Deliver
-      case 7:
-        return (
-          <FunctionalityStep
-            key="step-7"
-            deliver={blueprint.deliver}
-            onUpdate={updateDeliver}
-            onBack={() => goToStep(6)}
-            onNext={() => goToStep(8)}
-          />
-        );
-      case 8:
-        return (
-          <CreativeRiskStep
-            key="step-8"
-            deliver={blueprint.deliver}
-            onUpdate={updateDeliver}
-            onBack={() => goToStep(7)}
-            onNext={() => goToStep(9)}
-          />
-        );
-      case 9:
-        return (
-          <ReferencesStep
-            key="step-9"
-            blueprintId={blueprint.id}
-            references={references}
-            onReferencesChange={setReferences}
-            onBack={() => goToStep(8)}
-            onNext={() => goToStep(10)}
-          />
-        );
-
-      // Review
-      case 10:
-        return (
-          <ReviewStep
-            key="step-10"
-            blueprint={blueprint}
-            references={references}
-            onUpdateUserDetails={updateUserDetails}
-            onGoToStep={goToStep}
-            onSubmit={handleSubmit}
-            onBack={() => goToStep(9)}
-          />
-        );
-
-      default:
-        return null;
-    }
-  };
 
   const renderPlaceholder = (act: ConfiguratorAct, step: number) => {
     const stepTitles: Record<number, { title: string; framing: string }> = {
@@ -519,13 +369,36 @@ export function BlueprintConfigurator() {
 
             <div className="max-w-4xl mx-auto">
               <AnimatePresence mode="wait">
-                <Suspense fallback={
-                  <div className="min-h-[400px] flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-accent/50" />
-                  </div>
-                }>
-                  {renderStep()}
-                </Suspense>
+                {activeTransition ? (
+                  <ActTransition
+                    key="transition"
+                    completedAct={activeTransition.from}
+                    nextAct={activeTransition.to}
+                    onContinue={handleTransitionContinue}
+                    discovery={blueprint.discovery}
+                    design={blueprint.design}
+                  />
+                ) : (
+                  <Suspense fallback={
+                    <div className="min-h-[400px] flex items-center justify-center">
+                      <Loader2 className="w-8 h-8 animate-spin text-accent/50" />
+                    </div>
+                  }>
+                    <StepRenderer
+                      act={act}
+                      step={currentStep}
+                      blueprint={blueprint}
+                      onUpdateDesign={updateDesign}
+                      onUpdateDiscovery={updateDiscovery}
+                      onUpdateDeliver={updateDeliver}
+                      onUpdateReferences={setReferences}
+                      onSubmit={handleSubmit}
+                      onBack={() => goToStep(currentStep - 1)}
+                      onNext={() => goToStep(currentStep + 1)}
+                      stepRefs={stepRefs}
+                    />
+                  </Suspense>
+                )}
               </AnimatePresence>
             </div>
           </div>

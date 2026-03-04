@@ -1,32 +1,11 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
+import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
 
-interface WordRevealProps {
-    children: string;
-    progress: MotionValue<number>;
-    range: [number, number];
-}
-
-const Word = ({ children, progress, range }: WordRevealProps) => {
-    const opacity = useTransform(progress, range, [0.25, 1]);
-    const color = useTransform(progress, range, ["hsla(220, 12%, 50%, 0.25)", "hsl(45, 10%, 92%)"]);
-
-    return (
-        <motion.span className="relative transition-colors duration-100" style={{ opacity, color }}>
-            {children}
-        </motion.span>
-    );
-};
-
-const HighlightedWord = ({ children, progress, range }: WordRevealProps) => {
-    const opacity = useTransform(progress, range, [0.4, 1]);
-
-    return (
-        <motion.span style={{ opacity }}>
-            {children}
-        </motion.span>
-    );
+const SCROLLYTELL_COLORS: WordRevealColors = {
+    from: "hsla(220, 12%, 50%, 0.25)",
+    to: "hsl(45, 10%, 92%)",
 };
 
 export function ScrollytellSection() {
@@ -41,7 +20,28 @@ export function ScrollytellSection() {
     const words = text.split(" ");
 
     return (
-        <GridSection ref={containerRef} className="relative py-24 md:py-32 bg-muted/30">
+        <GridSection ref={containerRef} className="relative py-24 md:py-32 bg-[hsl(220_15%_4%)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.15),inset_0_2px_15px_rgba(0,0,0,0.8)] overflow-hidden">
+            {/* Architectural Bevel Lighting (from ConfiguratorCardSurface) */}
+            <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.03),transparent_70%)]" />
+            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.02),transparent_40%)]" />
+
+            {/* ══ SUBSTRATE ENHANCEMENT LAYERS ══ */}
+
+            {/* Layer 1: Micro Film Grain — SVG feTurbulence noise (reused from ConfiguratorCardSurface) */}
+            {/* baseFrequency tuned to 0.65 for a coarser, fibrous matte-paper feel */}
+            <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+
+            {/* Layer 2: Luminance Falloff — Left-biased radial lift for reading focus + edge darkening */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(60%_50%_at_25%_40%,hsl(220_10%_12%_/_0.5),transparent_70%)]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(220_15%_2%_/_0.75)_100%)]" />
+
+            {/* Layer 4: Micro Chromatic Drift — Cool shadows in corners, warm centre */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(70%_60%_at_30%_45%,hsl(37_30%_55%_/_0.07),transparent_70%)]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(50%_50%_at_85%_80%,hsl(220_40%_30%_/_0.08),transparent_60%)]" />
+
+            {/* Layer 6: Ghost Editorial Grid — barely perceivable brand continuity */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />
+
             {/* True Edge Docking Rails spanning the entire section height */}
             <div className="absolute inset-0 pointer-events-none z-0 flex justify-center">
                 <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
@@ -80,7 +80,7 @@ export function ScrollytellSection() {
                             if (["fail", "assumptions.", "alignment.", "rush", "execution.", "don't.", "uncertainty.", "misperception.", "fragmentation.", "clarity."].some(w => word.includes(w))) {
                                 return (
                                     <span key={i}>
-                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pr-1.5">
+                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pl-[0.15em] -ml-[0.15em] pr-[0.3em]">
                                             <HighlightedWord progress={scrollYProgress} range={[start, end]}>
                                                 {word}
                                             </HighlightedWord>
@@ -94,7 +94,7 @@ export function ScrollytellSection() {
 
                             return (
                                 <span key={i}>
-                                    <Word progress={scrollYProgress} range={[start, end]}>
+                                    <Word progress={scrollYProgress} range={[start, end]} colors={SCROLLYTELL_COLORS}>
                                         {word}
                                     </Word>
                                     {i !== words.length - 1 && " "}

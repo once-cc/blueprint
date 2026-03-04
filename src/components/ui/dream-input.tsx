@@ -1,4 +1,5 @@
 import React, { KeyboardEvent, useRef, useState } from "react";
+import { useInView } from "framer-motion";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { AnimatedButtonIcon } from "@/components/ui/AnimatedButtonIcon";
 import paperplaneAnimation from "@/assets/ui/1paperplane.json";
@@ -24,7 +25,9 @@ export function DreamInput({
   className = ""
 }: DreamInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const typewrittenText = useTypewriter(PHRASES, 45, 25, 1200);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: false, margin: "200px" });
+  const typewrittenText = useTypewriter(PHRASES, 45, 25, 1200, isInView);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -35,6 +38,7 @@ export function DreamInput({
 
   return (
     <div
+      ref={containerRef}
       className={`shiny-input-container flex flex-row items-center w-full min-w-[300px] border border-transparent shadow-2xl backdrop-blur-md group ${className}`}
       onClick={() => inputRef.current?.focus()}
     >

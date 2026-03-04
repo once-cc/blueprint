@@ -67,11 +67,8 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
       }
     };
 
-    // Validation
-    const isValid = !!(
-      discovery.salesPersonality &&
-      discovery.ctaPrimaryLabel?.trim()
-    );
+    // Validation - Relaxed UX to allow defaults
+    const isValid = true;
 
     return (
       <StepLayout

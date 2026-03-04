@@ -199,7 +199,8 @@ serve(async (req: Request): Promise<Response> => {
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Unknown error");
     console.error("[send-blueprint-email]", error);
     return new Response(JSON.stringify({ success: false, error: error.message }), {
       status: 500,

@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { DreamInput } from "@/components/ui/dream-input";
 import { LogoGrid } from "@/components/ui/LogoGrid";
 import { Crosshair } from "@/components/ui/crosshair";
+import { useRayPause } from "@/hooks/useRayPause";
 
 export function VisionIntent() {
     const navigate = useNavigate();
     const [dreamIntent, setDreamIntent] = useState("");
+    const raysRef = useRayPause<HTMLDivElement>();
 
     const handleDreamIntentSubmit = () => {
         localStorage.setItem("blueprint_dream_intent", dreamIntent);
@@ -20,10 +22,10 @@ export function VisionIntent() {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-muted/30" />
 
             {/* Environmental Volumetric Light Rays (Continuing down from Hero) */}
-            {/* Clipped to section bounds to prevent touch interception on mobile */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-70" />
-                <div className="absolute top-[-10%] right-[15%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.03] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-50" />
+            {/* Extended clip path allows volumetric bleed upwards into Hero, but strictly stops at bottom and side boundaries */}
+            <div ref={raysRef} className="absolute inset-0 pointer-events-none z-0" style={{ clipPath: 'inset(-50% 0 0 0)' }}>
+                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-100" />
+                <div className="absolute top-[-10%] right-[15%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-80" />
             </div>
 
             {/* Faded Background Pattern & Rails */}

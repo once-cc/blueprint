@@ -17,7 +17,7 @@ export const AnimatedLockIcon: React.FC<AnimatedLockIconProps> = ({ isLocked, cl
     const prevLockedRef = useRef(isLocked);
 
     // Use a stable reference to keep track of initializing
-    const initLottie = (data: any, goToFrame: number | 'end') => {
+    const initLottie = (data: Record<string, unknown>, goToFrame: number | 'end') => {
         if (animRef.current) {
             animRef.current.destroy();
         }

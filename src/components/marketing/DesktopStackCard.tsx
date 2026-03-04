@@ -77,16 +77,27 @@ export const DesktopStackCard = ({ index, step, progressRange, progressTotal, is
                             </span>
                         </motion.div>
 
-                        {/* Editorial Outlines on Outer Frame (Placed OUTSIDE overflow-hidden) */}
-                        <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/50 z-20" />
-                        <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/50 z-20" />
-                        <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/50 z-20" />
-                        <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/50 z-20" />
-
                         <div
-                            // Unified width is inherited from the parent motion.div. Relaxing height restrictions to prevent clipping
-                            className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden rounded-xl"
+                            // Unified width is inherited from the parent motion.div. Giving explicit uniform height across all step cards so they don't overflow underneath the following cards.
+                            className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 flex relative overflow-hidden rounded-xl h-[550px] lg:h-[640px]"
                         >
+                            {/* Structural Ticks */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 1, delay: 0.2 }}
+                                className="absolute inset-0 pointer-events-none z-20 rounded-[inherit]"
+                            >
+                                {/* Top Left */}
+                                <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/20 rounded-tl-[inherit]" />
+                                {/* Top Right */}
+                                <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-white/20 rounded-tr-[inherit]" />
+                                {/* Bottom Left */}
+                                <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-white/20 rounded-bl-[inherit]" />
+                                {/* Bottom Right */}
+                                <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/20 rounded-br-[inherit]" />
+                            </motion.div>
+
                             {/* Darkening overlay removed; group opacity handles the void fade organically */}
 
                             {/* Content Grid */}

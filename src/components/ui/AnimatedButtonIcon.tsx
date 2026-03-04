@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 
 interface AnimatedButtonIconProps {
-    animationData: any;
+    animationData: Record<string, unknown>;
     isActive: boolean;
     className?: string;
     staticFrame?: number;

@@ -19,128 +19,14 @@ interface TypographyMotionStepProps {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-type WeightPrefTargets = {
+import { typographyStyles, fontWeights } from '@/lib/typographyConfig';
+
+export type WeightPrefTargets = {
   light: { h1: number; h2: number; h3: number; h4: number; body: number };
   regular: { h1: number; h2: number; h3: number; h4: number; body: number };
   mixed: { h1: number; h2: number; h3: number; h4: number; body: number };
   bold: { h1: number; h2: number; h3: number; h4: number; body: number };
 };
-
-const typographyStyles: Array<{
-  value: string;
-  label: string;
-  fontFamily: string;
-  headingWeight: number;
-  bodyWeight: number;
-  maxHeadingWeight: number;
-  minBodyWeight: number;
-  weightPrefTargets: WeightPrefTargets;
-  useCaseHints: { h1: string; h2: string; h3: string };
-}> = [
-    {
-      value: 'modern_minimal',
-      label: 'Modern Minimal',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      headingWeight: 500,
-      bodyWeight: 400,
-      maxHeadingWeight: 800,
-      minBodyWeight: 300,
-      weightPrefTargets: {
-        light: { h1: 500, h2: 450, h3: 400, h4: 400, body: 300 },
-        regular: { h1: 600, h2: 550, h3: 500, h4: 450, body: 400 },
-        mixed: { h1: 700, h2: 600, h3: 500, h4: 450, body: 300 },
-        bold: { h1: 800, h2: 700, h3: 600, h4: 550, body: 500 },
-      },
-      useCaseHints: { h1: 'Clean product launches', h2: 'Streamlined portfolios', h3: 'Tech-forward brands' }
-    },
-    {
-      value: 'elegant_premium',
-      label: 'Elegant Premium',
-      fontFamily: 'Playfair Display, Georgia, serif',
-      headingWeight: 500,
-      bodyWeight: 400,
-      maxHeadingWeight: 900,
-      minBodyWeight: 300,
-      weightPrefTargets: {
-        light: { h1: 500, h2: 450, h3: 400, h4: 400, body: 300 },
-        regular: { h1: 600, h2: 550, h3: 500, h4: 450, body: 400 },
-        mixed: { h1: 700, h2: 600, h3: 550, h4: 500, body: 300 },
-        bold: { h1: 800, h2: 700, h3: 650, h4: 600, body: 500 },
-      },
-      useCaseHints: { h1: 'Luxury brand storytelling', h2: 'High-end hospitality', h3: 'Refined lifestyle brands' }
-    },
-    {
-      value: 'bold_expressive',
-      label: 'Bold Expressive',
-      fontFamily: 'Syne, sans-serif',
-      headingWeight: 700,
-      bodyWeight: 400,
-      maxHeadingWeight: 850,
-      minBodyWeight: 300,
-      weightPrefTargets: {
-        light: { h1: 600, h2: 550, h3: 500, h4: 450, body: 300 },
-        regular: { h1: 700, h2: 650, h3: 600, h4: 550, body: 400 },
-        mixed: { h1: 780, h2: 720, h3: 650, h4: 600, body: 300 },
-        bold: { h1: 850, h2: 800, h3: 750, h4: 700, body: 500 },
-      },
-      useCaseHints: { h1: 'Creative agency manifestos', h2: 'Event campaigns', h3: 'Youth-focused brands' }
-    },
-    {
-      value: 'tech_sans',
-      label: 'Tech / Sans-Serif',
-      fontFamily: 'Space Grotesk, system-ui, sans-serif',
-      headingWeight: 600,
-      bodyWeight: 400,
-      maxHeadingWeight: 700,
-      minBodyWeight: 300,
-      weightPrefTargets: {
-        light: { h1: 500, h2: 450, h3: 400, h4: 400, body: 300 },
-        regular: { h1: 600, h2: 550, h3: 500, h4: 450, body: 400 },
-        mixed: { h1: 700, h2: 600, h3: 500, h4: 450, body: 300 },
-        bold: { h1: 700, h2: 700, h3: 600, h4: 500, body: 500 },
-      },
-      useCaseHints: { h1: 'SaaS product interfaces', h2: 'Developer documentation', h3: 'Fintech dashboards' }
-    },
-    {
-      value: 'editorial',
-      label: 'Editorial',
-      fontFamily: 'Cormorant Garamond, serif',
-      headingWeight: 400,
-      bodyWeight: 300,
-      maxHeadingWeight: 700,
-      minBodyWeight: 300,
-      weightPrefTargets: {
-        light: { h1: 400, h2: 350, h3: 300, h4: 300, body: 300 },
-        regular: { h1: 500, h2: 450, h3: 400, h4: 350, body: 300 },
-        mixed: { h1: 600, h2: 500, h3: 400, h4: 350, body: 300 },
-        bold: { h1: 700, h2: 600, h3: 500, h4: 450, body: 400 },
-      },
-      useCaseHints: { h1: 'Long-form journalism', h2: 'Cultural publications', h3: 'Author portfolios' }
-    },
-    {
-      value: 'display',
-      label: 'Display / Statement',
-      fontFamily: 'Oswald, Impact, sans-serif',
-      headingWeight: 500,
-      bodyWeight: 400,
-      maxHeadingWeight: 700,
-      minBodyWeight: 300,
-      weightPrefTargets: {
-        light: { h1: 400, h2: 400, h3: 400, h4: 400, body: 300 },
-        regular: { h1: 500, h2: 500, h3: 500, h4: 500, body: 400 },
-        mixed: { h1: 700, h2: 600, h3: 500, h4: 500, body: 300 },
-        bold: { h1: 700, h2: 700, h3: 600, h4: 600, body: 500 },
-      },
-      useCaseHints: { h1: 'Hero announcements', h2: 'Sports & entertainment', h3: 'Bold campaign headlines' }
-    },
-  ];
-
-const fontWeights = [
-  { value: 'light', label: 'Light / Thin' },
-  { value: 'regular', label: 'Regular' },
-  { value: 'mixed', label: 'Mixed Weights' },
-  { value: 'bold', label: 'Bold / Heavy' },
-] as const;
 
 export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionStepProps>(
   function TypographyMotionStep({
@@ -216,7 +102,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
         return;
       }
 
-      const newFonts: any[] = [];
+      const newFonts: { id: string; fileData: string; filename: string; weight: string; style: string; }[] = [];
       for (const file of validFiles) {
         if (file.size > 3 * 1024 * 1024) {
           setUploadError("One or more files exceeded the 3MB limit.");
@@ -266,7 +152,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
       }
     };
 
-    const handleUpdateFile = (id: string, updates: any) => {
+    const handleUpdateFile = (id: string, updates: Record<string, unknown>) => {
       const updatedFiles = files.map(f => f.id === id ? { ...f, ...updates } : f);
       onUpdate({ customFonts: { files: updatedFiles, roles: { ...roles } } });
     };
@@ -280,20 +166,15 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
           updatedRoles[key] = undefined;
         }
       });
-      onUpdate({ customFonts: { files: updatedFiles, roles: updatedRoles as any } });
+      onUpdate({ customFonts: { files: updatedFiles, roles: updatedRoles as Record<string, string | undefined> } });
     };
 
     const handleUpdateRole = (roleKey: string, fileId?: string) => {
       onUpdate({ customFonts: { files: [...files], roles: { ...roles, [roleKey]: fileId } } });
     };
 
-    // Check completion rules: H1 and Body must be assigned
-    let isValid = false;
-    if (mode === 'direction') {
-      isValid = !!currentTypography;
-    } else {
-      isValid = !!(roles.h1 && roles.body);
-    }
+    // Check completion rules: Permissive UX
+    let isValid = true;
 
     const typographyItems: DropdownItem[] = typographyStyles.map(style => ({
       value: style.value,

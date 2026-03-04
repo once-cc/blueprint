@@ -15,209 +15,26 @@ import { ConfiguratorCardHeader } from '../ui/ConfiguratorCardHeader';
 import { CopyHexButton } from '../ui/ColorWheelDiagram';
 import { AnimatedLockIcon } from '../ui/AnimatedLockIcon';
 
-// Energy zones and conversion functions
-const ENERGY_ZONES = ['Calm', 'Gentle', 'Balanced', 'Vibrant', 'Energetic'] as const;
-
-const energyToZone = (value: number): string => {
-  if (value <= 2) return 'Calm';
-  if (value <= 4) return 'Gentle';
-  if (value <= 6) return 'Balanced';
-  if (value <= 8) return 'Vibrant';
-  return 'Energetic';
-};
-
-const zoneToEnergy = (zone: string): number => {
-  const map: Record<string, number> = {
-    'Calm': 2, 'Gentle': 4, 'Balanced': 5, 'Vibrant': 7, 'Energetic': 9
-  };
-  return map[zone] ?? 5;
-};
-
-// Contrast zones and conversion functions
-const CONTRAST_ZONES = ['Subtle', 'Soft', 'Balanced', 'Strong', 'Bold'] as const;
-
-const contrastToZone = (value: number): string => {
-  if (value <= 2) return 'Subtle';
-  if (value <= 4) return 'Soft';
-  if (value <= 6) return 'Balanced';
-  if (value <= 8) return 'Strong';
-  return 'Bold';
-};
-
-const zoneToContrast = (zone: string): number => {
-  const map: Record<string, number> = {
-    'Subtle': 2, 'Soft': 4, 'Balanced': 5, 'Strong': 7, 'Bold': 9
-  };
-  return map[zone] ?? 5;
-};
+import {
+  ENERGY_ZONES,
+  energyToZone,
+  zoneToEnergy,
+  CONTRAST_ZONES,
+  contrastToZone,
+  zoneToContrast,
+  colourRelationships,
+  aestheticBaseHues,
+  hslToHex,
+  hexToHue,
+  hexToHslData,
+  generatePalette
+} from '@/lib/colorUtils';
 
 interface ColorPaletteStepProps {
   design: BlueprintDesign;
   onUpdate: (updates: Partial<BlueprintDesign>) => void;
   onBack: () => void;
   onNext: () => void;
-}
-
-const colourRelationships = [
-  {
-    value: 'monochrome',
-    label: 'Monochrome',
-    description: 'Single hue, tonal depth, calm and editorial',
-    angle: 0,
-  },
-  {
-    value: 'analogous',
-    label: 'Analogous',
-    description: 'Neighbouring hues, cohesive and premium',
-    angle: 30,
-  },
-  {
-    value: 'complementary',
-    label: 'Complementary',
-    description: 'High contrast, bold accent focus',
-    angle: 180,
-  },
-  {
-    value: 'triadic',
-    label: 'Triadic',
-    description: 'Balanced contrast, expressive energy',
-    angle: 120,
-  },
-] as const;
-
-// Base hues based on aesthetic
-const aestheticBaseHues: Record<string, number> = {
-  minimal: 0, // Neutral grays
-  dark_cinematic: 240, // Deep blue
-  urban: 30, // Orange/brown
-  luxury: 45, // Gold
-  playful: 300, // Magenta
-  tech: 200, // Cyan
-};
-
-function hslToHex(h: number, s: number, l: number): string {
-  l /= 100;
-  const a = (s * Math.min(l, 1 - l)) / 100;
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-// Convert hex color to hue (0-360)
-function hexToHue(hex: string): number | null {
-  // Remove # if present and validate
-  const cleanHex = hex.replace('#', '').trim();
-  if (!/^[0-9A-Fa-f]{6}$/.test(cleanHex) && !/^[0-9A-Fa-f]{3}$/.test(cleanHex)) {
-    return null;
-  }
-
-  // Expand 3-digit hex
-  const fullHex = cleanHex.length === 3
-    ? cleanHex.split('').map(c => c + c).join('')
-    : cleanHex;
-
-  const r = parseInt(fullHex.slice(0, 2), 16) / 255;
-  const g = parseInt(fullHex.slice(2, 4), 16) / 255;
-  const b = parseInt(fullHex.slice(4, 6), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const delta = max - min;
-
-  if (delta === 0) return 0; // Gray, no hue
-
-  let hue = 0;
-  if (max === r) {
-    hue = ((g - b) / delta) % 6;
-  } else if (max === g) {
-    hue = (b - r) / delta + 2;
-  } else {
-    hue = (r - g) / delta + 4;
-  }
-
-  hue = Math.round(hue * 60);
-  if (hue < 0) hue += 360;
-
-  return hue;
-}
-
-function hexToHslData(hex: string): { h: number, s: number, l: number } | null {
-  const cleanHex = hex.replace('#', '').trim();
-  if (!/^[0-9A-Fa-f]{6}$/.test(cleanHex) && !/^[0-9A-Fa-f]{3}$/.test(cleanHex)) return null;
-
-  const fullHex = cleanHex.length === 3 ? cleanHex.split('').map(c => c + c).join('') : cleanHex;
-  const r = parseInt(fullHex.slice(0, 2), 16) / 255;
-  const g = parseInt(fullHex.slice(2, 4), 16) / 255;
-  const b = parseInt(fullHex.slice(4, 6), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const delta = max - min;
-
-  let h = 0, s = 0, l = (max + min) / 2;
-
-  if (delta !== 0) {
-    s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-    if (max === r) h = ((g - b) / delta) + (g < b ? 6 : 0);
-    else if (max === g) h = (b - r) / delta + 2;
-    else h = (r - g) / delta + 4;
-    h /= 6;
-  }
-
-  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
-}
-
-function generatePalette(
-  relationship: string,
-  customBaseHue: number,
-  energy: number,
-  contrast: number
-): { role: string; color: string }[] {
-  const baseHue = customBaseHue;
-  const baseSaturation = 10 + (energy - 1) * 8; // 10-82% based on energy
-  const lightnessSpread = 10 + (contrast - 1) * 5; // How much luminance varies
-
-  const isMonochrome = relationship === 'monochrome';
-  const saturation = isMonochrome ? Math.min(baseSaturation, 15) : baseSaturation;
-
-  let hues: number[];
-  switch (relationship) {
-    case 'monochrome':
-      hues = [baseHue, baseHue, baseHue, baseHue];
-      break;
-    case 'analogous':
-      hues = [baseHue, baseHue + 30, baseHue - 30, baseHue + 15];
-      break;
-    case 'complementary':
-      hues = [baseHue, baseHue, baseHue + 180, baseHue];
-      break;
-    case 'triadic':
-      hues = [baseHue, baseHue + 120, baseHue + 240, baseHue + 60];
-      break;
-    default:
-      hues = [baseHue, baseHue, baseHue, baseHue];
-  }
-
-  // Normalize hues
-  hues = hues.map(h => ((h % 360) + 360) % 360);
-
-  const baseLightness = 50;
-  const primaryL = baseLightness;
-  const secondaryL = baseLightness + lightnessSpread;
-  const neutralL = 85 + (10 - contrast); // Lighter for low contrast
-  const accentL = baseLightness - lightnessSpread / 2;
-
-  return [
-    { role: 'Primary', color: hslToHex(hues[0], saturation, primaryL) },
-    { role: 'Secondary', color: hslToHex(hues[1], saturation * 0.7, secondaryL) },
-    { role: 'Neutral', color: hslToHex(hues[2], isMonochrome ? 5 : saturation * 0.3, neutralL) },
-    { role: 'Accent', color: hslToHex(hues[3], saturation * 1.2, accentL) },
-  ];
 }
 
 export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps>(
@@ -234,6 +51,20 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
     // Get default hue based on aesthetic
     const defaultHue = aestheticBaseHues[design.visualStyle || 'minimal'] || 0;
     const baseHue = design.baseHue ?? defaultHue;
+
+    const [localHexInput, setLocalHexInput] = useState(hslToHex(baseHue, 70, 50));
+
+    // Sync external wheel spins back to local targeted hex input text
+    useEffect(() => {
+      setLocalHexInput((prev) => {
+        const derivedFromInput = hexToHue(prev);
+        // Only force an update if the external hue change doesn't match our current text box value (e.g wheel drag vs typing)
+        if (derivedFromInput === null || Math.round(derivedFromInput) !== Math.round(baseHue)) {
+          return hslToHex(baseHue, 70, 50);
+        }
+        return prev;
+      });
+    }, [baseHue]);
 
     const [paletteMode, setPaletteMode] = useState<'system' | 'manual'>('system');
     const [lockedColors, setLockedColors] = useState<Record<string, string>>({});
@@ -331,10 +162,6 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
       onUpdate({ baseHue: hue });
     };
 
-    const handleResetHue = () => {
-      onUpdate({ baseHue: defaultHue });
-    };
-
     const hueDragRef = useRef<{ startX: number; startHue: number } | null>(null);
 
     const handleHueDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -363,8 +190,6 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
       e.currentTarget.releasePointerCapture(e.pointerId);
       hueDragRef.current = null;
     };
-
-    const isHueCustomized = design.baseHue !== undefined && design.baseHue !== defaultHue;
 
     return (
       <StepLayout
@@ -467,7 +292,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="text-sm text-muted-foreground max-w-[280px] mx-auto"
+                    className="text-sm text-muted-foreground w-full mx-auto px-4"
                   >
                     {colourRelationships.find(r => r.value === relationship)?.description}
                   </motion.p>
@@ -539,10 +364,11 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                           <Input
                             type="text"
                             placeholder="#FF5500"
-                            defaultValue={hslToHex(baseHue, 70, 50)}
-                            key={Math.round(baseHue)}
+                            value={localHexInput}
                             onChange={(e) => {
-                              const hue = hexToHue(e.target.value);
+                              const val = e.target.value;
+                              setLocalHexInput(val);
+                              const hue = hexToHue(val);
                               if (hue !== null) {
                                 handleBaseHueChange(hue);
                               }
@@ -550,26 +376,13 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                             className="h-8 text-center font-mono text-xs uppercase min-w-[8ch] whitespace-nowrap overflow-visible px-1 w-full"
                           />
                           <div className="shrink-0 flex items-center justify-center">
-                            <CopyHexButton hex={hslToHex(baseHue, 70, 50)} />
+                            <CopyHexButton hex={localHexInput} />
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-                {isHueCustomized && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleResetHue}
-                    className="absolute bottom-4 left-4 text-xs text-muted-foreground hover:text-foreground gap-1.5 h-8 px-2 z-20"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    Reset
-                  </Button>
-                )}
               </div>
             </ConfiguratorCardSurface>
           </motion.div>
@@ -579,7 +392,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.2 }}
             className="space-y-4"
           >
-            <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
+            <ConfiguratorCardSurface className="max-w-3xl mx-auto relative overflow-hidden">
               <ConfiguratorCardHeader
                 title="Generated Palette"
                 metaLabel="SYS.PALETTE"
@@ -589,23 +402,23 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                   onChange: setPaletteMode
                 }}
               />
-              <div className="w-full h-full pt-20 pb-6 px-6 space-y-8">
-                <div className="flex gap-4 justify-center">
+              <div className="w-full h-full pt-20 pb-6 px-4 md:px-6 space-y-8">
+                <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
                   {activePalette.map((swatch, index) => (
                     <motion.div
                       key={swatch.role}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.1 * index }}
-                      className="flex flex-col items-center gap-2 relative min-h-[105px]"
+                      className="flex flex-col items-center gap-2 relative min-h-[105px] w-[72px] sm:w-auto"
                     >
                       <motion.div
                         layoutId={`swatch-${swatch.role}`}
                         className={cn(
-                          'rounded-xl border border-border/30 shadow-sm relative group',
-                          swatch.role === 'Primary' ? 'w-16 h-16' :
-                            swatch.role === 'Secondary' ? 'w-14 h-14' :
-                              swatch.role === 'Neutral' ? 'w-12 h-12' : 'w-10 h-10'
+                          'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
+                          swatch.role === 'Primary' ? 'w-14 h-14 md:w-16 md:h-16' :
+                            swatch.role === 'Secondary' ? 'w-12 h-12 md:w-14 md:h-14' :
+                              swatch.role === 'Neutral' ? 'w-10 h-10 md:w-12 md:h-12' : 'w-8 h-8 md:w-10 md:h-10'
                         )}
                         animate={{ backgroundColor: swatch.color }}
                         transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -637,10 +450,10 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                           </button>
                         )}
                       </motion.div>
-                      <span className="text-xs font-medium text-muted-foreground">{swatch.role}</span>
+                      <span className="text-[10px] md:text-xs font-medium text-muted-foreground text-center line-clamp-2 md:line-clamp-1 break-words">{swatch.role.replace('_', ' ')}</span>
 
                       {/* Interactive Hex Input in Manual Mode */}
-                      {paletteMode === 'manual' && (
+                      {paletteMode === 'manual' ? (
                         <motion.div
                           initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
                           className="relative -mt-1 w-full"
@@ -651,16 +464,20 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                               const val = e.target.value;
                               handleManualHexChange(swatch.role, val);
                             }}
-                            className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[8ch] whitespace-nowrap overflow-visible bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none"
+                            className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] md:min-w-[8ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none"
                           />
                         </motion.div>
+                      ) : (
+                        <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">
+                          {swatch.color}
+                        </span>
                       )}
                     </motion.div>
                   ))}
                 </div>
 
                 {/* Palette Strip */}
-                <div className="flex gap-1 h-10 rounded-xl overflow-hidden shadow-inner border border-white/5 relative z-10">
+                <div className="flex gap-1 h-8 md:h-10 rounded-xl overflow-hidden shadow-inner border border-white/5 relative z-10 w-full">
                   {activePalette.map((swatch) => (
                     <motion.div
                       key={`strip-${swatch.role}`}

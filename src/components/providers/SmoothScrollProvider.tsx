@@ -10,7 +10,7 @@ interface SmoothScrollContextType {
   scrollYProgress: MotionValue<number>;
   isNavigating: MotionValue<boolean>;
   scrollVelocity: MotionValue<number>;
-  scrollTo: (target: any, options?: any) => void;
+  scrollTo: (target: string | number | HTMLElement, options?: Record<string, unknown>) => void;
 }
 
 const SmoothScrollContext = createContext<SmoothScrollContextType | null>(null);
@@ -60,7 +60,7 @@ export function SmoothScrollProvider({ children, enabled = true }: SmoothScrollP
   // Global Scroll Authority - Sampled once at the root
   const { scrollY, scrollYProgress } = useScroll();
 
-  const scrollTo = (target: any, options?: any) => {
+  const scrollTo = (target: string | number | HTMLElement, options?: Record<string, unknown>) => {
     lenis?.scrollTo(target, options);
   };
 
