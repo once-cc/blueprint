@@ -402,7 +402,7 @@
 /* Lightweight, Hollow Animated Border Sequence */
 .animated-glow-border {
   position: absolute;
-  inset: -1px;
+  inset: 0;
   pointer-events: none;
   padding: 1px;
   /* The border thickness */

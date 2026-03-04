@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ReactNode, forwardRef, useState } from 'react';
+import { ReactNode, forwardRef, useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfiguratorAct } from '@/types/blueprint';
@@ -7,6 +7,7 @@ import { ShinyButton } from '@/components/ui/shiny-button';
 import { AnimatedButtonIcon } from '@/components/ui/AnimatedButtonIcon';
 import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 import { cn } from '@/lib/utils';
+import { useLenisScroll } from '@/hooks/useLenisScroll';
 const springConfig = { type: "spring" as const, stiffness: 400, damping: 25 };
 
 // Staggered "curtain rise" choreography for step entry (#6)
@@ -68,6 +69,21 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
     hideNavigation = false,
   }, ref) {
     const [isHovered, setIsHovered] = useState(false);
+    const { scrollTo } = useLenisScroll();
+
+    // Safely scroll to the top of the step payload *after* it mounts through Suspense
+    useEffect(() => {
+      let timer: NodeJS.Timeout;
+      requestAnimationFrame(() => {
+        timer = setTimeout(() => {
+          if (document.getElementById('step-header-anchor')) {
+            scrollTo('#step-header-anchor', { duration: 0.8, offset: -120 });
+          }
+        }, 100);
+      });
+      return () => clearTimeout(timer);
+    }, [stepNumber, scrollTo]);
+
     return (
       <motion.div
         ref={ref}

@@ -17,10 +17,10 @@ export function ShinyButton({
   disabled,
   ...props
 }: ShinyButtonProps) {
-  const sizeStyles = {
-    sm: { padding: '0.6rem 1.5rem', fontSize: '0.875rem' },
-    default: { padding: '1.25rem 2.5rem', fontSize: '1.125rem' },
-    lg: { padding: '1.5rem 3rem', fontSize: '1.25rem' },
+  const sizeClasses = {
+    sm: "px-6 py-2.5 text-sm",
+    default: "px-10 py-5 text-lg",
+    lg: "px-8 py-4 md:px-12 md:py-6 text-lg md:text-xl",
   };
   return (
     <>
@@ -210,11 +210,10 @@ export function ShinyButton({
       `}</style>
 
       <button
-        className={`shiny-cta ${!isAnimating ? 'static-shiny' : ''} ${className}`}
+        className={`shiny-cta ${!isAnimating ? 'static-shiny' : ''} ${sizeClasses[size]} ${className}`}
         onClick={onClick}
         disabled={disabled}
         style={{
-          ...sizeStyles[size],
           opacity: disabled ? 0.5 : 1,
           cursor: disabled ? 'not-allowed' : 'pointer',
         }}

@@ -17,46 +17,46 @@ const ContactFormSchema = z.object({
   email: z.string().email("Invalid email format").max(255, "Email must be less than 255 characters"),
   phone: z.string().max(20, "Phone must be less than 20 characters").optional().nullable(),
   industry: z.enum([
-    'professional-services', 
-    'creative-agency', 
-    'consulting', 
-    'legal-finance', 
-    'health-wellness', 
-    'architecture-design', 
-    'technology', 
+    'professional-services',
+    'creative-agency',
+    'consulting',
+    'legal-finance',
+    'health-wellness',
+    'architecture-design',
+    'technology',
     'other'
   ], { errorMap: () => ({ message: "Invalid industry selection" }) }),
   goals: z.array(
     z.enum([
-      'attract-premium-clients', 
-      'increase-conversion', 
-      'build-authority', 
-      'launch-new', 
-      'expand-markets', 
+      'attract-premium-clients',
+      'increase-conversion',
+      'build-authority',
+      'launch-new',
+      'expand-markets',
       'rebrand-entirely'
     ])
   ).min(1, "At least one goal is required").max(10, "Maximum 10 goals allowed"),
   blockers: z.array(
     z.enum([
-      'looks-outdated', 
-      'not-converting', 
-      'competitors-better', 
-      'no-time-diy', 
-      'dont-know-start', 
+      'looks-outdated',
+      'not-converting',
+      'competitors-better',
+      'no-time-diy',
+      'dont-know-start',
       'past-agencies-disappointed'
     ])
   ).max(10, "Maximum 10 blockers allowed"),
   timeline: z.enum([
-    'asap', 
-    'soon', 
-    'planning-ahead', 
+    'asap',
+    'soon',
+    'planning-ahead',
     'exploring'
   ], { errorMap: () => ({ message: "Invalid timeline selection" }) }),
   investment: z.enum([
-    'under-5k', 
-    '5k-10k', 
-    '10k-20k', 
-    '25k-50k', 
+    'under-5k',
+    '5k-10k',
+    '10k-20k',
+    '25k-50k',
     'flexible'
   ], { errorMap: () => ({ message: "Invalid investment selection" }) }),
   additionalNotes: z.string().max(2000, "Additional notes must be less than 2000 characters").optional().nullable(),
@@ -173,14 +173,14 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("STUDIO_EMAIL value:", STUDIO_EMAIL || "(empty)");
     console.log("FROM_EMAIL:", FROM_EMAIL);
     console.log("isTestMode:", FROM_EMAIL.includes("@resend.dev"));
-    
+
     const rawData = await req.json();
-    
+
     // Validate input with Zod schema
     const parseResult = ContactFormSchema.safeParse(rawData);
-    
+
     if (!parseResult.success) {
-      const errorMessages = parseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+      const errorMessages = parseResult.error.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`).join(', ');
       console.error("Validation failed:", errorMessages);
       return new Response(
         JSON.stringify({ error: `Validation failed: ${errorMessages}` }),
@@ -190,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
-    
+
     const data: ContactFormData = parseResult.data;
     console.log("Received contact form submission:", { email: data.email, businessName: data.businessName });
 
@@ -261,7 +261,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const isTestMode = FROM_EMAIL.includes("@resend.dev");
-    
+
     if (isTestMode && STUDIO_EMAIL) {
       const combinedHtml = `
         <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
@@ -298,7 +298,8 @@ const handler = async (req: Request): Promise<Response> => {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Unknown error");
     console.error("Error in send-contact-email function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),

@@ -310,9 +310,9 @@ Deno.serve(async (req: Request) => {
 
         // Use EdgeRuntime.waitUntil if available, otherwise fire and forget
         try {
-            // @ts-ignore — EdgeRuntime may not be in types
+            // @ts-expect-error - EdgeRuntime may not be in types
             if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) {
-                // @ts-ignore
+                // @ts-expect-error - EdgeRuntime.waitUntil is a global function, but not part of standard TS types
                 EdgeRuntime.waitUntil(phase2Promise);
             } else {
                 phase2Promise.catch((err) =>

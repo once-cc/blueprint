@@ -81,8 +81,8 @@ function clamp(n: number, min = 0, max = 100): number {
  * Higher = more pages, features, urgency, budget.
  */
 export function calculateComplexityScore(input: ScoringInput): number {
-    const deliver = input.deliver as Record<string, unknown>;
-    const design = input.design as Record<string, unknown>;
+    const deliver = (input.deliver || {}) as Record<string, unknown>;
+    const design = (input.design || {}) as Record<string, unknown>;
 
     const pages = Array.isArray(deliver.pages) ? deliver.pages.length : 0;
     const features = Array.isArray(deliver.features)
@@ -124,14 +124,15 @@ export function calculateComplexityScore(input: ScoringInput): number {
  * Higher = more fields filled, references provided, strong contact info.
  */
 export function calculateIntegrityScore(input: ScoringInput): number {
-    const discovery = input.discovery as Record<string, unknown>;
+    const discovery = (input.discovery || {}) as Record<string, unknown>;
+    const design = (input.design || {}) as Record<string, unknown>;
 
     // Required fields completeness
     const coreFields = [
         discovery.primaryPurpose,
         discovery.salesPersonality,
-        (input.design as Record<string, unknown>).visualStyle,
-        (input.design as Record<string, unknown>).typography_direction,
+        design.visualStyle,
+        design.typography_direction,
     ];
     const filledCount = coreFields.filter(
         (f) => f != null && f !== '',

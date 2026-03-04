@@ -323,6 +323,12 @@
     pointer-events: none;
   }
 
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
   body {
     @apply bg-background text-foreground antialiased font-light;
     font-family: var(--font-body);

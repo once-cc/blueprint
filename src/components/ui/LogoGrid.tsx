@@ -1,6 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { Crosshair } from "@/components/ui/crosshair";
+import { useRayPause } from "@/hooks/useRayPause";
 
 import framerMotionLogo from "@/assets/brandlogos/framermotion-white.svg";
 import githubLogo from "@/assets/brandlogos/github-white.svg";
@@ -19,8 +19,9 @@ const brandPairs = [
 ];
 
 export function LogoGrid() {
+    const gridRef = useRayPause<HTMLDivElement>();
     return (
-        <div className="w-full relative border-y border-white/10 bg-background/50 backdrop-blur-sm">
+        <div ref={gridRef} className="w-full relative border-y border-white/10 bg-background/80">
             <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
                 <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
 
@@ -30,9 +31,13 @@ export function LogoGrid() {
                     <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/40 z-20" />
                     <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/40 z-20" />
 
-                    <h3 className="absolute -top-10 left-0 w-full text-center text-[10px] uppercase tracking-[0.5em] text-white/20">
-                        Architectural Primitives
-                    </h3>
+                    <div className="absolute -top-16 left-0 w-full z-10">
+                        <div className="w-full h-px bg-white/10" />
+                        <h3 className="w-full text-center text-[10px] uppercase tracking-[0.5em] text-white/20 py-3 bg-background/80">
+                            Architectural Primitives
+                        </h3>
+                        <div className="w-full h-px bg-white/10" />
+                    </div>
 
                     {/* Geometric Grid Container (Inner) */}
                     <div className="grid grid-cols-4 relative">

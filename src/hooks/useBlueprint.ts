@@ -1,50 +1,35 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getBlueprintClientWithToken, clearBlueprintClient } from '@/lib/blueprintClient';
 import { supabase } from '@/integrations/supabase/client';
-import { Blueprint, BlueprintDiscovery, BlueprintDesign, BlueprintDeliver } from '@/types/blueprint';
+import { Blueprint, BlueprintDiscovery, BlueprintDesign, BlueprintDeliver, SessionStatus } from '@/types/blueprint';
 import { useToast } from '@/hooks/use-toast';
 
-const STORAGE_KEY = 'blueprint_id';
-const SESSION_TOKEN_KEY = 'blueprint_session_token';
-const DREAM_INTENT_KEY = 'dream_intent';
-const LOCAL_DRAFT_KEY = 'blueprint_draft';
-const DEBOUNCE_MS = 1000;
+import {
+  STORAGE_KEY,
+  SESSION_TOKEN_KEY,
+  DREAM_INTENT_KEY,
+  LOCAL_DRAFT_KEY,
+  mapDbToBlueprint,
+  useBlueprintStorage,
+  DEBOUNCE_MS
+} from './useBlueprintStorage';
 
 
-
-// Helper to map database row to Blueprint type
-const mapDbToBlueprint = (
-  data: Record<string, unknown>,
-  storedDreamIntent?: string | null
-): Blueprint => ({
-  id: data.id as string,
-  status: data.status as Blueprint['status'],
-  userEmail: (data.user_email as string) ?? undefined,
-  firstName: (data.first_name as string) ?? undefined,
-  lastName: (data.last_name as string) ?? undefined,
-  businessName: (data.business_name as string) ?? undefined,
-  dreamIntent: (data.dream_intent as string) ?? storedDreamIntent ?? undefined,
-  discovery: (data.discovery as BlueprintDiscovery) || {},
-  design: (data.design as BlueprintDesign) || {},
-  deliver: (data.deliver as BlueprintDeliver) || {},
-  pdfUrl: (data.pdf_url as string) ?? undefined,
-  currentStep: data.current_step as number,
-  createdAt: new Date(data.created_at as string),
-  updatedAt: new Date(data.updated_at as string),
-  submittedAt: data.submitted_at ? new Date(data.submitted_at as string) : undefined,
-});
 
 export function useBlueprint() {
   const [blueprint, setBlueprint] = useState<Blueprint | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [sessionStatus, setSessionStatus] = useState<{
-    hasExisting: boolean;
-    confirmed: boolean;
-  }>({ hasExisting: false, confirmed: false });
+  const [sessionStatus, setSessionStatus] = useState<SessionStatus>({ hasExisting: false, confirmed: false });
   const { toast } = useToast();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isInitializingRef = useRef(false);
+
+  const {
+    loadLocalDraft,
+    saveLocalDraft,
+    queueSync
+  } = useBlueprintStorage(setBlueprint, setIsLoading, setSessionStatus);
 
   // Initialize or resume blueprint
   useEffect(() => {
@@ -193,38 +178,8 @@ export function useBlueprint() {
       return;
     }
 
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(async () => {
-      setIsSaving(true);
-
-      const dbUpdates: Record<string, unknown> = {};
-      if (updates.discovery !== undefined) dbUpdates.discovery = updates.discovery;
-      if (updates.design !== undefined) dbUpdates.design = updates.design;
-      if (updates.deliver !== undefined) dbUpdates.deliver = updates.deliver;
-      if (updates.dreamIntent !== undefined) dbUpdates.dream_intent = updates.dreamIntent;
-      if (updates.currentStep !== undefined) dbUpdates.current_step = updates.currentStep;
-      if (updates.userEmail !== undefined) dbUpdates.user_email = updates.userEmail;
-      if (updates.firstName !== undefined) dbUpdates.first_name = updates.firstName;
-      if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
-      if (updates.businessName !== undefined) dbUpdates.business_name = updates.businessName;
-      if (updates.status !== undefined) dbUpdates.status = updates.status;
-      if (updates.submittedAt !== undefined) dbUpdates.submitted_at = updates.submittedAt.toISOString();
-
-      const blueprintClient = getBlueprintClientWithToken(token);
-      const { error } = await blueprintClient
-        .from('blueprints')
-        .update(dbUpdates)
-        .eq('id', blueprint.id);
-
-      if (error) {
-      }
-
-      setIsSaving(false);
-    }, DEBOUNCE_MS);
-  }, [blueprint?.id]);
+    queueSync(updates as Blueprint);
+  }, [blueprint?.id, queueSync]);
 
   const updateDiscovery = useCallback((updates: Partial<BlueprintDiscovery>) => {
     setBlueprint(prev => {
@@ -385,7 +340,7 @@ export function useBlueprint() {
       setIsSaving(false);
       return { success: false };
     }
-  }, [blueprint?.id, blueprint?.userEmail, toast]);
+  }, [blueprint, toast]);
 
   // Reset to start fresh
   const resetBlueprint = useCallback(() => {

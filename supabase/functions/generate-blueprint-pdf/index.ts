@@ -72,7 +72,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Build the preview URL for the blueprint
     const previewUrl = `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/blueprint-preview/${blueprint_id}`;
-    
+
     console.log(`[generate-blueprint-pdf] Blueprint data prepared, preview URL: ${previewUrl}`);
 
     // For now, store a placeholder PDF URL until we integrate a PDF service
@@ -97,8 +97,8 @@ serve(async (req: Request): Promise<Response> => {
     console.log(`[generate-blueprint-pdf] Successfully processed blueprint: ${blueprint_id}`);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         pdf_url: pdfUrl,
         preview_url: previewUrl,
         message: "Blueprint PDF generation initiated. Preview available at preview_url."
@@ -106,7 +106,8 @@ serve(async (req: Request): Promise<Response> => {
       { headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
 
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Unknown error");
     console.error("[generate-blueprint-pdf] Error:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),

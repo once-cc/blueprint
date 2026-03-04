@@ -129,7 +129,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
     };
 
     // Validation
-    const isValid = selectedPages.length > 0;
+    const isValid = true;
 
     return (
       <StepLayout

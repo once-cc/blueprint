@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { motion, useScroll, useInView } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
+import { useRayPause } from "@/hooks/useRayPause";
+import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
 import { BenefitIconLottie } from "@/components/ui/BenefitIconLottie";
 import clarityAnimation from "@/assets/benefitstack/clarity.json";
 import technicalAnimation from "@/assets/benefitstack/technical.json";
@@ -35,37 +37,16 @@ const benefits = [
     }
 ];
 
-interface WordRevealProps {
-    children: string;
-    progress: MotionValue<number>;
-    range: [number, number];
-}
-
-const Word = ({ children, progress, range }: WordRevealProps) => {
-    const opacity = useTransform(progress, range, [0.25, 1]);
-    const color = useTransform(progress, range, ["hsla(220, 12%, 50%, 0.25)", "hsl(45, 10%, 92%)"]);
-
-    return (
-        <motion.span className="relative transition-colors duration-100" style={{ opacity, color }}>
-            {children}
-        </motion.span>
-    );
-};
-
-const HighlightedWord = ({ children, progress, range }: WordRevealProps) => {
-    const opacity = useTransform(progress, range, [0.4, 1]);
-
-    return (
-        <motion.span style={{ opacity }}>
-            {children}
-        </motion.span>
-    );
+const BENEFIT_COLORS: WordRevealColors = {
+    from: "hsla(220, 12%, 50%, 0.25)",
+    to: "hsl(45, 10%, 92%)",
 };
 
 
 
 export function BenefitStackSection() {
     const containerRef = useRef<HTMLElement>(null);
+    const benefitRaysRef = useRayPause<HTMLDivElement>();
     const textRef = useRef<HTMLDivElement>(null);
     const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
 
@@ -78,22 +59,23 @@ export function BenefitStackSection() {
         offset: ["start 85%", "end 45%"]
     });
 
+
     const introText = "Why Start With a Blueprint? Because building first and thinking later is expensive. Define it properly once. Build with direction. Avoid the cost of revisions, delays, and fragmented systems. Time saved. Money protected. Momentum preserved.";
     const words = introText.split(" ");
 
     return (
-        <GridSection ref={containerRef} className="py-24 md:py-32 bg-muted/30 z-20 relative">
+        <GridSection
+            ref={containerRef}
+            className="py-12 md:py-32 bg-[hsl(220_15%_4%)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.15),inset_0_2px_15px_rgba(0,0,0,0.8)] overflow-hidden z-20 relative border-white/10"
+            topCrosshairColors={{ topColor: "rgba(255,255,255,0.4)", bottomColor: "rgba(255,255,255,0.15)" }}
+            bottomCrosshairColors={{ topColor: "rgba(255,255,255,0.15)", bottomColor: "rgba(255,255,255,0.4)" }}
+            gridLineClassName="bg-white/10"
+        >
             {/* The Editorial Ramp / Central Spine connecting to next section */}
-            <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/[0.03] pointer-events-none hidden md:block" />
-
-            {/* Faint Volumetric Atmospheric Light Rays — clipped to section bounds to prevent touch interception on mobile */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute top-[10%] left-[-10%] w-[50%] h-[120%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-60" />
-                <div className="absolute top-[20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.02] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-1000 opacity-40" />
-            </div>
+            <div className="absolute top-0 bottom-0 left-1/2 -ml-px w-px bg-white/10 pointer-events-none hidden md:block z-[25]" />
 
             {/* True Edge Docking Rails spanning the entire section height */}
-            <div className="absolute inset-0 pointer-events-none z-0 flex justify-center">
+            <div className="absolute inset-0 pointer-events-none z-[25] flex justify-center">
                 {/* 
                     Matches the exact width constraint of the Architectural Grid below 
                     - On mobile, it's w-full, matching the 16px inset of the grid's padding.
@@ -107,7 +89,27 @@ export function BenefitStackSection() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 mb-24 relative z-10">
+            {/* ══ SUBSTRATE ENHANCEMENT LAYERS (matching ScrollytellSection) ══ */}
+
+            {/* Bevel Lighting — warm lift from bottom, cool wash from top */}
+            <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.03),transparent_70%)]" />
+            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.02),transparent_40%)]" />
+
+            {/* Film Grain — SVG feTurbulence noise for matte-paper texture */}
+            <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+
+            {/* Luminance Falloff — left-biased radial lift + edge darkening */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(60%_50%_at_25%_40%,hsl(220_10%_12%_/_0.5),transparent_70%)]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(220_15%_2%_/_0.75)_100%)]" />
+
+            {/* Chromatic Drift — warm centre, cool corners */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(70%_60%_at_30%_45%,hsl(37_30%_55%_/_0.07),transparent_70%)]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(50%_50%_at_85%_80%,hsl(220_40%_30%_/_0.08),transparent_60%)]" />
+
+            {/* Ghost Editorial Grid */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />
+
+            <div className="container mx-auto px-6 mb-12 md:mb-24 relative z-[25]">
                 <div ref={textRef} className="max-w-4xl mx-auto text-center flex flex-col items-center relative">
                     <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2 mb-8">
                         <span className="text-accent/60">//</span> STRATEGIC CLARITY
@@ -126,7 +128,7 @@ export function BenefitStackSection() {
                             if (isHighlighted) {
                                 return (
                                     <span key={i}>
-                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pr-1.5">
+                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pl-[0.15em] -ml-[0.15em] pr-[0.3em]">
                                             <HighlightedWord progress={scrollYProgress} range={[start, end]}>
                                                 {word}
                                             </HighlightedWord>
@@ -140,7 +142,7 @@ export function BenefitStackSection() {
 
                             return (
                                 <span key={i}>
-                                    <Word progress={scrollYProgress} range={[start, end]}>
+                                    <Word progress={scrollYProgress} range={[start, end]} colors={BENEFIT_COLORS}>
                                         {word}
                                     </Word>
                                     {i !== words.length - 1 && " "}
@@ -158,77 +160,127 @@ export function BenefitStackSection() {
                 <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
 
                     {/* The 2x2 Drawn Grid — Using 'group/grid' to track hover over the whole section */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="group/grid grid grid-cols-1 md:grid-cols-2 bg-background border-y border-white/10 divide-y divide-white/10 md:divide-y-0 relative shadow-2xl"
-                    >
+                    <div className="group/grid grid grid-cols-1 md:grid-cols-2 bg-transparent border-y border-white/10 divide-y divide-white/10 md:divide-y-0 relative z-0 rounded-none">
+
+                        {/* Drop shadow caster — sits ABOVE the ivory slab so its shadow is visible on the ivory surface */}
+                        <div className="absolute inset-0 pointer-events-none z-[2] shadow-[0_50px_120px_0px_rgba(0,0,0,0.9),0_20px_50px_-5px_rgba(0,0,0,0.7),inset_0_0_0_1px_rgba(0,0,0,0.5)]" />
+
+                        {/* Faint Volumetric Atmospheric Light Rays — moved inside grid so they illuminate only through the transparent cards */}
+                        <div ref={benefitRaysRef} className="absolute inset-0 pointer-events-none z-0">
+                            <div className="absolute top-0 left-[-10%] w-[70%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-100" />
+                            <div className="absolute top-0 right-[-10%] w-[70%] h-full bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-1000 opacity-80" />
+                        </div>
+
                         {/* Faint Global Editorial Grid behind the cards */}
                         <div className="absolute inset-0 bg-editorial-grid pointer-events-none z-0" />
+
+                        {/* Structural Ticks (Editorial Design Treatment) */}
+                        <div className="absolute inset-0 pointer-events-none z-20">
+                            {/* Top Left */}
+                            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/20" />
+                            {/* Top Right */}
+                            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-white/20" />
+                            {/* Bottom Left */}
+                            <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-white/20" />
+                            {/* Bottom Right */}
+                            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/20" />
+                        </div>
 
                         {/* 1. Global Outline: Visible when idle. Fades out immediately when the grid is hovered (since any hover hits a card) */}
                         <div className="animated-glow-border opacity-100 group-hover/grid:opacity-0 transition-opacity duration-700 z-10" />
 
                         {benefits.map((benefit, i) => (
-                            <div
+                            <BenefitCard
                                 key={i}
-                                onMouseEnter={() => setHoveredCardIndex(i)}
-                                onMouseLeave={() => setHoveredCardIndex(null)}
-                                // Card is 'group/card'. 
-                                // On grid hover: all cards get a faint white glow.
-                                // On card hover: this card isolates and gets a strong branded radial glow, while others fade back.
-                                className="group/card relative p-8 md:p-12 flex flex-col gap-8 transition-all duration-500"
-                            >
-                                {/* Conditionally render the structural dividing lines inside the cards so the hover glow perfectly traces them */}
-                                {/* Top inner border (for bottom row) */}
-                                {i > 1 && <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-white/10 z-[5]" />}
-                                {/* Left inner border (for right column) */}
-                                {i % 2 !== 0 && <div className="hidden md:block absolute top-0 bottom-0 left-0 w-px bg-white/10 z-[5]" />}
-
-                                {/* Background Hover Illuminations */}
-                                {/* 1. The collective grid glow (faint white, appears when hovering anywhere in the grid, but hides if hovering on THIS card) */}
-                                <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover/grid:opacity-100 group-hover/card:!opacity-0 transition-opacity duration-700 pointer-events-none z-0" />
-
-                                {/* 2. The isolated card glow (branded radial gradient, appears ONLY when hovering on THIS specific card) */}
-                                <div
-                                    className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
-                                    style={{
-                                        background: `radial-gradient(circle at center, ${benefit.color}15 0%, transparent 70%)`
-                                    }}
-                                />
-
-                                {/* 3. The isolated card outline (CSS mask shiny border! isolated strictly to THIS card) */}
-                                <div className="animated-glow-border opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-10" />
-
-                                {/* Technical Header */}
-                                <div className="flex justify-between items-start relative z-10">
-                                    <div className="flex flex-col gap-2">
-                                        <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: "#f5a524" }}>
-                                            <span className="opacity-60">//</span> 0{i + 1}
-                                        </span>
-                                        <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-foreground group-hover/card:text-white transition-colors duration-300">
-                                            {benefit.title}
-                                        </h3>
-                                    </div>
-                                    <BenefitIconLottie
-                                        animationData={benefit.animationData}
-                                        color={benefit.color}
-                                        isActive={hoveredCardIndex === i}
-                                        staticFrame={benefit.staticFrame}
-                                    />
-                                </div>
-
-                                {/* Annotation copy */}
-                                <p className="font-body type-functional-light text-sm md:text-base text-muted-foreground leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-zinc-300 transition-colors duration-500">
-                                    {benefit.description}
-                                </p>
-                            </div>
+                                benefit={benefit}
+                                index={i}
+                                isHovered={hoveredCardIndex === i}
+                                setHovered={setHoveredCardIndex}
+                            />
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
             </div>
         </GridSection>
+    );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Sub-Component: BenefitCard
+// Extracted to maintain isolated useInView state for staggered lottie animations
+// ═══════════════════════════════════════════════════════════════
+
+interface BenefitCardProps {
+    benefit: typeof benefits[0];
+    index: number;
+    isHovered: boolean;
+    setHovered: (i: number | null) => void;
+}
+
+function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps) {
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    // Triggers when the card's top edge crosses 25% up from the bottom of the viewport
+    // Removing `once: true` means `isInView` will flip back to false when it leaves the screen,
+    // allowing the Lottie icon to snap to the static frame and re-trigger upon re-entry.
+    const isInView = useInView(cardRef, {
+        margin: "0px 0px -25% 0px"
+    });
+
+    return (
+        <div
+            ref={cardRef}
+            onMouseEnter={() => setHovered(index)}
+            onMouseLeave={() => setHovered(null)}
+            // Card is 'group/card'. 
+            // On grid hover: all cards get a faint white glow.
+            // On card hover: this card isolates and gets a strong branded radial glow, while others fade back.
+            className="group/card relative p-8 md:p-12 flex flex-col gap-8 transition-all duration-500"
+        >
+            {/* Conditionally render the structural dividing lines inside the cards so the hover glow perfectly traces them */}
+            {/* Top inner border (for bottom row) */}
+            {index > 1 && <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-white/5 z-[5]" />}
+            {/* Left inner border (for right column) */}
+            {index % 2 !== 0 && <div className="hidden md:block absolute top-0 bottom-0 left-0 w-px bg-white/5 z-[5]" />}
+
+            {/* Background Hover Illuminations */}
+            {/* 1. The collective grid glow */}
+            <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover/grid:opacity-100 group-hover/card:!opacity-0 transition-opacity duration-700 pointer-events-none z-0" />
+
+            {/* 2. The isolated card glow */}
+            <div
+                className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
+                style={{
+                    background: `radial-gradient(circle at center, ${benefit.color}15 0%, transparent 70%)`
+                }}
+            />
+
+            {/* 3. The isolated card outline */}
+            <div className="animated-glow-border opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-10" />
+
+            {/* Technical Header */}
+            <div className="flex justify-between items-start relative z-10">
+                <div className="flex flex-col gap-2">
+                    <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: "#f5a524" }}>
+                        <span className="opacity-60">//</span> 0{index + 1}
+                    </span>
+                    <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-white group-hover/card:text-white transition-colors duration-300">
+                        {benefit.title}
+                    </h3>
+                </div>
+                <BenefitIconLottie
+                    animationData={benefit.animationData}
+                    color={benefit.color}
+                    isActive={isHovered}
+                    hasPlayedOnce={isInView}
+                    staticFrame={benefit.staticFrame}
+                />
+            </div>
+
+            {/* Annotation copy */}
+            <p className="font-body type-functional-light text-sm md:text-base text-zinc-300 leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-white transition-colors duration-500">
+                {benefit.description}
+            </p>
+        </div>
     );
 }

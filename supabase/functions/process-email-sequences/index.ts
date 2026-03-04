@@ -201,8 +201,7 @@ serve(async (req: Request): Promise<Response> => {
 
     for (const emailRecord of dueEmails) {
       try {
-        // deno-lint-ignore no-explicit-any
-        const blueprint = (emailRecord as any).blueprints;
+        const blueprint = emailRecord.blueprints as unknown as { user_email: string; user_name: string; business_name: string; status: string };
         if (!blueprint || !blueprint.user_email) {
           log("SKIP", "No blueprint or email", { id: emailRecord.id });
           continue;

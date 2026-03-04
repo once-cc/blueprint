@@ -2,11 +2,12 @@ import React, { useEffect, useRef } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 
 interface BenefitIconLottieProps {
-    animationData: any;
+    animationData: Record<string, unknown>;
     isActive: boolean;
     color: string;
     className?: string;
     staticFrame?: number;
+    hasPlayedOnce?: boolean;
 }
 
 export const BenefitIconLottie = React.memo(({
@@ -14,27 +15,29 @@ export const BenefitIconLottie = React.memo(({
     isActive,
     color,
     className = "",
-    staticFrame = 0
+    staticFrame = 0,
+    hasPlayedOnce = false
 }: BenefitIconLottieProps) => {
     const lottieRef = useRef<LottieRefCurrentProps>(null);
 
-    // Initial load: Snap to the static frame once it mounts
+    // Initial mount: snap to the static frame
     useEffect(() => {
-        if (lottieRef.current && !isActive) {
+        if (lottieRef.current) {
             lottieRef.current.goToAndStop(staticFrame, true);
         }
-    }, [lottieRef.current, staticFrame]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    // Hover state handling
+    // Hover / entrance trigger: play from frame 0, or snap back to static frame
     useEffect(() => {
         if (!lottieRef.current) return;
 
-        if (isActive) {
+        if (isActive || hasPlayedOnce) {
             lottieRef.current.goToAndPlay(0, true);
         } else {
             lottieRef.current.goToAndStop(staticFrame, true);
         }
-    }, [isActive, staticFrame]);
+    }, [isActive, hasPlayedOnce, staticFrame]);
 
     return (
         <div

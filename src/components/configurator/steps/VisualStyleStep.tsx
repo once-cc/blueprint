@@ -43,7 +43,7 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
     onNext,
   }, ref) {
     // Validation - only require visualStyle now
-    const isValid = !!design.visualStyle;
+    const isValid = true;
 
     const brandImageryMode = design.brandImageryMode || 'direction';
     const brandAssets = design.brandAssets || [];

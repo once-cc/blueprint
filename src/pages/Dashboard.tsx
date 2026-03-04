@@ -150,14 +150,15 @@ function ArtifactModal({ blueprintId, onClose }: { blueprintId: string; onClose:
 
     useEffect(() => {
         async function fetchArtifacts() {
+            // @ts-expect-error - Dynamic table access
             const { data, error } = await supabase
-                .from("blueprint_artifacts" as any)
+                .from("blueprint_artifacts")
                 .select("artifact_type, version, payload, file_url, hash, created_at")
                 .eq("blueprint_id", blueprintId)
                 .order("artifact_type")
                 .order("version", { ascending: false });
 
-            if (!error && data) setArtifacts(data as any);
+            if (!error && data) setArtifacts(data as unknown as NonNullable<typeof artifacts>);
             setLoading(false);
         }
         fetchArtifacts();
@@ -253,42 +254,45 @@ export default function Dashboard() {
             const blueprintIds = (bpData || []).map((b) => b.id);
 
             // Fetch scores
+            // @ts-expect-error - Dynamic table access
             const { data: scoresData } = await supabase
-                .from("blueprint_scores" as any)
+                .from("blueprint_scores")
                 .select("blueprint_id, integrity_score, complexity_score")
                 .in("blueprint_id", blueprintIds);
 
             // Fetch email sequences
+            // @ts-expect-error - Dynamic table access
             const { data: emailData } = await supabase
-                .from("email_sequences" as any)
+                .from("email_sequences")
                 .select("blueprint_id, email_type, status, sent_at")
                 .in("blueprint_id", blueprintIds);
 
             // Fetch bookings
+            // @ts-expect-error - Dynamic table access
             const { data: bookingsData } = await supabase
-                .from("bookings" as any)
+                .from("bookings")
                 .select("blueprint_id, booked_at, source")
                 .in("blueprint_id", blueprintIds);
 
             // Map scores, emails, and bookings to blueprints
-            const scoresMap = new Map((scoresData as any[] || []).map((s: any) => [s.blueprint_id, s]));
-            const emailsMap = new Map<string, any[]>();
-            for (const e of (emailData as any[] || [])) {
-                if (!emailsMap.has(e.blueprint_id)) emailsMap.set(e.blueprint_id, []);
-                emailsMap.get(e.blueprint_id)!.push(e);
+            const scoresMap = new Map((scoresData as Record<string, unknown>[] || []).map((s) => [s.blueprint_id as string, s]));
+            const emailsMap = new Map<string, Record<string, unknown>[]>();
+            for (const e of (emailData as Record<string, unknown>[] || [])) {
+                if (!emailsMap.has(e.blueprint_id as string)) emailsMap.set(e.blueprint_id as string, []);
+                emailsMap.get(e.blueprint_id as string)!.push(e);
             }
-            const bookingsMap = new Map<string, any[]>();
-            for (const b of (bookingsData as any[] || [])) {
-                if (!bookingsMap.has(b.blueprint_id)) bookingsMap.set(b.blueprint_id, []);
-                bookingsMap.get(b.blueprint_id)!.push(b);
+            const bookingsMap = new Map<string, Record<string, unknown>[]>();
+            for (const b of (bookingsData as Record<string, unknown>[] || [])) {
+                if (!bookingsMap.has(b.blueprint_id as string)) bookingsMap.set(b.blueprint_id as string, []);
+                bookingsMap.get(b.blueprint_id as string)!.push(b);
             }
 
             const enriched: DashboardBlueprint[] = (bpData || []).map((bp) => ({
                 ...bp,
                 deliver: (typeof bp.deliver === "object" && bp.deliver !== null && !Array.isArray(bp.deliver) ? bp.deliver : {}) as Record<string, unknown>,
-                scores: scoresMap.get(bp.id) as any || null,
-                email_sequences: emailsMap.get(bp.id) || [],
-                bookings: bookingsMap.get(bp.id) || [],
+                scores: scoresMap.get(bp.id) as unknown as DashboardBlueprint["scores"] || null,
+                email_sequences: emailsMap.get(bp.id) as unknown as DashboardBlueprint["email_sequences"] || [],
+                bookings: bookingsMap.get(bp.id) as unknown as DashboardBlueprint["bookings"] || [],
             }));
 
             setBlueprints(enriched);
@@ -330,8 +334,8 @@ export default function Dashboard() {
 
         // Sort
         result.sort((a, b) => {
-            let aVal: any;
-            let bVal: any;
+            let aVal: string | number;
+            let bVal: string | number;
 
             switch (sortField) {
                 case "business_name":
@@ -447,8 +451,8 @@ export default function Dashboard() {
                         <button
                             onClick={() => { setQuickFilter(f => f === 'high_complexity_no_booking' ? 'all' : 'high_complexity_no_booking'); setPage(0); }}
                             className={`text-xs px-3 py-1.5 border rounded transition-colors ${quickFilter === 'high_complexity_no_booking'
-                                    ? 'border-amber-500/50 text-amber-300 bg-amber-500/10'
-                                    : 'border-white/10 text-muted-foreground hover:text-foreground'
+                                ? 'border-amber-500/50 text-amber-300 bg-amber-500/10'
+                                : 'border-white/10 text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             🟡 High Complexity + No Booking

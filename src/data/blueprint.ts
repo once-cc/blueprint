@@ -21,7 +21,7 @@ export const processSteps: ProcessStep[] = [
         title: "Discovery",
         description: "Define what your asset must do.\nWhat outcomes it must support.\nAnd how it must communicate.\nBuilt with purpose, so it serves as an asset to your business.",
         bullets: ["Strategic Intent", "Conversion Pathways", "Positioning Alignment"],
-        imageUrl: "/assets/infographics/discovery.png"
+        imageUrl: "/assets/framework/discovery.webp"
     },
     {
         id: "design",
@@ -29,7 +29,7 @@ export const processSteps: ProcessStep[] = [
         title: "Design",
         description: "Direct the color and visual style it wears.\nHow the design should feel.\nHow attention should move.\nDesign is how trust is felt. Before anyone reads your offer, they feel your presence.",
         bullets: ["Visual Style", "Typography Direction", "Mood and Color Palette"],
-        imageUrl: "/assets/infographics/design.png"
+        imageUrl: "/assets/framework/design.webp"
     },
     {
         id: "deliver",
@@ -37,7 +37,7 @@ export const processSteps: ProcessStep[] = [
         title: "Deliver",
         description: "Translate strategy and design into a production-ready system.\nScope defined.\nRequirements clarified.\nConstraints acknowledged.\nInfrastructure designed to support growth — not just launch.",
         bullets: ["Features & Integrations", "Scope & Constraints", "Creative risk tolerance"],
-        imageUrl: "/assets/infographics/deliver.png"
+        imageUrl: "/assets/framework/delivery.webp"
     }
 ];
 

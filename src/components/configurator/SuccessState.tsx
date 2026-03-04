@@ -4,7 +4,6 @@ import { Check, Shield, Phone, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { generateBlueprintPdf } from '@/lib/generateBlueprintPdf';
 import type { Blueprint } from '@/types/blueprint';
 
 // ── Types ──────────────────────────────────────────────────────
@@ -107,7 +106,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
   }, []);
 
   // PDF download handler
-  const handleDownloadPdf = useCallback(() => {
+  const handleDownloadPdf = useCallback(async () => {
     if (!blueprint) {
       toast({
         title: 'PDF not ready',
@@ -117,12 +116,16 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
       return;
     }
     try {
+      // Lazy load the PDF generator to reduce initial bundle size
+      const { generateBlueprintPdf } = await import('@/lib/generateBlueprintPdf');
       generateBlueprintPdf(blueprint);
+
       toast({
         title: 'PDF downloaded',
         description: 'Your Blueprint PDF has been saved to your device.',
       });
-    } catch {
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
       toast({
         title: 'PDF generation failed',
         description: 'Please try again or contact us at blueprints@cleland.studio',

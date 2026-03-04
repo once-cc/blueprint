@@ -84,14 +84,14 @@ serve(async (req: Request): Promise<Response> => {
             .in("blueprint_id", blueprintIds);
 
         // Map artifacts and scores — only keep LATEST version per blueprint
-        const artifactMap = new Map<string, any>();
-        for (const a of (artifacts || []) as any[]) {
-            const existing = artifactMap.get(a.blueprint_id);
-            if (!existing || a.version > existing.version) {
-                artifactMap.set(a.blueprint_id, a);
+        const artifactMap = new Map<string, Record<string, unknown>>();
+        for (const a of (artifacts || []) as Record<string, unknown>[]) {
+            const existing = artifactMap.get(a.blueprint_id as string);
+            if (!existing || (a.version as number) > (existing.version as number)) {
+                artifactMap.set(a.blueprint_id as string, a);
             }
         }
-        const scoreMap = new Map((scores || []).map((s: any) => [s.blueprint_id, s]));
+        const scoreMap = new Map((scores || []).map((s: Record<string, unknown>) => [s.blueprint_id as string, s]));
 
         const result = blueprints.map((bp) => ({
             id: bp.id,
@@ -102,7 +102,7 @@ serve(async (req: Request): Promise<Response> => {
             submitted_at: bp.submitted_at,
             contract: artifactMap.get(bp.id)?.payload || null,
             scores: scoreMap.get(bp.id) ? {
-                complexity: (scoreMap.get(bp.id) as any).complexity_score,
+                complexity: (scoreMap.get(bp.id) as Record<string, unknown>).complexity_score,
             } : null,
         }));
 

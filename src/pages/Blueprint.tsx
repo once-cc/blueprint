@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, animate, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { TestimonialCarousel } from "@/components/blueprint/TestimonialCarousel";
 import { useNavigate } from "react-router-dom";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { useLenisScroll } from "@/hooks/useLenisScroll";
+import { useRayPause } from "@/hooks/useRayPause";
 import { ScrollytellSection } from "@/components/marketing/ScrollytellSection";
 import { FrameworkSection } from "@/components/marketing/FrameworkSection";
 import { BenefitStackSection } from "@/components/marketing/BenefitStackSection";
@@ -21,6 +23,9 @@ import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 
 export default function Blueprint() {
   const navigate = useNavigate();
+  const { scrollTo: lenisScrollTo } = useLenisScroll();
+  const heroRaysRef = useRayPause<HTMLDivElement>();
+  const testimonialRaysRef = useRayPause<HTMLDivElement>();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [forceReveal, setForceReveal] = useState(false);
@@ -60,24 +65,11 @@ export default function Blueprint() {
         inputEl.focus({ preventScroll: true });
       }
 
-      const rect = el.getBoundingClientRect();
-      const elementTop = rect.top + window.scrollY;
-
-      const isMobile = window.innerWidth < 768; // Based on tailwind md breakpoint
-
-      let targetY;
-      if (isMobile) {
-        // Mobile: Position element in the upper quarter of the screen to leave room for keyboard below
-        targetY = elementTop - (window.innerHeight * 0.25);
-      } else {
-        // Desktop: Center exactly
-        targetY = elementTop - (window.innerHeight / 2) + (rect.height / 2);
-      }
-
-      animate(window.scrollY, targetY, {
+      // Use Lenis for smooth scroll — avoids dual-scroll-authority conflict
+      // Lenis handles easing and momentum naturally
+      lenisScrollTo(el, {
+        offset: -window.innerHeight * (window.innerWidth < 768 ? 0.25 : 0.35),
         duration: 1.8,
-        ease: [0.22, 1, 0.36, 1], // Expanded, luxuriously smooth ease-out curve (Custom CSS EaseOutQuart/Quint blend)
-        onUpdate: (latest) => window.scrollTo(0, latest)
       });
     }
   };
@@ -129,7 +121,7 @@ export default function Blueprint() {
   return (
     <>
       <div
-        className="min-h-screen bg-background text-foreground relative z-10 shadow-[0_50px_100px_40px_rgba(0,0,0,1)]"
+        className="min-h-screen bg-background text-foreground relative z-10 shadow-[0_50px_100px_40px_rgba(0,0,0,1)] flex flex-col"
       >
         {/* Splash Screen Overlay - Option D: Blur Dissolve */}
         <AnimatePresence>
@@ -147,14 +139,16 @@ export default function Blueprint() {
         {/* ═══ HERO: VIDEO & HEADLINE ═══ */}
         {/* ═══════════════════════════════════════════════════════════════ */}
 
-        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center pt-24 pb-32 overflow-hidden">
+        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center pt-24 pb-32">
           {/* Loopable Hero Video Background */}
-          <div className="absolute inset-0 z-0 overflow-hidden bg-background">
+          <div className="absolute inset-0 z-0 bg-background overflow-hidden">
             <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10 pointer-events-none" /> {/* Dimming overlay for text legibility */}
 
             {/* Environmental Volumetric Light Rays (Flipped to match video source: coming from top-right to bottom-left) */}
-            <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse" />
-            <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse delay-700" />
+            <div ref={heroRaysRef}>
+              <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse" />
+              <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse delay-700" />
+            </div>
 
             {/* Top gradient mask to beautifully blend video ceiling removed in favor of CSS mask on video element */}
 
@@ -276,12 +270,13 @@ export default function Blueprint() {
         {/* ═══ TESTIMONIALS ═══ */}
         {/* ═══════════════════════════════════════════════════════════════ */}
 
-        <GridSection className="py-24 pb-32 bg-background z-20 relative">
+        {/* Restored top/bottom padding to ensure the footer reveal has enough scroll track to function properly */}
+        <GridSection className="pt-24 pb-32 bg-background z-20 relative">
           {/* Faint Global Editorial Grid */}
           <div className="absolute inset-0 bg-editorial-grid pointer-events-none" />
 
           {/* Faint Volumetric Atmospheric Light Rays — clipped to section bounds */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div ref={testimonialRaysRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
             <div className="absolute top-[30%] left-[-15%] w-[60%] h-[180%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-50" />
             <div className="absolute top-[-10%] right-[20%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.03] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-500 opacity-40" />
           </div>
@@ -296,10 +291,26 @@ export default function Blueprint() {
             </div>
           </div>
 
-          {/* Testimonial Banner Block. Uses a bg-background base layer to opaquely cover the global grid underneath, and applies bg-muted/30 over it to match BenefitStackSection. */}
-          <div className="w-full py-16 mb-16 relative z-10 border-y border-white/10">
-            <div className="absolute inset-0 bg-background pointer-events-none" />
-            <div className="absolute inset-0 bg-muted/30 pointer-events-none" />
+          {/* Testimonial Banner Block — Full substrate treatment matching ScrollyTell section */}
+          {/* Reduced vertical padding and bottom margin to draw the carousel closer to the banner */}
+          <div className="w-full py-12 mb-8 relative z-10 border-y border-white/10 bg-[hsl(220_15%_4%)] overflow-hidden">
+            {/* Architectural Bevel Lighting */}
+            <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.03),transparent_70%)]" />
+            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.02),transparent_40%)]" />
+
+            {/* Layer 1: Micro Film Grain — SVG feTurbulence noise */}
+            <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+
+            {/* Layer 2: Luminance Falloff — Radial lift for reading focus + edge darkening */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(60%_50%_at_25%_40%,hsl(220_10%_12%_/_0.5),transparent_70%)]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(220_15%_2%_/_0.75)_100%)]" />
+
+            {/* Layer 3: Micro Chromatic Drift — Cool shadows, warm centre */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(70%_60%_at_30%_45%,hsl(37_30%_55%_/_0.07),transparent_70%)]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(50%_50%_at_85%_80%,hsl(220_40%_30%_/_0.08),transparent_60%)]" />
+
+            {/* Layer 4: Ghost Editorial Grid */}
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />
 
             {/* Crosshairs intersecting the docking rails on the horizontal banner borders */}
             <div className="absolute inset-0 pointer-events-none flex justify-center z-20">
@@ -333,8 +344,21 @@ export default function Blueprint() {
             </div>
           </div>
 
+          {/* Editorial label — echoes "Architectural Primitives" treatment */}
+          <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative z-10">
+            <div className="w-full md:max-w-[90vw] lg:max-w-[1240px]">
+              <div className="w-full h-px bg-white/10" />
+              <p className="w-full text-center text-[10px] uppercase tracking-[0.5em] text-white/20 py-3 bg-background/80">
+                Engineered Visions
+              </p>
+              <div className="w-full h-px bg-white/10" />
+            </div>
+          </div>
+
           {/* Full-width carousel */}
-          <TestimonialCarousel />
+          <div className="py-8">
+            <TestimonialCarousel />
+          </div>
         </GridSection>
       </div>
 

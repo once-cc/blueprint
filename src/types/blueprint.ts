@@ -209,6 +209,7 @@ export interface Blueprint {
   discovery: BlueprintDiscovery;
   design: BlueprintDesign;
   deliver: BlueprintDeliver;
+  references?: BlueprintReference[];
   pdfUrl?: string;
   currentStep: number;
   createdAt: Date;
@@ -241,6 +242,11 @@ export interface BlueprintRefinement {
   };
   imageryStyle?: string;
   riskTolerance?: string;
+}
+
+export interface SessionStatus {
+  hasExisting: boolean;
+  confirmed: boolean;
 }
 
 // ============= Configurator Steps =============

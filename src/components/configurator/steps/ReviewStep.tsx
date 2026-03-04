@@ -146,7 +146,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
               ? `Specific Goals: ${discovery.conversionGoals.map(g => g.replace(/_/g, ' ')).join(', ')}`
               : null,
           ].filter(Boolean) as string[];
-        case 2:
+        case 2: {
           const archetype = BRAND_ARCHETYPES.find(a => a.id === discovery.brandArchetype);
           const brandVoice = discovery.brandVoice || {};
           return [
@@ -156,12 +156,14 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             (brandVoice.personality || discovery.personalityTags?.[0]) && `Personality: ${brandVoice.personality || discovery.personalityTags?.[0]}`,
             (brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]) && `Energy: ${brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}`,
           ].filter(Boolean) as string[];
-        case 3:
+        }
+        case 3: {
           const personality = SALES_PERSONALITIES.find(p => p.id === discovery.salesPersonality);
           return [
             personality && `Style: ${personality.title}`,
             discovery.ctaPrimaryLabel && `CTA: "${discovery.ctaPrimaryLabel}"`,
           ].filter(Boolean) as string[];
+        }
         default:
           return [];
       }
@@ -181,7 +183,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             design.fontWeight && `Weight: ${design.fontWeight}`,
             design.animationIntensity && `Animation: ${design.animationIntensity}/10`,
           ].filter(Boolean) as string[];
-        case 6:
+        case 6: {
           const lines: string[] = [];
           if (design.imageryStyle) {
             lines.push(`Imagery: ${design.imageryStyle}`);
@@ -190,6 +192,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
             lines.push(`Palette: ${design.colourPaletteStyle}`);
           }
           return lines;
+        }
         default:
           return [];
       }

@@ -15,4 +15,15 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'framer-motion': ['framer-motion'],
+          'lottie-react': ['lottie-react'],
+          'jspdf': ['jspdf']
+        }
+      }
+    }
+  }
 }));
