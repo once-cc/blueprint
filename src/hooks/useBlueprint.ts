@@ -305,7 +305,7 @@ export function useBlueprint() {
 
       // Force-sync user details to DB before submission
       // (the debounced sync may not have persisted these yet)
-      const blueprintClient = getBlueprintClientWithToken(blueprint.id);
+      const blueprintClient = getBlueprintClientWithToken(token);
       const { error: syncError } = await blueprintClient
         .from('blueprints')
         .update({
@@ -320,6 +320,7 @@ export function useBlueprint() {
           dream_intent: blueprint.dreamIntent || null,
         })
         .eq('id', blueprint.id);
+      console.log('[useBlueprint] Pre-submit sync result:', { syncError, userEmail: blueprint.userEmail, firstName: blueprint.firstName });
 
       if (syncError) {
         console.error('[useBlueprint] Pre-submit sync failed:', syncError);
