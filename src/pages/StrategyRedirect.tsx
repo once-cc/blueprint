@@ -6,9 +6,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 /**
- * /strategy — Landing page for PDF "Request Strategy Session" CTA.
+ * /clarity — Landing page for PDF "Request Clarity Call" CTA.
  *
- * Opens when a user clicks the CTA button in their Blueprint PDF.
+ * Opens when a user clicks the CTA button in their Blueprint PDF or email.
  * Reads ?id=<blueprint_id> and calls the request-clarity-call edge function.
  */
 
@@ -83,7 +83,7 @@ export default function StrategyRedirect() {
                             Sending your request…
                         </h1>
                         <p className="text-muted-foreground">
-                            We're notifying our team about your strategy session request.
+                            We're notifying our team about your clarity call request.
                         </p>
                     </div>
                 )}
@@ -104,7 +104,7 @@ export default function StrategyRedirect() {
                                 Request Received
                             </h1>
                             <p className="text-muted-foreground leading-relaxed">
-                                We'll be in touch within <span className="text-foreground font-medium">24 hours</span> to schedule your strategy session.
+                                We'll be in touch within <span className="text-foreground font-medium">24 hours</span> to schedule your clarity call.
                             </p>
                         </div>
                         <Button
@@ -129,7 +129,7 @@ export default function StrategyRedirect() {
                                 Already Requested
                             </h1>
                             <p className="text-muted-foreground leading-relaxed">
-                                A strategy session has already been requested for this Blueprint. Our team will be reaching out shortly.
+                                A clarity call has already been requested for this Blueprint. Our team will be reaching out shortly.
                             </p>
                         </div>
                         <Button

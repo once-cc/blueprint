@@ -536,35 +536,104 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         y += 12;
 
         const palette = blueprint.design.generatedPalette;
-        const swatchW = Math.min((CONTENT_WIDTH - (palette.length - 1) * 4) / palette.length, 28);
-        let sx = MARGIN;
 
-        palette.forEach((swatch) => {
-            try {
-                doc.setFillColor(swatch.color);
-            } catch {
-                doc.setFillColor('#888888');
-            }
-            doc.rect(sx, y, swatchW, swatchW, 'F');
+        if (palette.length === 7) {
+            // Adopt the 3-row layout from the configurator UI
+            const row1 = [palette[2], palette[3], palette[4], palette[5]]; // Foregrounds & Accents
+            const row2 = [palette[0], palette[1], palette[6]]; // Backgrounds & Border
 
-            doc.setDrawColor(COLORS.structural);
-            doc.setLineWidth(0.3);
-            doc.rect(sx, y, swatchW, swatchW, 'S');
+            const swatchW = 18;
+            const swatchH = 18;
+            const rx = Math.min(swatchW / 4, 4); // rounded border
 
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(7);
-            doc.setTextColor(COLORS.secondaryText);
-            doc.text(swatch.role.toUpperCase(), sx, y + swatchW + 5);
+            const renderSwatch = (swatch: typeof palette[0], sx: number, sy: number) => {
+                try { doc.setFillColor(swatch.color); } catch { doc.setFillColor('#888888'); }
+                if (typeof doc.roundedRect === 'function') {
+                    doc.roundedRect(sx, sy, swatchW, swatchH, rx, rx, 'F');
+                    doc.setDrawColor(COLORS.structural); doc.setLineWidth(0.3);
+                    doc.roundedRect(sx, sy, swatchW, swatchH, rx, rx, 'S');
+                } else {
+                    doc.rect(sx, sy, swatchW, swatchH, 'F');
+                    doc.setDrawColor(COLORS.structural); doc.setLineWidth(0.3);
+                    doc.rect(sx, sy, swatchW, swatchH, 'S');
+                }
 
-            doc.setFont('courier', 'normal');
-            doc.setFontSize(7);
-            doc.setTextColor(COLORS.primaryText);
-            doc.text(swatch.color, sx, y + swatchW + 10);
+                const roleStr = swatch.role.replace(/_/g, ' ').toLowerCase();
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(COLORS.primaryText);
+                const roleWidth = doc.getTextWidth(roleStr);
+                doc.text(roleStr, sx + (swatchW / 2) - (roleWidth / 2), sy + swatchH + 6);
 
-            sx += swatchW + 4;
-        });
+                const hexStr = swatch.color.toUpperCase();
+                doc.setFont('courier', 'normal'); doc.setFontSize(7); doc.setTextColor(COLORS.secondaryText);
+                const hexWidth = doc.getTextWidth(hexStr);
+                doc.text(hexStr, sx + (swatchW / 2) - (hexWidth / 2), sy + swatchH + 11);
+            };
 
-        y += swatchW + 20;
+            // Top Row (4 items)
+            const row1Spacing = 16;
+            const row1Width = (4 * swatchW) + (3 * row1Spacing);
+            let startX1 = (PAGE_WIDTH / 2) - (row1Width / 2);
+            row1.forEach((swatch) => { renderSwatch(swatch, startX1, y); startX1 += swatchW + row1Spacing; });
+
+            y += swatchH + 20;
+
+            // Middle Row (3 items)
+            const row2Spacing = 24; // slightly wider spread for 3 items
+            const row2Width = (3 * swatchW) + (2 * row2Spacing);
+            let startX2 = (PAGE_WIDTH / 2) - (row2Width / 2);
+            row2.forEach((swatch) => { renderSwatch(swatch, startX2, y); startX2 += swatchW + row2Spacing; });
+
+            y += swatchH + 20;
+
+            // Bottom Strip (7 joined colors)
+            const stripW = CONTENT_WIDTH;
+            const stripH = 8;
+            const segmentW = stripW / 7;
+            let stripX = MARGIN;
+
+            palette.forEach((swatch) => {
+                try { doc.setFillColor(swatch.color); } catch { doc.setFillColor('#888888'); }
+                doc.rect(stripX, y, segmentW, stripH, 'F');
+                stripX += segmentW;
+            });
+
+            doc.setDrawColor(COLORS.structural); doc.setLineWidth(0.3);
+            doc.rect(MARGIN, y, stripW, stripH, 'S');
+
+            y += stripH + 20;
+
+        } else {
+            // Fallback for custom palette counts
+            const swatchW = Math.min((CONTENT_WIDTH - (palette.length - 1) * 4) / palette.length, 28);
+            let sx = MARGIN;
+
+            palette.forEach((swatch) => {
+                try { doc.setFillColor(swatch.color); } catch { doc.setFillColor('#888888'); }
+                if (typeof doc.roundedRect === 'function') {
+                    doc.roundedRect(sx, y, swatchW, swatchW, 3, 3, 'F');
+                } else {
+                    doc.rect(sx, y, swatchW, swatchW, 'F');
+                }
+
+                doc.setDrawColor(COLORS.structural); doc.setLineWidth(0.3);
+
+                if (typeof doc.roundedRect === 'function') {
+                    doc.roundedRect(sx, y, swatchW, swatchW, 3, 3, 'S');
+                } else {
+                    doc.rect(sx, y, swatchW, swatchW, 'S');
+                }
+
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(COLORS.secondaryText);
+                doc.text(swatch.role.toUpperCase(), sx, y + swatchW + 5);
+
+                doc.setFont('courier', 'normal'); doc.setFontSize(7); doc.setTextColor(COLORS.primaryText);
+                doc.text(swatch.color, sx, y + swatchW + 10);
+
+                sx += swatchW + 4;
+            });
+
+            y += swatchW + 20;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -667,7 +736,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     doc.text(`[ SYS.10 ]`, centerPoint, y, { align: 'center' });
     y += 6;
 
-    const sysTitle = 'INITIATE EXECUTION PHASE';
+    const sysTitle = 'INITIATE NEXT PHASE';
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(COLORS.primaryText);
@@ -690,7 +759,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     doc.setTextColor(COLORS.secondaryText);
     doc.setFont('times', 'normal');
     const closingLines = doc.splitTextToSize(
-        'Your strategic parameters have been catalogued and locked. To move forward with implementation, authorize a strategy sequence below.',
+        'Your blueprint captures the strategic direction for what comes next. To explore this further with our team, request a clarity call below.',
         CONTENT_WIDTH - 20
     );
     closingLines.forEach((line: string) => {
@@ -701,7 +770,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
 
     y += 10;
 
-    const btnText = 'REQUEST STRATEGY SESSION';
+    const btnText = 'REQUEST CLARITY CALL';
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     const btnSpace = 1.5;
@@ -719,7 +788,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     doc.text(btnText, centerPoint - (btnWTotal / 2), y + 8);
     doc.setCharSpace(0);
 
-    doc.link(centerPoint - (buttonW / 2), y, buttonW, 14, { url: `https://cleland.studio/strategy?id=${blueprint.id}` });
+    doc.link(centerPoint - (buttonW / 2), y, buttonW, 14, { url: `https://crafted.cleland.studio/clarity?id=${blueprint.id}` });
 
     return {
         doc,

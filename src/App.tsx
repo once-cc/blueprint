@@ -76,8 +76,8 @@ const App = () => (
                   <Route path="/blueprint-preview/:id" element={<BlueprintPreview />} />
                   <Route path="/blueprint/pdf-preview" element={<BlueprintPreview />} />
 
-                  {/* Strategy session CTA from PDF */}
-                  <Route path="/strategy" element={<StrategyRedirect />} />
+                  {/* Clarity call CTA from PDF/email */}
+                  <Route path="/clarity" element={<StrategyRedirect />} />
 
 
                   {/* External portal redirect */}
