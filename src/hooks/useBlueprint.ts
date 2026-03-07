@@ -280,7 +280,14 @@ export function useBlueprint() {
       let pdfUrl: string | null = null;
       try {
         const { generateBlueprintPdfBlob } = await import('@/lib/generateBlueprintPdf');
-        const { blob, filename } = generateBlueprintPdfBlob(blueprint);
+
+        // Merge in the fresh userDetails so the PDF has the latest form data
+        const pdfPayload = {
+          ...blueprint,
+          ...(userDetails || {})
+        };
+
+        const { blob, filename } = generateBlueprintPdfBlob(pdfPayload as any);
         const storagePath = `pdfs/${blueprint.id}/${filename}`;
 
         const { error: uploadError } = await supabase.storage
