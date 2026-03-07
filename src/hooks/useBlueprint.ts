@@ -303,6 +303,28 @@ export function useBlueprint() {
         console.warn('[useBlueprint] PDF generation failed, continuing without attachment:', pdfErr);
       }
 
+      // Force-sync user details to DB before submission
+      // (the debounced sync may not have persisted these yet)
+      const blueprintClient = getBlueprintClientWithToken(blueprint.id);
+      const { error: syncError } = await blueprintClient
+        .from('blueprints')
+        .update({
+          status: 'draft',
+          user_email: blueprint.userEmail || null,
+          first_name: blueprint.firstName || null,
+          last_name: blueprint.lastName || null,
+          business_name: blueprint.businessName || null,
+          discovery: blueprint.discovery,
+          design: blueprint.design,
+          deliver: blueprint.deliver,
+          dream_intent: blueprint.dreamIntent || null,
+        })
+        .eq('id', blueprint.id);
+
+      if (syncError) {
+        console.error('[useBlueprint] Pre-submit sync failed:', syncError);
+      }
+
       // Call the atomic submit-blueprint Edge Function
       console.log('[useBlueprint] Invoking submit-blueprint with blueprint_id:', blueprint.id);
       const { data, error: invokeError } = await supabase.functions.invoke('submit-blueprint', {
