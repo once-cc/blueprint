@@ -304,12 +304,15 @@ export function useBlueprint() {
       }
 
       // Call the atomic submit-blueprint Edge Function
+      console.log('[useBlueprint] Invoking submit-blueprint with blueprint_id:', blueprint.id);
       const { data, error: invokeError } = await supabase.functions.invoke('submit-blueprint', {
         body: { blueprint_id: blueprint.id, pdf_url: pdfUrl }
       });
+      console.log('[useBlueprint] Response:', { data, invokeError });
 
       if (invokeError || !data?.success) {
         const errorMsg = data?.errors?.join(', ') || data?.error || 'Submission failed';
+        console.error('[useBlueprint] Submission failed:', { invokeError, data, errorMsg });
         toast({
           title: 'Error',
           description: errorMsg,

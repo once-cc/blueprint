@@ -86,6 +86,10 @@ export const useBlueprintStorage = (
                 deliver: currentBlueprint.deliver,
                 dream_intent: currentBlueprint.dreamIntent ?? null,
                 current_step: currentBlueprint.currentStep,
+                user_email: currentBlueprint.userEmail ?? undefined,
+                first_name: currentBlueprint.firstName ?? undefined,
+                last_name: currentBlueprint.lastName ?? undefined,
+                business_name: currentBlueprint.businessName ?? undefined,
                 updated_at: new Date().toISOString(),
             };
 
