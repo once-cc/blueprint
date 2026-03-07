@@ -374,7 +374,7 @@ export function useBlueprint() {
 
       toast({
         title: 'Blueprint Submitted',
-        description: 'Your Crafted Blueprint has been received. Check your email for next steps.',
+        description: 'Your Crafted Blueprint has been received. To initiate next phase — Request a Clarity Call.',
         className: 'bg-background/80 backdrop-blur-xl border border-[#d4a853]/20 shadow-2xl shadow-black/40',
         titleClassName: 'font-nohemi font-medium tracking-wide text-white text-sm uppercase',
         descriptionClassName: 'font-body text-muted-foreground mt-1.5'

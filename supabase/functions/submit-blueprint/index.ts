@@ -225,7 +225,7 @@ async function phase2(
             If you'd like to explore the blueprint further, you can request a short clarity call here.
           </p>
           <div style="text-align: center; margin-bottom: 8px;">
-            <a href="https://crafted.cleland.studio/clarity" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
+            <a href="https://crafted.cleland.studio/clarity?id=${blueprintId}" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
               Request a Clarity Call
             </a>
           </div>
