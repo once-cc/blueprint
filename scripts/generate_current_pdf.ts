@@ -1,16 +1,5 @@
-/**
- * Client-side PDF generation for submitted blueprints.
- *
- * Uses jspdf to programmatically build a branded PDF document
- * from the Blueprint data model. White-paper studio artifact
- * aesthetic with editorial typography and architectural precision.
- */
-
 import { jsPDF } from 'jspdf';
-import type { Blueprint, BlueprintReference, BrandAsset } from '@/types/blueprint';
-import { SALES_PERSONALITIES, CONFIGURATOR_STEPS } from '@/types/blueprint';
-
-// ── Brand Constants ────────────────────────────────────────────
+import * as fs from 'fs';
 
 const COLORS = {
     bg: '#fcfcfc',
@@ -24,40 +13,135 @@ const PAGE_WIDTH = 210;
 const PAGE_HEIGHT = 297;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
-// ── Reference Lookups ──────────────────────────────────────────
+// ── Complete dummy data matching the full configurator ──────────
+
+const blueprint = {
+    id: "bp_1234567890",
+    firstName: "Aria",
+    lastName: "Vance",
+    businessName: "Aethera Aesthetics",
+    userEmail: "hello@aethera.co",
+    dreamIntent: "I want a website that feels like walking into a five-star spa — the moment someone lands on the page, they should feel an overwhelming sense of calm, trust, and exclusivity. Every detail should whisper luxury.",
+    discovery: {
+        siteTopic: "High-end Medical Spa",
+        primaryPurpose: "lead_contact",
+        secondaryPurposes: ["promotion", "content_community"],
+        conversionGoals: ["capture_leads", "book_calls", "build_authority"],
+        advancedObjectives: {
+            booking_type: "private_consultation",
+            lead_type: "high_value_inquiry",
+            visibility: "seo_organic",
+        },
+        brandVoice: {
+            tone: "Professional",
+            presence: "Confident",
+            personality: "Elegant",
+            visitorFeeling: {
+                energy: "Calm",
+                confidence: "Absolute trust"
+            }
+        },
+        salesPersonality: "luxury_gatekeeper",
+        ctaPrimaryLabel: "Apply for a Private Consultation",
+        ctaStrategyNotes: "Focus on exclusivity and high-touch service. Application model to filter leads."
+    },
+    design: {
+        visualStyle: "luxury",
+        imageryStyle: "cinematic",
+        brandImageryMode: "upload",
+        brandAssets: [
+            { id: "ba_1", filename: "hero-treatment-room.jpg", size: 2400000, type: "lifestyle", notes: "Main hero banner — treatment suite", isPrimary: true, order: 0 },
+            { id: "ba_2", filename: "dr-vance-headshot.jpg", size: 1800000, type: "headshot", notes: "Founder portrait for About page", isPrimary: false, order: 1 },
+            { id: "ba_3", filename: "aethera-logo-gold.svg", size: 45000, type: "logo", notes: "Primary brand mark — gold variant", isPrimary: false, order: 2 },
+            { id: "ba_4", filename: "product-serum-line.jpg", size: 3200000, type: "product", notes: "Product line imagery for services section", isPrimary: false, order: 3 },
+        ],
+        typographyMode: "upload",
+        customFonts: {
+            files: [
+                { id: "cf_1", fileData: "", filename: "Cormorant-SemiBold.woff2", weight: "600", style: "normal" },
+                { id: "cf_2", fileData: "", filename: "Cormorant-Italic.woff2", weight: "400", style: "italic" },
+                { id: "cf_3", fileData: "", filename: "Inter-Regular.woff2", weight: "400", style: "normal" },
+            ],
+            roles: {
+                h1: "cf_1",
+                h2: "cf_1",
+                h3: "cf_2",
+                eyebrow: "cf_3",
+                body: "cf_3",
+                button: "cf_3",
+            }
+        },
+        typography_direction: "elegant_premium",
+        fontWeight: "mixed",
+        animationIntensity: 4,
+        colourRelationship: "monochrome",
+        baseHue: 45,
+        paletteEnergy: 3,
+        paletteContrast: 8,
+        generatedPalette: [
+            { role: "Background", color: "#0a0a0f" },
+            { role: "Surface", color: "#1a1a1f" },
+            { role: "Text", color: "#f5f5f5" },
+            { role: "Accent", color: "#d4a853" },
+            { role: "Muted", color: "#6b6b6b" },
+        ]
+    },
+    deliver: {
+        pages: ["Home", "About", "Services", "Portfolio", "Contact", "Blog"],
+        features: ["Booking System", "CMS / Blog", "Email Marketing", "Analytics Dashboard", "SEO Tools"],
+        timeline: "6_10_weeks",
+        budget: "10_25k",
+        riskTolerance: 3
+    },
+    references: [
+        { id: "ref_1", type: "link", url: "https://www.augustinusbader.com", role: "hero_reference", label: "Augustinus Bader", notes: "Love the clinical luxury feel and photography treatment", createdAt: new Date() },
+        { id: "ref_2", type: "image", url: "", filename: "moodboard-interior.jpg", role: "overall_vibe", notes: "Spa interior atmosphere — marble and warm tones", createdAt: new Date() },
+        { id: "ref_3", type: "link", url: "https://www.drbarbarasturm.com", role: "layout_reference", label: "Dr. Barbara Sturm", notes: "Elegant editorial layout with strong hierarchy", createdAt: new Date() },
+        { id: "ref_4", type: "image", url: "", filename: "typography-sample.png", role: "typography_reference", notes: "Serif + sans pairing reference", createdAt: new Date() },
+        { id: "ref_5", type: "link", url: "https://www.lamer.com", role: "colour_reference", label: "La Mer", notes: "The deep ocean teal with gold accents", createdAt: new Date() },
+    ]
+};
+
+// ── Sales personality lookup ──────────────────────────────────
+
+const SALES_PERSONALITIES: Record<string, string> = {
+    fast_freemium: "Fast Freemium",
+    social_proof_closer: "Social Proof Closer",
+    natural_approachable: "Natural & Approachable",
+    guided_sherpa: "Guided Sherpa",
+    educator: "Educator First",
+    quietly_authoritative: "Quietly Authoritative",
+    luxury_gatekeeper: "Luxury Gatekeeper",
+    slow_burn_strategist: "Slow Burn Strategist",
+    movement_starter: "Movement Starter",
+    algorithmic_closer: "Algorithmic Closer",
+};
 
 const REFERENCE_ROLES: Record<string, string> = {
-    hero_reference: 'Hero Inspiration',
-    layout_reference: 'Layout Reference',
-    colour_reference: 'Colour Reference',
-    typography_reference: 'Typography Reference',
-    overall_vibe: 'Overall Vibe',
-    other: 'Other',
+    hero_reference: "Hero Inspiration",
+    layout_reference: "Layout Reference",
+    colour_reference: "Colour Reference",
+    typography_reference: "Typography Reference",
+    overall_vibe: "Overall Vibe",
+    other: "Other",
 };
 
 const ASSET_TYPES: Record<string, string> = {
-    headshot: 'Headshot',
-    product: 'Product',
-    portfolio: 'Portfolio',
-    lifestyle: 'Lifestyle',
-    campaign: 'Campaign',
-    logo: 'Logo',
-    background: 'Background',
-    texture: 'Texture',
-    other: 'Other',
-    unassigned: 'Unassigned',
+    headshot: "Headshot",
+    product: "Product",
+    portfolio: "Portfolio",
+    lifestyle: "Lifestyle",
+    campaign: "Campaign",
+    logo: "Logo",
+    background: "Background",
+    texture: "Texture",
+    other: "Other",
+    unassigned: "Unassigned",
 };
 
-// ── Helpers ────────────────────────────────────────────────────
-
-function formatLabel(key: string): string {
+function formatLabel(key: string) {
     if (!key) return '';
-    return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function getSalesPersonalityTitle(id?: string): string | undefined {
-    if (!id) return undefined;
-    return SALES_PERSONALITIES.find((p) => p.id === id)?.title;
+    return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function formatFileSize(bytes: number): string {
@@ -66,14 +150,12 @@ function formatFileSize(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// ── PDF Builder ────────────────────────────────────────────────
+// ── PDF Builder ───────────────────────────────────────────────
 
-function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName: string } {
+function buildBlueprintPdf() {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     let pageNum = 1;
     let y = 0;
-
-    // ── Page Infrastructure ───────────────────────────────────
 
     function drawBaseStudio() {
         doc.setFillColor(COLORS.bg);
@@ -95,8 +177,6 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
             y = MARGIN + 10;
         }
     }
-
-    // ── Typography Components ─────────────────────────────────
 
     function actHeader(actTitle: string) {
         checkPage(30);
@@ -198,7 +278,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     y += 24;
 
     // Centered hero title
-    const titleStr = blueprint.businessName || 'Confidential Project';
+    let titleStr = blueprint.businessName || "Confidential Project";
     doc.setFont('times', 'italic');
     doc.setFontSize(44);
     doc.setTextColor(COLORS.primaryText);
@@ -230,7 +310,8 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     doc.setFont('times', 'normal');
     doc.setFontSize(16);
     doc.setTextColor(COLORS.primaryText);
-    doc.text(clientName || 'Client', MARGIN, y + 6);
+    doc.text(clientName, MARGIN, y + 6);
+
     y += 24;
 
     // EMAIL
@@ -257,14 +338,14 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     doc.text('GENERATED', MARGIN, y);
     doc.setCharSpace(0);
 
-    const dateStr = new Date(blueprint.submittedAt || blueprint.createdAt || new Date()).toLocaleDateString('en-NZ', { year: 'numeric', month: 'long', day: 'numeric' });
+    const dateStr = new Date("2026-03-07").toLocaleDateString('en-NZ', { year: 'numeric', month: 'long', day: 'numeric' });
     doc.setFont('times', 'normal');
     doc.setFontSize(14);
     doc.setTextColor(COLORS.primaryText);
     doc.text(dateStr, MARGIN, y + 6);
 
     // ═══════════════════════════════════════════════════════════
-    // ACT I — Discovery
+    // PAGE 2 — ACT I: Discovery
     // ═══════════════════════════════════════════════════════════
 
     doc.addPage();
@@ -274,7 +355,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
 
     actHeader('ACT I — Discovery');
 
-    // ── Dream Intent Pull-Quote ───────────────────────────────
+    // ── DREAM INTENT PULL-QUOTE ──────────────────────────────
     if (blueprint.dreamIntent) {
         checkPage(40);
 
@@ -297,6 +378,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
         y += 12;
 
+        // Large italic pull-quote
         doc.setFont('times', 'italic');
         doc.setFontSize(16);
         doc.setTextColor(COLORS.primaryText);
@@ -304,6 +386,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         const quoteLines = doc.splitTextToSize(quoteText, CONTENT_WIDTH - 10);
         doc.text(quoteLines, MARGIN + 5, y);
 
+        // Vertical accent bar on the left
         doc.setDrawColor(COLORS.secondaryText);
         doc.setLineWidth(0.6);
         doc.line(MARGIN, y - 4, MARGIN, y + quoteLines.length * 7);
@@ -311,48 +394,46 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         y += quoteLines.length * 7 + 16;
     }
 
-    // SYS.01 — Business Foundations
-    editorialSection('SYS.01', CONFIGURATOR_STEPS[0].title, {
+    // SYS.01 Business Foundations
+    editorialSection('SYS.01', 'Business Foundations', {
         'Industry Sector': blueprint.discovery?.siteTopic,
-        'Primary Purpose': blueprint.discovery?.primaryPurpose ? formatLabel(blueprint.discovery.primaryPurpose) : undefined,
+        'Primary Purpose': formatLabel(blueprint.discovery?.primaryPurpose)
     }, {
         'Secondary Objectives': blueprint.discovery?.secondaryPurposes,
-        'Conversion Goals': blueprint.discovery?.conversionGoals,
+        'Conversion Goals': blueprint.discovery?.conversionGoals
     });
 
-    // SYS.01-B — Advanced Objectives
+    // Advanced Objectives (Tier 3)
     if (blueprint.discovery?.advancedObjectives) {
         const objs = blueprint.discovery.advancedObjectives;
         const objFields: Record<string, string> = {};
         Object.entries(objs).forEach(([k, v]) => {
-            if (v) objFields[formatLabel(k)] = formatLabel(String(v));
+            objFields[formatLabel(k)] = formatLabel(String(v));
         });
-        if (Object.keys(objFields).length > 0) {
-            editorialSection('SYS.01-B', 'Strategic Parameters', objFields);
-        }
+        editorialSection('SYS.01-B', 'Strategic Parameters', objFields);
     }
 
-    // SYS.02 — Brand Voice
+    // SYS.02 Brand Voice
     if (blueprint.discovery?.brandVoice) {
         const bv = blueprint.discovery.brandVoice;
-        editorialSection('SYS.02', CONFIGURATOR_STEPS[1].title, {
+        editorialSection('SYS.02', 'Brand Voice', {
             'Primary Tone': bv.tone,
             'Digital Presence': bv.presence,
             'Brand Personality': bv.personality,
             'Imparted Energy': bv.visitorFeeling?.energy,
-            'Visitor Confidence': bv.visitorFeeling?.confidence,
+            'Visitor Confidence': bv.visitorFeeling?.confidence
         });
     }
 
-    // SYS.03 — CTA Energy (with human-readable sales personality)
-    editorialSection('SYS.03', CONFIGURATOR_STEPS[2].title, {
-        'Sales Personality': getSalesPersonalityTitle(blueprint.discovery?.salesPersonality),
+    // SYS.03 CTA Energy — with human-readable sales personality title
+    editorialSection('SYS.03', 'CTA Energy', {
+        'Sales Personality': SALES_PERSONALITIES[blueprint.discovery?.salesPersonality || ''] || formatLabel(blueprint.discovery?.salesPersonality || ''),
         'Primary CTA Syntax': blueprint.discovery?.ctaPrimaryLabel,
-        'Strategic Approach': blueprint.discovery?.ctaStrategyNotes,
+        'Strategic Approach': blueprint.discovery?.ctaStrategyNotes
     });
 
     // ═══════════════════════════════════════════════════════════
-    // ACT II — Architecture & Design
+    // PAGE — ACT II: Architecture & Design
     // ═══════════════════════════════════════════════════════════
 
     doc.addPage();
@@ -362,13 +443,13 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
 
     actHeader('ACT II — Architecture & Design');
 
-    // SYS.04 — Visual Style
-    editorialSection('SYS.04', CONFIGURATOR_STEPS[3].title, {
-        'Aesthetic Direction': blueprint.design?.visualStyle ? formatLabel(blueprint.design.visualStyle) : undefined,
-        'Imagery Composition': blueprint.design?.imageryStyle ? formatLabel(blueprint.design.imageryStyle) : undefined,
+    // SYS.04 Visual Style
+    editorialSection('SYS.04', 'Visual Style', {
+        'Aesthetic Direction': formatLabel(blueprint.design?.visualStyle || ''),
+        'Imagery Composition': formatLabel(blueprint.design?.imageryStyle || '')
     });
 
-    // SYS.04-B — Brand Asset Catalogue
+    // ── BRAND ASSETS CATALOGUE (Tier 2) ─────────────────────
     if (blueprint.design?.brandAssets && blueprint.design.brandAssets.length > 0) {
         checkPage(40);
 
@@ -391,16 +472,17 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
         y += 10;
 
-        blueprint.design.brandAssets.forEach((asset: BrandAsset) => {
+        blueprint.design.brandAssets.forEach((asset: any) => {
             checkPage(18);
 
+            // Primary badge
             const prefix = asset.isPrimary ? '★  ' : '';
 
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8);
             doc.setTextColor(COLORS.secondaryText);
             doc.setCharSpace(1);
-            doc.text((ASSET_TYPES[asset.type] || 'Asset').toUpperCase(), MARGIN, y);
+            doc.text(`${ASSET_TYPES[asset.type] || 'Asset'}`.toUpperCase(), MARGIN, y);
             doc.setCharSpace(0);
 
             doc.setFont('times', 'normal');
@@ -408,6 +490,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
             doc.setTextColor(COLORS.primaryText);
             doc.text(`${prefix}${asset.filename}`, MARGIN, y + 5);
 
+            // File size
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8);
             doc.setTextColor(COLORS.secondaryText);
@@ -427,14 +510,14 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         y += 8;
     }
 
-    // SYS.05 — Typography & Motion
-    editorialSection('SYS.05', CONFIGURATOR_STEPS[4].title, {
-        'Typographic System': blueprint.design?.typography_direction ? formatLabel(blueprint.design.typography_direction) : undefined,
-        'Base Weights': blueprint.design?.fontWeight ? formatLabel(blueprint.design.fontWeight) : undefined,
-        'Animation Velocity (1-10)': blueprint.design?.animationIntensity !== undefined ? String(blueprint.design.animationIntensity) : undefined,
+    // SYS.05 Typography & Motion
+    editorialSection('SYS.05', 'Typography & Motion', {
+        'Typographic System': formatLabel(blueprint.design?.typography_direction || ''),
+        'Base Weights': formatLabel(blueprint.design?.fontWeight || ''),
+        'Animation Velocity (1-10)': String(blueprint.design?.animationIntensity)
     });
 
-    // SYS.05-B — Custom Font Specimen
+    // ── CUSTOM FONT SPECIMEN (Tier 1) ───────────────────────
     if (blueprint.design?.customFonts && blueprint.design.customFonts.files.length > 0) {
         checkPage(50);
 
@@ -457,7 +540,8 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
         y += 10;
 
-        blueprint.design.customFonts.files.forEach((font) => {
+        // Font files
+        blueprint.design.customFonts.files.forEach((font: any) => {
             checkPage(12);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8);
@@ -473,6 +557,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
 
         y += 6;
 
+        // Role assignments
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
         doc.setTextColor(COLORS.secondaryText);
@@ -486,7 +571,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         Object.entries(roles).forEach(([role, fileId]) => {
             if (!fileId) return;
             checkPage(10);
-            const matchedFont = files.find((f) => f.id === fileId);
+            const matchedFont = files.find((f: any) => f.id === fileId);
             const fontName = matchedFont ? matchedFont.filename : 'Unmapped';
 
             doc.setFont('helvetica', 'normal');
@@ -504,15 +589,15 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         y += 10;
     }
 
-    // SYS.06 — Color Palette
-    editorialSection('SYS.06', CONFIGURATOR_STEPS[5].title, {
-        'Color Relationship': blueprint.design?.colourRelationship ? formatLabel(blueprint.design.colourRelationship) : undefined,
-        'Base Hue': blueprint.design?.baseHue !== undefined ? `${blueprint.design.baseHue}°` : undefined,
-        'Palette Energy (1-10)': blueprint.design?.paletteEnergy !== undefined ? String(blueprint.design.paletteEnergy) : undefined,
-        'Contrast Ratio (1-10)': blueprint.design?.paletteContrast !== undefined ? String(blueprint.design.paletteContrast) : undefined,
+    // SYS.06 Color Palette
+    editorialSection('SYS.06', 'Color Palette', {
+        'Color Relationship': formatLabel(blueprint.design?.colourRelationship || ''),
+        'Base Hue': `${blueprint.design?.baseHue}°`,
+        'Palette Energy (1-10)': String(blueprint.design?.paletteEnergy),
+        'Contrast Ratio (1-10)': String(blueprint.design?.paletteContrast)
     });
 
-    // SYS.06-B — Visual Color Swatches
+    // ── COLOR SWATCHES (Tier 1 — Visual Showpiece) ──────────
     if (blueprint.design?.generatedPalette && blueprint.design.generatedPalette.length > 0) {
         checkPage(50);
 
@@ -539,7 +624,11 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         const swatchW = Math.min((CONTENT_WIDTH - (palette.length - 1) * 4) / palette.length, 28);
         let sx = MARGIN;
 
-        palette.forEach((swatch) => {
+        // Draw horizontal swatches
+        palette.forEach((swatch: any) => {
+            checkPage(40);
+
+            // Filled color rectangle
             try {
                 doc.setFillColor(swatch.color);
             } catch {
@@ -547,15 +636,18 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
             }
             doc.rect(sx, y, swatchW, swatchW, 'F');
 
+            // Subtle border
             doc.setDrawColor(COLORS.structural);
             doc.setLineWidth(0.3);
             doc.rect(sx, y, swatchW, swatchW, 'S');
 
+            // Role label beneath
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(7);
             doc.setTextColor(COLORS.secondaryText);
             doc.text(swatch.role.toUpperCase(), sx, y + swatchW + 5);
 
+            // Hex value
             doc.setFont('courier', 'normal');
             doc.setFontSize(7);
             doc.setTextColor(COLORS.primaryText);
@@ -568,7 +660,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     }
 
     // ═══════════════════════════════════════════════════════════
-    // ACT III — Execution
+    // PAGE — ACT III: Execution
     // ═══════════════════════════════════════════════════════════
 
     doc.addPage();
@@ -578,23 +670,22 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
 
     actHeader('ACT III — Execution');
 
-    // SYS.07 — Functionality & Scope
-    editorialSection('SYS.07', CONFIGURATOR_STEPS[6].title, {
-        'Deployment Timeline': blueprint.deliver?.timeline ? formatLabel(blueprint.deliver.timeline) : undefined,
-        'Allocated Budget': blueprint.deliver?.budget ? formatLabel(blueprint.deliver.budget) : undefined,
+    // SYS.07 Functionality & Scope
+    editorialSection('SYS.07', 'Functionality & Scope', {
+        'Deployment Timeline': formatLabel(blueprint.deliver?.timeline || ''),
+        'Allocated Budget': formatLabel(blueprint.deliver?.budget || '')
     }, {
         'Architectural Pages': blueprint.deliver?.pages,
-        'Functional Systems': blueprint.deliver?.features,
+        'Functional Systems': blueprint.deliver?.features
     });
 
-    // SYS.08 — Creative Risk
-    editorialSection('SYS.08', CONFIGURATOR_STEPS[7].title, {
-        'Creative Risk Tolerance (1-10)': blueprint.deliver?.riskTolerance !== undefined ? String(blueprint.deliver.riskTolerance) : undefined,
+    // SYS.08 Creative Risk
+    editorialSection('SYS.08', 'Creative Risk', {
+        'Creative Risk Tolerance (1-10)': String(blueprint.deliver?.riskTolerance)
     });
 
-    // SYS.09 — Reference Catalogue
-    const refs = blueprint.references as unknown as BlueprintReference[] | undefined;
-    if (refs && refs.length > 0) {
+    // ── REFERENCES CATALOGUE (Tier 2) ───────────────────────
+    if (blueprint.references && blueprint.references.length > 0) {
         checkPage(40);
 
         doc.setFont('courier', 'normal');
@@ -616,27 +707,31 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
         doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
         y += 10;
 
-        refs.forEach((ref) => {
+        blueprint.references.forEach((ref: any) => {
             checkPage(22);
 
+            // Role label
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8);
             doc.setTextColor(COLORS.secondaryText);
             doc.setCharSpace(1);
-            doc.text((REFERENCE_ROLES[ref.role || ''] || ref.role || 'Reference').toUpperCase(), MARGIN, y);
+            doc.text((REFERENCE_ROLES[ref.role] || ref.role || 'Reference').toUpperCase(), MARGIN, y);
             doc.setCharSpace(0);
 
+            // Title / filename / URL
             doc.setFont('times', 'normal');
             doc.setFontSize(12);
             doc.setTextColor(COLORS.primaryText);
             const displayName = ref.label || ref.filename || ref.url || 'Untitled';
             doc.text(displayName, MARGIN, y + 5);
 
+            // Type badge + URL on right
             doc.setFont('courier', 'normal');
             doc.setFontSize(7);
             doc.setTextColor(COLORS.secondaryText);
             doc.text(ref.type.toUpperCase(), PAGE_WIDTH - MARGIN, y + 5, { align: 'right' });
 
+            // Notes
             if (ref.notes) {
                 doc.setFont('times', 'italic');
                 doc.setFontSize(10);
@@ -653,7 +748,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     }
 
     // ═══════════════════════════════════════════════════════════
-    // Final — CTA (Perfectly Centered)
+    // FINAL — CTA (Perfectly Centered)
     // ═══════════════════════════════════════════════════════════
 
     checkPage(80);
@@ -690,7 +785,7 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
     doc.setTextColor(COLORS.secondaryText);
     doc.setFont('times', 'normal');
     const closingLines = doc.splitTextToSize(
-        'Your strategic parameters have been catalogued and locked. To move forward with implementation, authorize a strategy sequence below.',
+        "Your strategic parameters have been catalogued and locked. To move forward with implementation, authorize a strategy sequence below.",
         CONTENT_WIDTH - 20
     );
     closingLines.forEach((line: string) => {
@@ -721,29 +816,9 @@ function buildBlueprintPdf(blueprint: Blueprint): { doc: jsPDF; safeBusinessName
 
     doc.link(centerPoint - (buttonW / 2), y, buttonW, 14, { url: `https://cleland.studio/strategy?id=${blueprint.id}` });
 
-    return {
-        doc,
-        safeBusinessName: blueprint.businessName
-            ? blueprint.businessName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
-            : 'blueprint',
-    };
+    return doc;
 }
 
-/**
- * Generate and download the PDF to the user's device.
- */
-export function generateBlueprintPdf(blueprint: Blueprint): void {
-    const { doc, safeBusinessName } = buildBlueprintPdf(blueprint);
-    const filename = `crafted-blueprint-${safeBusinessName}.pdf`;
-    doc.save(filename);
-}
-
-/**
- * Generate the PDF and return it as a Blob for upload to storage.
- */
-export function generateBlueprintPdfBlob(blueprint: Blueprint): { blob: Blob; filename: string } {
-    const { doc, safeBusinessName } = buildBlueprintPdf(blueprint);
-    const filename = `crafted-blueprint-${safeBusinessName}.pdf`;
-    const blob = doc.output('blob');
-    return { blob, filename };
-}
+const doc = buildBlueprintPdf();
+fs.writeFileSync('example_blueprint.pdf', Buffer.from(doc.output('arraybuffer')));
+console.log("PDF created at example_blueprint.pdf");
