@@ -117,6 +117,20 @@ async function phase2(
                     ? "Growth"
                     : "Essential";
 
+            // Extract discovery data for summary
+            const discovery = (blueprint.discovery || {}) as Record<string, unknown>;
+            const primaryPurpose = escapeHtml((discovery.primaryPurpose as string) || '');
+            const conversionGoals = (discovery.conversionGoals as string[]) || [];
+            const secondaryPurposes = (discovery.secondaryPurposes as string[]) || [];
+
+            // Build dynamic summary rows
+            const outcomesText = primaryPurpose
+                ? escapeHtml(primaryPurpose) + (secondaryPurposes.length ? `, ${secondaryPurposes.map(s => escapeHtml(s)).join(', ')}` : '')
+                : null;
+            const bottlenecksText = conversionGoals.length
+                ? conversionGoals.map(g => escapeHtml(g)).join(', ')
+                : null;
+
             const emailHtml = `
         <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
 
@@ -143,18 +157,14 @@ async function phase2(
               Blueprint Summary
             </p>
             <table style="width: 100%; font-size: 14px; color: #555555; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888;">Complexity Tier</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right;">
-                  <span style="display: inline-block; padding: 4px 14px; border: 1px solid #111111; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #111111;">
-                    ${tierLabel}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #888888;">Integrity Score</td>
-                <td style="padding: 8px 0; text-align: right; font-family: Georgia, serif; color: #111111;">${scores.integrity_score}/100</td>
-              </tr>
+              ${bottlenecksText ? `<tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888; vertical-align: top;">Main Bottlenecks</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right; color: #111111;">${bottlenecksText}</td>
+              </tr>` : ''}
+              ${outcomesText ? `<tr>
+                <td style="padding: 8px 0; color: #888888; vertical-align: top;">Main Outcomes</td>
+                <td style="padding: 8px 0; text-align: right; color: #111111;">${outcomesText}</td>
+              </tr>` : ''}
             </table>
           </div>
 
@@ -183,31 +193,31 @@ async function phase2(
             <tr>
               <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">02</td>
               <td style="padding: 10px 0;">
-                <strong style="color: #111111; font-size: 14px;">Personalised Strategy</strong><br/>
-                <span style="color: #888888; font-size: 13px;">You receive a tailored proposal — no generic templates.</span>
+                <strong style="color: #111111; font-size: 14px;">We'll Reach Out</strong><br/>
+                <span style="color: #888888; font-size: 13px;">Brief hello, and see if it makes sense to schedule a clarity call to discuss further.</span>
               </td>
             </tr>
             <tr>
               <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">03</td>
               <td style="padding: 10px 0;">
-                <strong style="color: #111111; font-size: 14px;">Strategy Call</strong><br/>
-                <span style="color: #888888; font-size: 13px;">We walk through your roadmap and answer every question.</span>
+                <strong style="color: #111111; font-size: 14px;">Clarity Call</strong><br/>
+                <span style="color: #888888; font-size: 13px;">We walk through your blueprint live, observe the nuances and provide recommendations.</span>
               </td>
             </tr>
           </table>
 
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0;" />
 
-          <!-- Request Strategy CTA -->
+          <!-- Request Clarity CTA -->
           <p style="font-size: 14px; color: #555555; text-align: center; margin-bottom: 8px;">
             <strong style="color: #111111;">Ready to take the next step?</strong>
           </p>
           <p style="font-size: 13px; color: #888888; text-align: center; margin-bottom: 20px;">
-            Request a strategy call and we'll be in touch within 24 hours.
+            Request a clarity call and we'll be in touch within 24 hours.
           </p>
           <div style="text-align: center; margin-bottom: 8px;">
-            <a href="https://cleland.studio/strategy" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
-              Request a Strategy Call
+            <a href="https://cleland.studio/clarity" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
+              Request a Clarity Call
             </a>
           </div>
           <p style="font-size: 11px; color: #aaaaaa; text-align: center; margin-bottom: 0;">
@@ -218,7 +228,7 @@ async function phase2(
 
           <!-- Footer -->
           <p style="font-size: 11px; color: #aaaaaa; margin: 0;">
-            Cleland Studio<br/>Crafted digital systems for serious operators
+            Cleland Studio<br/>Crafted digital systems for owners and operators
           </p>
         </div>
       `;
