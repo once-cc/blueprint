@@ -222,8 +222,8 @@ export function BlueprintConfigurator() {
     }
   };
 
-  const handleSubmit = async () => {
-    const result = await submitBlueprint();
+  const handleSubmit = async (userDetails?: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => {
+    const result = await submitBlueprint(userDetails);
     if (result.success) {
       setSubmitResult({ scores: result.scores });
       setIsSubmitted(true);
@@ -391,9 +391,11 @@ export function BlueprintConfigurator() {
                       onUpdateDiscovery={updateDiscovery}
                       onUpdateDeliver={updateDeliver}
                       onUpdateReferences={setReferences}
+                      onUpdateUserDetails={updateUserDetails}
                       onSubmit={handleSubmit}
                       onBack={() => goToStep(currentStep - 1)}
                       onNext={() => goToStep(currentStep + 1)}
+                      onGoToStep={goToStep}
                       stepRefs={stepRefs}
                     />
                   </Suspense>

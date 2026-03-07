@@ -25,9 +25,11 @@ export interface StepRendererProps {
     onUpdateDiscovery: (updates: Partial<BlueprintDiscovery>) => void;
     onUpdateDeliver: (updates: Partial<BlueprintDeliver>) => void;
     onUpdateReferences: (refs: BlueprintReference[]) => void;
-    onSubmit: () => Promise<boolean>;
+    onUpdateUserDetails: (details: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => void;
+    onSubmit: (userDetails?: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => Promise<boolean>;
     onBack: () => void;
     onNext: () => void;
+    onGoToStep: (step: number) => void;
     stepRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
 }
 
@@ -39,9 +41,11 @@ export function StepRenderer({
     onUpdateDiscovery,
     onUpdateDeliver,
     onUpdateReferences,
+    onUpdateUserDetails,
     onSubmit,
     onBack,
     onNext,
+    onGoToStep,
     stepRefs,
 }: StepRendererProps) {
     const setRef = (index: number) => (el: HTMLDivElement | null) => {
@@ -163,8 +167,8 @@ export function StepRenderer({
                         ref={setRef(10)}
                         blueprint={blueprint}
                         references={blueprint.references as unknown as BlueprintReference[] || []}
-                        onUpdateUserDetails={() => { }} // Usually passed down, omitted for simplicity if not passed dynamically 
-                        onGoToStep={() => { }}
+                        onUpdateUserDetails={onUpdateUserDetails}
+                        onGoToStep={onGoToStep}
                         onSubmit={onSubmit}
                         onBack={onBack}
                     />

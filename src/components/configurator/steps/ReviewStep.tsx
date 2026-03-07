@@ -20,7 +20,7 @@ interface ReviewStepProps {
   references: BlueprintReference[];
   onUpdateUserDetails: (data: Partial<UserDetailsData>) => void;
   onGoToStep: (step: number) => void;
-  onSubmit: () => Promise<boolean>;
+  onSubmit: (userDetails?: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => Promise<boolean>;
   onBack: () => void;
 }
 
@@ -122,12 +122,14 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
         return;
       }
 
-      // Update user details first
+      // Update user details in React state (for local consistency)
       onUpdateUserDetails(localDetails);
 
       setIsSubmitting(true);
       try {
-        await onSubmit();
+        // Pass user details directly through the submit chain
+        // This bypasses the debounced sync race condition
+        await onSubmit(localDetails);
       } finally {
         setIsSubmitting(false);
       }

@@ -260,7 +260,7 @@ export function useBlueprint() {
   }, [saveToDatabase]);
 
   // Submit the blueprint and trigger PDF generation + email delivery
-  const submitBlueprint = useCallback(async (): Promise<{ success: boolean; pdfUrl?: string; scores?: { integrity: number; complexity: number; tier?: string } }> => {
+  const submitBlueprint = useCallback(async (userDetails?: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }): Promise<{ success: boolean; pdfUrl?: string; scores?: { integrity: number; complexity: number; tier?: string } }> => {
     if (!blueprint?.id) return { success: false };
 
     const token = localStorage.getItem(SESSION_TOKEN_KEY);
@@ -303,24 +303,29 @@ export function useBlueprint() {
         console.warn('[useBlueprint] PDF generation failed, continuing without attachment:', pdfErr);
       }
 
-      // Force-sync user details to DB before submission
-      // (the debounced sync may not have persisted these yet)
+      // Force-sync ALL data to DB before submission
+      // User details come directly from the form (bypasses debounce race condition)
+      const email = userDetails?.userEmail || blueprint.userEmail || null;
+      const firstName = userDetails?.firstName || blueprint.firstName || null;
+      const lastName = userDetails?.lastName || blueprint.lastName || null;
+      const businessName = userDetails?.businessName || blueprint.businessName || null;
+
       const blueprintClient = getBlueprintClientWithToken(token);
       const { error: syncError } = await blueprintClient
         .from('blueprints')
         .update({
           status: 'draft',
-          user_email: blueprint.userEmail || null,
-          first_name: blueprint.firstName || null,
-          last_name: blueprint.lastName || null,
-          business_name: blueprint.businessName || null,
+          user_email: email,
+          first_name: firstName,
+          last_name: lastName,
+          business_name: businessName,
           discovery: blueprint.discovery,
           design: blueprint.design,
           deliver: blueprint.deliver,
           dream_intent: blueprint.dreamIntent || null,
         })
         .eq('id', blueprint.id);
-      console.log('[useBlueprint] Pre-submit sync result:', { syncError, userEmail: blueprint.userEmail, firstName: blueprint.firstName });
+      console.log('[useBlueprint] Pre-submit sync result:', { syncError, email, firstName });
 
       if (syncError) {
         console.error('[useBlueprint] Pre-submit sync failed:', syncError);
