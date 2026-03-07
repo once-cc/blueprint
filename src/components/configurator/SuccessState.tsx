@@ -2,6 +2,8 @@ import { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Shield, Phone, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Crosshair } from '@/components/ui/crosshair';
+import { useRayPause } from '@/hooks/useRayPause';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import type { Blueprint } from '@/types/blueprint';
@@ -96,6 +98,7 @@ function GoldSeal() {
 
 export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
   const { toast } = useToast();
+  const raysRef = useRayPause<HTMLDivElement>();
   const [callRequested, setCallRequested] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
   const nextStepsRef = useRef<HTMLDivElement>(null);
@@ -136,7 +139,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
     setTimeout(() => scrollToNextSteps(), 800);
   }, [blueprint, toast, scrollToNextSteps]);
 
-  // One-click "Request Strategy Call"
+  // One-click "Request Clarity Call"
   const handleRequestCall = useCallback(async () => {
     if (!blueprintId || callRequested) return;
 
@@ -173,11 +176,43 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
   }, [blueprintId, callRequested, toast]);
 
   return (
-    <div className="relative">
+    <div className="relative min-h-screen bg-background text-foreground">
+      {/* ═══════════════════════════════════════════════════════
+          GLOBAL ATMOSPHERIC LAYERS
+          ═══════════════════════════════════════════════════════ */}
+
+      {/* Editorial Grid Substrate */}
+      <div className="fixed inset-0 bg-editorial-grid pointer-events-none z-0" />
+
+      {/* Animated Gradient Background */}
+      <div className="animated-gradient-bg" aria-hidden="true" />
+
+      {/* Volumetric Light Rays — performance-paused when off screen */}
+      <div ref={raysRef} className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse" />
+        <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700" />
+      </div>
+
+      {/* Fixed Docking Rails with Crosshairs */}
+      <div className="fixed inset-0 pointer-events-none flex justify-center z-10 hidden sm:flex">
+        <div className="relative h-full w-full max-w-screen-2xl">
+          <div className="absolute top-0 bottom-0 left-0 w-px bg-white/5" />
+          <div className="absolute top-0 bottom-0 right-0 w-px bg-white/5" />
+
+          <Crosshair className="absolute top-4 -left-[8.5px] text-white/40" />
+          <Crosshair className="absolute top-4 -right-[8.5px] text-white/40" />
+          <Crosshair className="absolute bottom-4 -left-[8.5px] text-white/40" />
+          <Crosshair className="absolute bottom-4 -right-[8.5px] text-white/40" />
+        </div>
+      </div>
+
+      {/* Film Grain Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.12] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+
       {/* ═══════════════════════════════════════════════════════
           SECTION 1 — Hero (full viewport)
           ═══════════════════════════════════════════════════════ */}
-      <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6 relative overflow-hidden z-10">
         {/* Background radial glow */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -198,17 +233,20 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           </div>
 
           <span className="font-nohemi font-medium type-structural-bold tracking-widest text-accent text-[10px] md:text-xs mb-4 uppercase">
-            BLUEPRINT GENERATED
+            STRATEGIC BLUEPRINT
           </span>
 
           {/* Headline */}
           <h1 className="font-nohemi font-medium text-4xl md:text-6xl lg:text-7xl mb-6 tracking-tight leading-[1.15]">
-            Your Roadmap is <em className="italic font-medium">Crafted</em>.
+            Your Strategic Blueprint is <em className="italic font-medium">Ready</em>.
           </h1>
 
           {/* Sub-copy */}
-          <p className="font-body type-functional-light text-muted-foreground text-lg max-w-xl mb-8">
-            We've received your Blueprint. A confirmation receipt + PDF has been sent to your email.
+          <p className="font-body type-functional-light text-muted-foreground text-lg max-w-xl mb-3">
+            Your responses have been distilled into a strategic blueprint — defining the digital architecture your business may require next.
+          </p>
+          <p className="font-body type-functional-light text-muted-foreground text-base max-w-xl mb-8">
+            A confirmation and PDF has been sent to your email.
           </p>
 
           {/* PDF Download Button */}
@@ -219,7 +257,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
             className="gap-2.5 text-sm px-8 py-5 border-[#d4a853]/30 hover:border-[#d4a853]/50 hover:bg-[#d4a853]/5 text-foreground cursor-pointer"
           >
             <Download className="w-4 h-4 text-[#d4a853]" />
-            Download Blueprint PDF
+            Open Your Blueprint
           </Button>
 
           {/* 48-Hour Priority Window */}
@@ -231,9 +269,8 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           >
             <Shield className="w-4 h-4 text-[#d4a853]/60 flex-shrink-0" />
             <p className="text-sm text-muted-foreground/80">
-              As a Blueprint holder, we've reserved a{' '}
-              <span className="text-foreground/90 font-medium">48-hour priority review window</span>{' '}
-              for your project.
+              Our team will review your blueprint and its strategic signals within{' '}
+              <span className="text-foreground/90 font-medium">the next 24 hours</span>.
             </p>
           </motion.div>
         </motion.div>
@@ -270,7 +307,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           ═══════════════════════════════════════════════════════ */}
       <div
         ref={nextStepsRef}
-        className="min-h-[100dvh] flex flex-col items-center justify-center px-6 py-20 md:py-28"
+        className="min-h-[100dvh] flex flex-col items-center justify-center px-6 py-20 md:py-28 relative z-10"
       >
         {/* Big bold heading */}
         <motion.h2
@@ -288,18 +325,18 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           {[
             {
               step: '01',
-              title: 'Blueprint Review',
-              description: 'Our team reviews your Blueprint within 24 hours, mapping your goals to actionable next steps.',
+              title: 'Review',
+              description: 'Our team reviews your blueprint and its strategic signals within the next 24 hours.',
             },
             {
               step: '02',
-              title: 'Personalised Strategy',
-              description: "You\u2019ll receive a tailored proposal outlining scope, timeline, and investment \u2014 no generic templates.",
+              title: 'Introduction',
+              description: "We'll reach out briefly to introduce ourselves and see whether a deeper strategy conversation would be valuable.",
             },
             {
               step: '03',
-              title: 'Strategy Call',
-              description: 'We jump on a focused call to walk through your roadmap and answer every question before you commit.',
+              title: 'Walkthrough',
+              description: 'If it makes sense, we can walk through your blueprint, clarify key opportunities, and outline potential next steps.',
             },
           ].map((item, i) => (
             <motion.div
@@ -321,7 +358,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           ))}
         </div>
 
-        {/* ── Primary CTA — Request Strategy Call ──────────── */}
+        {/* ── Primary CTA — Request Clarity Call ──────────── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -345,13 +382,13 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
                 ) : (
                   <>
                     <Phone className="w-5 h-5" />
-                    Request a Strategy Call
+                    Request a Clarity Call
                   </>
                 )}
               </Button>
 
               <p className="text-xs text-muted-foreground/50 text-center">
-                One click · We'll reach out within 24 hours · No obligation
+                No obligation · We'll respond within 24 hours
               </p>
             </div>
           ) : (
@@ -365,7 +402,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
               </div>
               <p className="text-sm font-medium text-foreground mb-1">Request received</p>
               <p className="text-xs text-muted-foreground">
-                We'll be in touch within 24 hours to schedule your strategy call.
+                We'll respond within 24 hours to schedule your clarity call.
               </p>
             </motion.div>
           )}
