@@ -82,7 +82,7 @@ Deno.serve(async (req: Request) => {
                     lead: {
                         first_name: bp.first_name || "",
                         last_name: bp.last_name || "",
-                        email: bp.user_email || "",
+                        email: (bp.user_email || "").toLowerCase(),
                         company: bp.business_name || undefined,
                     },
                     tier: bp.complexity_tier || "unknown",
@@ -107,7 +107,7 @@ Deno.serve(async (req: Request) => {
 
                 await supabase.from("blueprint_audit_log").insert({
                     blueprint_id,
-                    event_type: notifyRes.ok ? "clarity_call_notified" : "clarity_call_notified",
+                    event_type: notifyRes.ok ? "clarity_call_notified" : "clarity_call_notify_failed",
                     description: notifyRes.ok
                         ? "Console notified of clarity call request"
                         : `Console notification failed: ${notifyRes.status}`,

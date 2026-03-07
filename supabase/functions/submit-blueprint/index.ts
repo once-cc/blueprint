@@ -70,6 +70,31 @@ async function auditLog(
     }
 }
 
+// ── Retry Helper ────────────────────────────────────────────
+
+async function fetchWithRetry(
+    url: string,
+    options: RequestInit,
+    maxRetries = 2,
+): Promise<Response> {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        const res = await fetch(url, options);
+
+        // Never retry client errors (400/401) — these are permanent failures
+        if (res.status < 500) return res;
+
+        // On server error, retry with exponential backoff
+        if (attempt < maxRetries) {
+            const delay = Math.pow(2, attempt) * 1000; // 1s, 2s
+            await new Promise((r) => setTimeout(r, delay));
+        } else {
+            return res; // Final attempt, return whatever we got
+        }
+    }
+    // TypeScript safety — unreachable
+    throw new Error("fetchWithRetry: exhausted retries");
+}
+
 // ── Phase 2: Async Email + HMAC Handoff ─────────────────────
 
 async function phase2(
@@ -187,18 +212,18 @@ async function phase2(
                 lead: {
                     first_name: blueprint.first_name || "",
                     last_name: blueprint.last_name || "",
-                    email: blueprint.user_email || "",
+                    email: (blueprint.user_email || "").toLowerCase(),
                     company: blueprint.business_name || undefined,
                 },
                 tier: scores.complexity_tier,
                 integrity_score: scores.integrity_score,
-                pdf_url: pdfUrl || "",
+                ...(pdfUrl ? { pdf_url: pdfUrl } : {}),
             };
 
             const body = JSON.stringify(handoffPayload);
             const { signature, timestamp } = await signForConsole(body, HMAC_SECRET);
 
-            const handoffRes = await fetch(
+            const handoffRes = await fetchWithRetry(
                 `${OPS_CONSOLE_URL}/functions/v1/receive-blueprint-submission`,
                 {
                     method: "POST",
@@ -211,12 +236,24 @@ async function phase2(
                 },
             );
 
+            // Parse response for duplicate flag and logging
+            let responseData: Record<string, unknown> = {};
+            try {
+                responseData = await handoffRes.json();
+            } catch { /* non-JSON response */ }
+
+            const isDuplicate = responseData?.duplicate === true;
+
             await auditLog(
                 supabase,
                 handoffRes.ok ? "hmac_handoff_success" : "hmac_handoff_failed",
                 blueprintId,
                 req,
-                { status: handoffRes.status },
+                {
+                    status: handoffRes.status,
+                    ...(isDuplicate ? { duplicate: true } : {}),
+                    ...(handoffRes.ok ? {} : { response: responseData }),
+                },
             );
         } catch (err) {
             await auditLog(supabase, "hmac_handoff_failed", blueprintId, req, {

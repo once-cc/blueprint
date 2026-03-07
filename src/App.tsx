@@ -17,6 +17,7 @@ const Blueprint = lazy(() => import("./pages/Blueprint"));
 const Configurator = lazy(() => import("./pages/Configurator"));
 const Auth = lazy(() => import("./pages/Auth"));
 const BlueprintPreview = lazy(() => import("./pages/BlueprintPreview"));
+const StrategyRedirect = lazy(() => import("./pages/StrategyRedirect"));
 
 
 const queryClient = new QueryClient();
@@ -75,6 +76,8 @@ const App = () => (
                   <Route path="/blueprint-preview/:id" element={<BlueprintPreview />} />
                   <Route path="/blueprint/pdf-preview" element={<BlueprintPreview />} />
 
+                  {/* Strategy session CTA from PDF */}
+                  <Route path="/strategy" element={<StrategyRedirect />} />
 
 
                   {/* External portal redirect */}

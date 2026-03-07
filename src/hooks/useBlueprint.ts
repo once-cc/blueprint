@@ -294,7 +294,7 @@ export function useBlueprint() {
           // Get a signed URL valid for 7 days
           const { data: signedData } = await supabase.storage
             .from('blueprint-references')
-            .createSignedUrl(storagePath, 60 * 60 * 24 * 7);
+            .createSignedUrl(storagePath, 60 * 60 * 24 * 30); // 30-day expiry for ops console
           pdfUrl = signedData?.signedUrl || null;
         } else {
           console.warn('[useBlueprint] PDF upload failed, continuing without attachment:', uploadError.message);
