@@ -90,7 +90,7 @@ Headers expected:
 | `200` | `{ received: true, duplicate: true }` | Log duplicate flag, not an error |
 | `400` | Validation error | Log error, **no retry** |
 | `401` | HMAC failure | Log error, **no retry** |
-| `500` | Server error | **Retry** with exponential backoff (max 2 retries: 1s, 2s) |
+| `500` | Server error | **Retry** with exponential backoff (max 3 retries: 1s, 2s, 4s) |
 
 ---
 

@@ -75,17 +75,17 @@ async function auditLog(
 async function fetchWithRetry(
     url: string,
     options: RequestInit,
-    maxRetries = 2,
+    maxRetries = 3,
 ): Promise<Response> {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         const res = await fetch(url, options);
 
-        // Never retry client errors (400/401) — these are permanent failures
+        // Never retry client errors (400/401/404) — these are permanent failures
         if (res.status < 500) return res;
 
         // On server error, retry with exponential backoff
         if (attempt < maxRetries) {
-            const delay = Math.pow(2, attempt) * 1000; // 1s, 2s
+            const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
             await new Promise((r) => setTimeout(r, delay));
         } else {
             return res; // Final attempt, return whatever we got

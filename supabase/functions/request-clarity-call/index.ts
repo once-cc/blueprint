@@ -27,6 +27,26 @@ function respond(body: Record<string, unknown>, status = 200) {
     });
 }
 
+// ── Retry Helper ────────────────────────────────────────────
+
+async function fetchWithRetry(
+    url: string,
+    options: RequestInit,
+    maxRetries = 3,
+): Promise<Response> {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        const res = await fetch(url, options);
+        if (res.status < 500) return res;
+        if (attempt < maxRetries) {
+            const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+            await new Promise((r) => setTimeout(r, delay));
+        } else {
+            return res;
+        }
+    }
+    throw new Error("fetchWithRetry: exhausted retries");
+}
+
 Deno.serve(async (req: Request) => {
     if (req.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
@@ -92,7 +112,7 @@ Deno.serve(async (req: Request) => {
                 const body = JSON.stringify(notificationPayload);
                 const { signature, timestamp } = await signForConsole(body, HMAC_SECRET);
 
-                const notifyRes = await fetch(
+                const notifyRes = await fetchWithRetry(
                     `${OPS_CONSOLE_URL}/functions/v1/receive-clarity-call-request`,
                     {
                         method: "POST",
@@ -117,7 +137,7 @@ Deno.serve(async (req: Request) => {
                 // Don't fail the user request if Console notification fails
                 await supabase.from("blueprint_audit_log").insert({
                     blueprint_id,
-                    event_type: "clarity_call_notified",
+                    event_type: "clarity_call_notify_failed",
                     description: `Console notification error: ${String(err)}`,
                 });
             }
