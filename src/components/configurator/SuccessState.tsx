@@ -250,7 +250,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
 
           {/* Headline */}
           <h1 className="font-nohemi font-medium text-4xl md:text-6xl lg:text-7xl mb-6 tracking-tight leading-[1.15] pb-1">
-            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block pb-2 overflow-visible">
               Your Blueprint is
             </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
