@@ -81,7 +81,7 @@ export const SiteTopicLayer = forwardRef<HTMLDivElement, SiteTopicLayerProps>(
           {/* Question */}
           <div className="space-y-3 text-center px-6 md:px-0">
             <h2 className="text-2xl md:text-3xl font-nohemi font-medium text-foreground">
-              What is your website primarily about?
+              What is your platform primarily about?
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
               This helps us understand your industry context and tailor the blueprint that follows.

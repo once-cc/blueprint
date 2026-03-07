@@ -264,13 +264,13 @@ export const CONFIGURATOR_STEPS: ConfiguratorStepInfo[] = [
   // Act I: Discovery
   { step: 1, act: 'discovery', title: 'Business Foundations', framing: 'Let\'s understand your business and what success looks like.' },
   { step: 2, act: 'discovery', title: 'Brand Voice', framing: 'How should your brand speak and feel to visitors?' },
-  { step: 3, act: 'discovery', title: 'CTA Energy', framing: 'How should your website make the first ask?' },
+  { step: 3, act: 'discovery', title: 'CTA Energy', framing: 'How should your platform make the first ask?' },
   // Act II: Design
   { step: 4, act: 'design', title: 'Visual Style', framing: 'What aesthetic direction fits your brand?' },
   { step: 5, act: 'design', title: 'Typography', framing: 'Set the typographic posture for your brand.' },
   { step: 6, act: 'design', title: 'Color Palette', framing: 'Define your colour logic and palette.' },
   // Act III: Deliver
-  { step: 7, act: 'deliver', title: 'Functionality & Scope', framing: 'What does your website need to do?' },
+  { step: 7, act: 'deliver', title: 'Functionality & Scope', framing: 'What does your platform need to do?' },
   { step: 8, act: 'deliver', title: 'Creative Risk', framing: 'How bold should we be with your design?' },
   { step: 9, act: 'deliver', title: 'References', framing: 'Share any inspiration or examples you love.' },
   // Review

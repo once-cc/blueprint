@@ -138,7 +138,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
       switch (step) {
         case 1:
           return [
-            discovery.siteTopic && `Website Focus: ${discovery.siteTopic}`,
+            discovery.siteTopic && `Platform Focus: ${discovery.siteTopic}`,
             discovery.businessType && `Type: ${discovery.businessType.replace(/_/g, ' ')}`,
             discovery.primaryPurpose && `Purpose: ${discovery.primaryPurpose.replace(/_/g, ' ')}`,
             discovery.mainConversionGoal && `Primary Goal: ${discovery.mainConversionGoal.replace(/_/g, ' ')}`,

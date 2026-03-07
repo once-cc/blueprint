@@ -24,7 +24,7 @@ export const SERVICE_BUCKETS: ServiceBucket[] = [
     description: 'Clarify your market position and messaging',
     expandedCopy: {
       headline: 'Clarify what you stand for, who you serve, and why you win.',
-      body: 'This layer defines the strategic spine of your business. We align your brand, offer, and messaging so your website doesn\'t just look good — it knows exactly who it\'s speaking to and what action it\'s driving. This work removes ambiguity, sharpens differentiation, and ensures every page converts with intent rather than guesswork.',
+      body: 'This layer defines the strategic spine of your business. We align your brand, offer, and messaging so your platform doesn\'t just look good — it knows exactly who it\'s speaking to and what action it\'s driving. This work removes ambiguity, sharpens differentiation, and ensures every page converts with intent rather than guesswork.',
     },
     mobileCopy: 'Define your market position, offer clarity, and messaging direction.',
     subBuckets: [
@@ -56,13 +56,13 @@ export const SERVICE_BUCKETS: ServiceBucket[] = [
   },
   {
     id: 'website_platform',
-    label: 'Website & Platform Build',
-    description: 'Core website development and hosting',
+    label: 'Platform Build',
+    description: 'Core platform development and hosting',
     expandedCopy: {
       headline: 'Build the foundation your business actually runs on.',
-      body: 'This is the technical execution layer — where strategy and design become a fast, reliable, scalable website. We architect and build your platform with performance, maintainability, and future growth in mind, ensuring it works just as well behind the scenes as it does on the surface.',
+      body: 'This is the technical execution layer — where strategy and design become a fast, reliable, scalable platform. We architect and build it with performance, maintainability, and future growth in mind, ensuring it works just as well behind the scenes as it does on the surface.',
     },
-    mobileCopy: 'Build a fast, scalable, production-ready website.',
+    mobileCopy: 'Build a fast, scalable, production-ready platform.',
     subBuckets: [
       { id: 'marketing_website', label: 'Marketing website build' },
       { id: 'landing_pages', label: 'Custom landing pages' },
@@ -96,7 +96,7 @@ export const SERVICE_BUCKETS: ServiceBucket[] = [
     description: 'Lead generation and sales systems',
     expandedCopy: {
       headline: 'Design the paths that turn attention into revenue.',
-      body: 'This layer focuses on how people find you, move through your site, and take action. We engineer funnels, copy, and tracking systems that support growth — not vanity metrics — so your website actively contributes to lead generation and sales.',
+      body: 'This layer focuses on how people find you, move through your platform, and take action. We engineer funnels, copy, and tracking systems that support growth — not vanity metrics — so your platform actively contributes to lead generation and sales.',
     },
     mobileCopy: 'Design funnels that drive leads and sales.',
     subBuckets: [
@@ -132,7 +132,7 @@ export const SERVICE_BUCKETS: ServiceBucket[] = [
     description: 'Post-launch care and partnership',
     expandedCopy: {
       headline: 'Ensure your platform performs beyond launch day.',
-      body: 'A website isn\'t finished when it goes live. This layer supports launch execution, team handover, ongoing optimisation, and long-term partnership — ensuring your platform continues to evolve as your business grows.',
+      body: 'A platform isn\'t finished when it goes live. This layer supports launch execution, team handover, ongoing optimisation, and long-term partnership — ensuring it continues to evolve as your business grows.',
     },
     mobileCopy: 'Support launch, iteration, and long-term growth.',
     subBuckets: [

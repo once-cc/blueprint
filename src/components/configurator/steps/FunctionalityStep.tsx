@@ -59,7 +59,7 @@ const timelineOptions = [
 
 const budgetOptions = [
   { id: 'under_5k', label: 'Under $5K', description: 'Essential build' },
-  { id: '5_10k', label: '$5K - $10K', description: 'Full website' },
+  { id: '5_10k', label: '$5K - $10K', description: 'Full platform' },
   { id: '10_25k', label: '$10K - $25K', description: 'Premium experience' },
   { id: 'flexible', label: 'Flexible', description: "For the right outcome, let's discuss" },
 ];
@@ -86,7 +86,7 @@ const systemDomains = [
     id: 'design',
     title: 'Design & Build',
     icon: Palette,
-    items: ['Visual system', 'Website architecture', 'Performance & structure']
+    items: ['Visual system', 'Platform architecture', 'Performance & structure']
   },
   {
     id: 'growth',
@@ -137,7 +137,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
         act="deliver"
         stepNumber={7}
         title="Functionality & Scope"
-        framing="What does your website need to do?"
+        framing="What does your platform need to do?"
         onBack={onBack}
         onNext={onNext}
         canGoNext={isValid}

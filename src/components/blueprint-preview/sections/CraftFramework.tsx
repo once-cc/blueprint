@@ -33,7 +33,7 @@ const CRAFT_STAGES = [
     letter: 'F',
     title: 'Forge the Foundation',
     action: 'Build Phase',
-    output: 'Website + Brand Assets',
+    output: 'Platform + Brand Assets',
     status: 'pending' as const,
   },
   {
@@ -57,7 +57,7 @@ export function CraftFramework() {
           The C.R.A.F.T.™ Framework
         </h2>
         <p className="bp-meta" style={{ maxWidth: '400px', margin: '0 auto' }}>
-          A clear path from Blueprint to build. Your journey through our 
+          A clear path from Blueprint to build. Your journey through our
           studio-grade design and development process.
         </p>
       </div>
@@ -77,14 +77,13 @@ export function CraftFramework() {
       {/* CRAFT Ladder */}
       <div className="bp-craft-ladder">
         {CRAFT_STAGES.map((stage) => (
-          <div 
+          <div
             key={stage.letter}
-            className={`bp-craft-step ${
-              stage.status === 'next' ? 'bp-craft-step--next' : ''
-            }`}
+            className={`bp-craft-step ${stage.status === 'next' ? 'bp-craft-step--next' : ''
+              }`}
           >
             <span className="bp-craft-letter">{stage.letter}</span>
-            
+
             <div className="bp-craft-content">
               <p className="bp-craft-title">{stage.title}</p>
               <div className="bp-craft-details">
@@ -112,23 +111,23 @@ export function CraftFramework() {
       {/* Legend */}
       <div className="mt-8 flex justify-center gap-8">
         <div className="flex items-center gap-2">
-          <div 
-            className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: 'var(--bp-accent-gold)' }} 
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: 'var(--bp-accent-gold)' }}
           />
           <span className="bp-meta">Completed</span>
         </div>
         <div className="flex items-center gap-2">
-          <div 
-            className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: 'var(--bp-accent-blue)' }} 
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: 'var(--bp-accent-blue)' }}
           />
           <span className="bp-meta">Next Step</span>
         </div>
         <div className="flex items-center gap-2">
-          <div 
-            className="w-3 h-3 rounded-full border" 
-            style={{ borderColor: 'var(--bp-border)' }} 
+          <div
+            className="w-3 h-3 rounded-full border"
+            style={{ borderColor: 'var(--bp-border)' }}
           />
           <span className="bp-meta">Upcoming</span>
         </div>

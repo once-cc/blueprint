@@ -16,7 +16,7 @@ export function ScrollytellSection() {
         offset: ["start center", "end center"],
     });
 
-    const text = "Most websites fail before they're built. They begin with assumptions. They skip alignment. They rush execution. We don't. Discovery removes uncertainty. Design removes misperception. Delivery removes fragmentation. Nothing is built without clarity.";
+    const text = "Most digital projects fail before they're built. They begin with assumptions. They skip alignment. They rush execution. We don't. Discovery removes uncertainty. Design removes misperception. Delivery removes fragmentation. Nothing is built without clarity.";
     const words = text.split(" ");
 
     return (

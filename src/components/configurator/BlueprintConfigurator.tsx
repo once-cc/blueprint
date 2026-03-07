@@ -237,7 +237,7 @@ export function BlueprintConfigurator() {
       4: { title: 'Visual Style', framing: 'What aesthetic direction fits your brand?' },
       5: { title: 'Typography & Motion', framing: 'Define your typographic personality and animation style.' },
       6: { title: 'Color Palette', framing: 'Define your colour logic and palette.' },
-      7: { title: 'Functionality & Scope', framing: 'What does your website need to do?' },
+      7: { title: 'Functionality & Scope', framing: 'What does your platform need to do?' },
       8: { title: 'Creative Risk', framing: 'How bold should we be with your design?' },
       9: { title: 'References', framing: 'Share any inspiration or examples you love.' },
       10: { title: 'Review & Generate', framing: 'Review your Blueprint and bring it to life.' },

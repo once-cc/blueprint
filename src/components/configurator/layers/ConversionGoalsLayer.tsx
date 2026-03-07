@@ -65,7 +65,7 @@ export const ConversionGoalsLayer = forwardRef<HTMLDivElement, ConversionGoalsLa
               transition={{ delay: 0.1 }}
               className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
             >
-              What specific outcomes should your website support?
+              What specific outcomes should your platform support?
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}

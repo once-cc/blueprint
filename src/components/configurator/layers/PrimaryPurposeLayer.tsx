@@ -35,7 +35,7 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
               transition={{ delay: 0.1 }}
               className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
             >
-              What is the primary purpose of your website?
+              What is the primary purpose of your digital platform?
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
