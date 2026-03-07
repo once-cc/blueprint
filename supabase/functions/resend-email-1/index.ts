@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
     const conversionGoals = (discovery.conversionGoals as string[]) || [];
     const secondaryPurposes = (discovery.secondaryPurposes as string[]) || [];
 
-    const objectivesText = primaryPurpose
+    const goalsText = primaryPurpose
       ? [primaryPurpose, ...secondaryPurposes.map(s => escapeHtml(s))].join(' · ')
       : null;
     const constraintsText = conversionGoals.length
@@ -85,10 +85,10 @@ Deno.serve(async (req: Request) => {
     const emailHtml = `
       <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
 
-        <!-- Eyebrow -->
-        <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #888888; margin-bottom: 8px;">
-          Crafted Blueprint
-        </p>
+        <!-- Headline -->
+        <h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 400; font-style: italic; margin: 0 0 24px 0; color: #111111;">
+          Your Strategic Blueprint is Ready
+        </h1>
 
         <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
           Hi ${firstName},
@@ -103,10 +103,11 @@ Deno.serve(async (req: Request) => {
           This document defines this direction before design, development, or investment begins.
         </p>
 
+        <!-- Transition -->
         <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 4px;">
           Several useful signals emerged from your responses.
         </p>
-        <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 24px;">
+        <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 20px;">
           Below is a short summary.
         </p>
 
@@ -120,9 +121,9 @@ Deno.serve(async (req: Request) => {
               <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888; vertical-align: top;">Primary Constraints</td>
               <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right; color: #111111;">${constraintsText}</td>
             </tr>` : ''}
-            ${objectivesText ? `<tr>
+            ${goalsText ? `<tr>
               <td style="padding: 8px 0; color: #888888; vertical-align: top;">Primary Objectives</td>
-              <td style="padding: 8px 0; text-align: right; color: #111111;">${objectivesText}</td>
+              <td style="padding: 8px 0; text-align: right; color: #111111;">${goalsText}</td>
             </tr>` : ''}
           </table>
         </div>
@@ -160,16 +161,16 @@ Deno.serve(async (req: Request) => {
             <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">03</td>
             <td style="padding: 10px 0;">
               <strong style="color: #111111; font-size: 14px;">Walkthrough</strong><br/>
-              <span style="color: #888888; font-size: 13px;">Then, we can walk through your blueprint, clarify key opportunities, and outline potential next steps.</span>
+              <span style="color: #888888; font-size: 13px;">If it makes sense, we can walk through your blueprint, clarify key opportunities, and outline potential next steps.</span>
             </td>
           </tr>
         </table>
 
         <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0;" />
 
-        <!-- Request a Clarity Call -->
+        <!-- Continue the Conversation -->
         <p style="font-size: 14px; color: #555555; text-align: center; margin-bottom: 8px;">
-          <strong style="color: #111111;">Request a Clarity Call</strong>
+          <strong style="color: #111111;">Continue the Conversation</strong>
         </p>
         <p style="font-size: 13px; color: #888888; text-align: center; margin-bottom: 20px;">
           If you'd like to explore the blueprint further, you can request a short clarity call here.
@@ -201,7 +202,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: [bp.user_email],
-        subject: `Your Crafted Blueprint is Ready — ${businessName}`,
+        subject: `Your Strategic Blueprint is Ready — ${businessName}`,
         html: emailHtml,
       }),
     });
