@@ -5,12 +5,13 @@ import { useLenisScroll } from '@/hooks/useLenisScroll';
 import { ProgressRail } from './ProgressRail';
 import { DreamIntentHUD } from './DreamIntentHUD';
 import { DreamIntentTooltip } from './DreamIntentTooltip';
-import { ThemeToggle } from './ThemeToggle';
+
 
 import { ActTransition } from './ActTransition';
 import { SuccessState } from './SuccessState';
 import { SessionResumeModal } from './SessionResumeModal';
 import { StepLayout } from './StepLayout';
+import { ConfiguratorCardHeader } from './ui/ConfiguratorCardHeader';
 import { VideoLogo } from '@/components/ui/VideoLogo';
 import { Crosshair } from '@/components/ui/crosshair';
 import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -337,9 +338,7 @@ export function BlueprintConfigurator() {
             currentStep={currentStep}
             onClick={() => setIsDreamIntentEditing(true)}
           />
-          <div className="fixed top-4 right-4 z-50">
-            <ThemeToggle />
-          </div>
+
 
 
 
@@ -404,36 +403,59 @@ export function BlueprintConfigurator() {
           </div>
 
           <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-            <AlertDialogContent className="max-w-[400px]">
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure you want to exit?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Your progress is automatically saved to your session. Are you sure you'd like to exit to the Blueprint homepage?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter className="sm:justify-between flex-col-reverse sm:flex-row w-full mt-6 sm:space-x-0 gap-3">
-                <motion.div
-                  whileHover={{ x: -2, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-                  whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-                  className="w-full sm:w-auto mt-3 sm:mt-0"
-                >
-                  <AlertDialogAction
-                    onClick={() => navigate('/blueprint')}
-                    className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300 w-full"
-                  >
-                    <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-                    <ArrowLeft className="relative z-10 w-4 h-4" />
-                    <span className="relative z-10">Exit to Homepage</span>
-                  </AlertDialogAction>
-                </motion.div>
+            <AlertDialogContent className="max-w-[440px] p-0 border-0 bg-transparent shadow-none overflow-visible [&>button]:hidden">
+              {/* Machined Inset Plate Surface */}
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="relative bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm rounded-xl border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] overflow-hidden"
+              >
+                {/* Warm gold radial glow from bottom */}
+                <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />
+                {/* Top-down light gradient */}
+                <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.04),transparent_40%)]" />
+                {/* Noise texture overlay */}
+                <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] opacity-[0.03] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
 
-                <AlertDialogCancel
-                  className="gap-2 min-w-[140px] bg-primary text-primary-foreground hover:bg-primary/90 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 mt-0 sm:mt-0 w-full sm:w-auto"
-                >
-                  Cancel
-                  <ArrowRight className="w-4 h-4" />
-                </AlertDialogCancel>
-              </AlertDialogFooter>
+                {/* ConfiguratorCardHeader */}
+                <ConfiguratorCardHeader
+                  title="Confirm Exit"
+                  metaLabel="SYS.NAV"
+                  delay={0}
+                />
+
+                {/* Content */}
+                <div className="relative z-10 pt-[4.5rem] pb-6 px-6">
+                  <p className="text-sm text-muted-foreground/60 text-center mb-8 leading-relaxed">
+                    Your progress is automatically saved to your session.<br />Are you sure you'd like to exit to the Blueprint homepage?
+                  </p>
+
+                  <div className="flex flex-row justify-between gap-3">
+                    <motion.div
+                      whileHover={{ x: -2, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+                      whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+                      className="flex-1"
+                    >
+                      <AlertDialogAction
+                        onClick={() => navigate('/blueprint')}
+                        className="relative overflow-hidden group gap-2 bg-transparent text-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border border-border/50 transition-colors duration-300 w-full text-xs sm:text-sm"
+                      >
+                        <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                        <ArrowLeft className="relative z-10 w-4 h-4 shrink-0" />
+                        <span className="relative z-10">Exit</span>
+                      </AlertDialogAction>
+                    </motion.div>
+
+                    <AlertDialogCancel
+                      className="flex-1 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 mt-0 text-xs sm:text-sm"
+                    >
+                      Cancel
+                      <ArrowRight className="w-4 h-4 shrink-0" />
+                    </AlertDialogCancel>
+                  </div>
+                </div>
+              </motion.div>
             </AlertDialogContent>
           </AlertDialog>
         </motion.div >

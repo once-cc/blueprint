@@ -310,26 +310,23 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
           >
             <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
               <ConfiguratorCardHeader title="Base Hue" metaLabel="SYS.BASE_HUE" delay={0.15} />
-              <div className="w-full h-full pt-16 pb-6 px-6">
-                <div className="flex items-center justify-center gap-8 py-2 relative z-10">
+              <div className="w-full h-full pt-18 sm:pt-16 pb-4 sm:pb-6 px-5 sm:px-6">
+                {/* Desktop: original horizontal layout */}
+                <div className="hidden sm:flex items-center justify-center gap-8 py-2 relative z-10">
                   <InteractiveColorWheel
                     baseHue={baseHue}
                     relationship={relationship}
                     onChange={handleBaseHueChange}
                   />
 
-                  {/* Numeric hue input with color preview */}
                   <div className="flex flex-col items-center gap-6">
-                    {/* Color preview swatch */}
                     <div
                       className="w-16 h-16 rounded-xl border border-white/10 shadow-lg transition-colors duration-200"
                       style={{ backgroundColor: `hsl(${baseHue}, 70%, 50%)` }}
                       title={`hsl(${Math.round(baseHue)}, 70%, 50%)`}
                     />
 
-                    {/* Inputs Container */}
                     <div className="flex flex-col gap-4">
-                      {/* Degree input */}
                       <div
                         className="flex items-center justify-between gap-3 cursor-ew-resize touch-none select-none group"
                         onPointerDown={handleHueDragStart}
@@ -357,7 +354,6 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                         </div>
                       </div>
 
-                      {/* Hex input */}
                       <div className="flex items-center justify-between gap-3">
                         <Label className="text-xs text-muted-foreground w-16 text-right">Hex</Label>
                         <div className="flex items-center gap-2 w-[115px]">
@@ -383,6 +379,78 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                     </div>
                   </div>
                 </div>
+
+                {/* Mobile: Option D — compact controls top, large wheel bottom */}
+                <div className="flex flex-col items-center gap-4 sm:hidden relative z-10">
+                  {/* Compact top row: swatch + inputs */}
+                  <div className="flex items-start gap-3 max-w-[260px]">
+                    <div className="flex flex-col gap-2">
+                      <div
+                        className="flex items-center gap-2 cursor-ew-resize touch-none select-none group"
+                        onPointerDown={handleHueDragStart}
+                        onPointerMove={handleHueDragMove}
+                        onPointerUp={handleHueDragEnd}
+                        onPointerCancel={handleHueDragEnd}
+                      >
+                        <Label className="text-[10px] text-muted-foreground w-10 text-right cursor-ew-resize group-hover:text-foreground transition-colors pointer-events-none shrink-0">Degrees</Label>
+                        <div className="flex items-center gap-1 w-[120px]">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={360}
+                            value={Math.round(baseHue)}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value, 10);
+                              if (!isNaN(value)) {
+                                const normalizedHue = ((value % 360) + 360) % 360;
+                                handleBaseHueChange(normalizedHue);
+                              }
+                            }}
+                            className="h-7 text-center text-xs font-medium flex-1 cursor-ew-resize focus:cursor-text"
+                          />
+                          <span className="text-xs text-muted-foreground pointer-events-none w-4 text-center">°</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-[10px] text-muted-foreground w-10 text-right shrink-0">Hex</Label>
+                        <div className="flex items-center gap-1 w-[120px]">
+                          <Input
+                            type="text"
+                            placeholder="#FF5500"
+                            value={localHexInput}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setLocalHexInput(val);
+                              const hue = hexToHue(val);
+                              if (hue !== null) {
+                                handleBaseHueChange(hue);
+                              }
+                            }}
+                            className="h-7 text-center font-mono text-[10px] uppercase flex-1 px-1"
+                          />
+                          <div className="shrink-0 flex items-center justify-center w-4">
+                            <CopyHexButton hex={localHexInput} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className="w-10 h-10 rounded-lg border border-white/10 shadow-lg transition-colors duration-200 shrink-0 mt-1"
+                      style={{ backgroundColor: `hsl(${baseHue}, 70%, 50%)` }}
+                      title={`hsl(${Math.round(baseHue)}, 70%, 50%)`}
+                    />
+                  </div>
+
+                  {/* Large wheel at bottom */}
+                  <div className="w-full flex justify-center">
+                    <InteractiveColorWheel
+                      baseHue={baseHue}
+                      relationship={relationship}
+                      onChange={handleBaseHueChange}
+                      className="w-[60vw] h-[60vw] max-w-[280px] max-h-[280px]"
+                    />
+                  </div>
+                </div>
               </div>
             </ConfiguratorCardSurface>
           </motion.div>
@@ -390,7 +458,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="space-y-4"
+            className="space-y-3 sm:space-y-4"
           >
             <ConfiguratorCardSurface className="max-w-3xl mx-auto relative overflow-hidden">
               <ConfiguratorCardHeader
@@ -402,78 +470,226 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                   onChange: setPaletteMode
                 }}
               />
-              <div className="w-full h-full pt-20 pb-6 px-4 md:px-6 space-y-8">
-                <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
-                  {activePalette.map((swatch, index) => (
-                    <motion.div
-                      key={swatch.role}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 * index }}
-                      className="flex flex-col items-center gap-2 relative min-h-[105px] w-[72px] sm:w-auto"
-                    >
-                      <motion.div
-                        layoutId={`swatch-${swatch.role}`}
-                        className={cn(
-                          'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
-                          swatch.role === 'Primary' ? 'w-14 h-14 md:w-16 md:h-16' :
-                            swatch.role === 'Secondary' ? 'w-12 h-12 md:w-14 md:h-14' :
-                              swatch.role === 'Neutral' ? 'w-10 h-10 md:w-12 md:h-12' : 'w-8 h-8 md:w-10 md:h-10'
-                        )}
-                        animate={{ backgroundColor: swatch.color }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                      >
-                        {/* Native color picker explicitly hidden but clickable over the entire swatch */}
-                        {paletteMode === 'manual' && (
-                          <input
-                            type="color"
-                            value={swatch.color}
-                            onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          />
-                        )}
-                        {/* Lock Icon */}
-                        {paletteMode === 'manual' && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleLock(swatch.role, swatch.color);
-                            }}
-                            className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10"
+              <div className="w-full h-full pt-20 sm:pt-20 pb-4 sm:pb-6 px-4 md:px-6 space-y-5 sm:space-y-8">
+                {/* Desktop/Tablet: 4-3 layout */}
+                <div className="hidden sm:flex flex-col gap-6 items-center">
+                  {/* Top row: fg primary, fg secondary, accent primary, accent secondary */}
+                  <div className="flex gap-4 md:gap-6 justify-center">
+                    {[activePalette[2], activePalette[3], activePalette[4], activePalette[5]].map((swatch, i) => {
+                      const index = [2, 3, 4, 5][i];
+                      return (
+                        <motion.div
+                          key={swatch.role}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.1 * index }}
+                          className="flex flex-col items-center gap-2 relative min-h-[105px] w-[110px] md:w-[120px]"
+                        >
+                          <motion.div
+                            layoutId={`swatch-${swatch.role}`}
+                            className={cn(
+                              'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
+                              swatch.role === 'Primary' ? 'w-14 h-14 md:w-16 md:h-16' :
+                                swatch.role === 'Secondary' ? 'w-12 h-12 md:w-14 md:h-14' :
+                                  swatch.role === 'Neutral' ? 'w-10 h-10 md:w-12 md:h-12' : 'w-8 h-8 md:w-10 md:h-10'
+                            )}
+                            animate={{ backgroundColor: swatch.color }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
                           >
-                            <AnimatedLockIcon
-                              isLocked={!!lockedColors[swatch.role]}
-                              className="w-3 h-3"
-                            />
-                          </button>
+                            {paletteMode === 'manual' && (
+                              <input type="color" value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                            )}
+                            {paletteMode === 'manual' && (
+                              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLock(swatch.role, swatch.color); }} className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10">
+                                <AnimatedLockIcon isLocked={!!lockedColors[swatch.role]} className="w-3 h-3" />
+                              </button>
+                            )}
+                          </motion.div>
+                          <span className="text-[10px] md:text-xs font-medium text-muted-foreground text-center line-clamp-1 break-words">{swatch.role.replace('_', ' ')}</span>
+                          {paletteMode === 'manual' ? (
+                            <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="relative -mt-1 w-full">
+                              <Input value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value)} className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] md:min-w-[8ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none" />
+                            </motion.div>
+                          ) : (
+                            <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">{swatch.color}</span>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                  {/* Bottom row: bg primary, bg secondary, border */}
+                  <div className="flex gap-4 md:gap-6 justify-center">
+                    {[activePalette[0], activePalette[1], activePalette[6]].map((swatch, i) => {
+                      const index = [0, 1, 6][i];
+                      return (
+                        <motion.div
+                          key={swatch.role}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.1 * index }}
+                          className="flex flex-col items-center gap-2 relative min-h-[105px] w-[110px] md:w-[120px]"
+                        >
+                          <motion.div
+                            layoutId={`swatch-${swatch.role}`}
+                            className={cn(
+                              'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
+                              swatch.role === 'Primary' ? 'w-14 h-14 md:w-16 md:h-16' :
+                                swatch.role === 'Secondary' ? 'w-12 h-12 md:w-14 md:h-14' :
+                                  swatch.role === 'Neutral' ? 'w-10 h-10 md:w-12 md:h-12' : 'w-8 h-8 md:w-10 md:h-10'
+                            )}
+                            animate={{ backgroundColor: swatch.color }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
+                          >
+                            {paletteMode === 'manual' && (
+                              <input type="color" value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                            )}
+                            {paletteMode === 'manual' && (
+                              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLock(swatch.role, swatch.color); }} className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10">
+                                <AnimatedLockIcon isLocked={!!lockedColors[swatch.role]} className="w-3 h-3" />
+                              </button>
+                            )}
+                          </motion.div>
+                          <span className="text-[10px] md:text-xs font-medium text-muted-foreground text-center line-clamp-1 break-words">{swatch.role.replace('_', ' ')}</span>
+                          {paletteMode === 'manual' ? (
+                            <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="relative -mt-1 w-full">
+                              <Input value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value)} className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] md:min-w-[8ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none" />
+                            </motion.div>
+                          ) : (
+                            <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">{swatch.color}</span>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Mobile: 2-3-2 staggered diamond formation */}
+                <div className="flex flex-col gap-3 items-center sm:hidden">
+                  {/* Row 1: first 2 swatches */}
+                  <div className="flex justify-center gap-6">
+                    {activePalette.slice(0, 2).map((swatch, index) => (
+                      <motion.div
+                        key={swatch.role}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 * index }}
+                        className="flex flex-col items-center gap-1.5 relative min-h-[80px] w-[72px]"
+                      >
+                        <motion.div
+                          layoutId={`swatch-mobile-${swatch.role}`}
+                          className={cn(
+                            'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
+                            swatch.role === 'Primary' ? 'w-12 h-12' :
+                              swatch.role === 'Secondary' ? 'w-11 h-11' :
+                                swatch.role === 'Neutral' ? 'w-10 h-10' : 'w-9 h-9'
+                          )}
+                          animate={{ backgroundColor: swatch.color }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
+                        >
+                          {paletteMode === 'manual' && (
+                            <input type="color" value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                          )}
+                          {paletteMode === 'manual' && (
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLock(swatch.role, swatch.color); }} className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10">
+                              <AnimatedLockIcon isLocked={!!lockedColors[swatch.role]} className="w-3 h-3" />
+                            </button>
+                          )}
+                        </motion.div>
+                        <span className="text-[10px] font-medium text-muted-foreground text-center line-clamp-2 break-words">{swatch.role.replace('_', ' ')}</span>
+                        {paletteMode === 'manual' ? (
+                          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="relative -mt-1 w-full">
+                            <Input value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value)} className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none" />
+                          </motion.div>
+                        ) : (
+                          <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">{swatch.color}</span>
                         )}
                       </motion.div>
-                      <span className="text-[10px] md:text-xs font-medium text-muted-foreground text-center line-clamp-2 md:line-clamp-1 break-words">{swatch.role.replace('_', ' ')}</span>
+                    ))}
+                  </div>
 
-                      {/* Interactive Hex Input in Manual Mode */}
-                      {paletteMode === 'manual' ? (
+                  {/* Row 2: middle 3 swatches — wider spread */}
+                  <div className="flex justify-center gap-4 w-full max-w-[300px]">
+                    {activePalette.slice(2, 5).map((swatch, index) => (
+                      <motion.div
+                        key={swatch.role}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 * (index + 2) }}
+                        className="flex flex-col items-center gap-1.5 relative min-h-[80px] flex-1"
+                      >
                         <motion.div
-                          initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                          className="relative -mt-1 w-full"
+                          layoutId={`swatch-mobile-${swatch.role}`}
+                          className={cn(
+                            'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
+                            swatch.role === 'Primary' ? 'w-12 h-12' :
+                              swatch.role === 'Secondary' ? 'w-11 h-11' :
+                                swatch.role === 'Neutral' ? 'w-10 h-10' : 'w-9 h-9'
+                          )}
+                          animate={{ backgroundColor: swatch.color }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
                         >
-                          <Input
-                            value={swatch.color}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              handleManualHexChange(swatch.role, val);
-                            }}
-                            className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] md:min-w-[8ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none"
-                          />
+                          {paletteMode === 'manual' && (
+                            <input type="color" value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                          )}
+                          {paletteMode === 'manual' && (
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLock(swatch.role, swatch.color); }} className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10">
+                              <AnimatedLockIcon isLocked={!!lockedColors[swatch.role]} className="w-3 h-3" />
+                            </button>
+                          )}
                         </motion.div>
-                      ) : (
-                        <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">
-                          {swatch.color}
-                        </span>
-                      )}
-                    </motion.div>
-                  ))}
+                        <span className="text-[10px] font-medium text-muted-foreground text-center line-clamp-2 break-words">{swatch.role.replace('_', ' ')}</span>
+                        {paletteMode === 'manual' ? (
+                          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="relative -mt-1 w-full">
+                            <Input value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value)} className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none" />
+                          </motion.div>
+                        ) : (
+                          <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">{swatch.color}</span>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Row 3: last 2 swatches */}
+                  <div className="flex justify-center gap-6">
+                    {activePalette.slice(5, 7).map((swatch, index) => (
+                      <motion.div
+                        key={swatch.role}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 * (index + 5) }}
+                        className="flex flex-col items-center gap-1.5 relative min-h-[80px] w-[72px]"
+                      >
+                        <motion.div
+                          layoutId={`swatch-mobile-${swatch.role}`}
+                          className={cn(
+                            'rounded-xl border border-border/30 shadow-sm relative group shrink-0',
+                            swatch.role === 'Primary' ? 'w-12 h-12' :
+                              swatch.role === 'Secondary' ? 'w-11 h-11' :
+                                swatch.role === 'Neutral' ? 'w-10 h-10' : 'w-9 h-9'
+                          )}
+                          animate={{ backgroundColor: swatch.color }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
+                        >
+                          {paletteMode === 'manual' && (
+                            <input type="color" value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value.toUpperCase())} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                          )}
+                          {paletteMode === 'manual' && (
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLock(swatch.role, swatch.color); }} className="absolute -top-2 -right-2 p-1 rounded-full bg-background border border-white/10 z-10">
+                              <AnimatedLockIcon isLocked={!!lockedColors[swatch.role]} className="w-3 h-3" />
+                            </button>
+                          )}
+                        </motion.div>
+                        <span className="text-[10px] font-medium text-muted-foreground text-center line-clamp-2 break-words">{swatch.role.replace('_', ' ')}</span>
+                        {paletteMode === 'manual' ? (
+                          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="relative -mt-1 w-full">
+                            <Input value={swatch.color} onChange={(e) => handleManualHexChange(swatch.role, e.target.value)} className="h-6 px-1 text-center font-mono text-[10px] uppercase min-w-[7ch] overflow-hidden truncate bg-transparent border-none focus-visible:ring-1 focus-visible:ring-accent shadow-none" />
+                          </motion.div>
+                        ) : (
+                          <span className="text-[10px] font-mono text-muted-foreground/80 uppercase">{swatch.color}</span>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Palette Strip */}

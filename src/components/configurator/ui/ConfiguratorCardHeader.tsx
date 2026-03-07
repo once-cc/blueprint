@@ -54,19 +54,60 @@ export function ConfiguratorCardHeader({ title, metaLabel, className, delay = 0,
                 </div>
             </motion.div>
 
-            {/* Top-Left Mode Toggle */}
+            {/* Mobile Mode Toggle — below title, visible only on mobile */}
+            {modeSwitch && (
+                <motion.div
+                    initial={{ opacity: 0, y: -3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: delay + 0.6 }}
+                    className="absolute left-[15px] right-[15px] top-[3.5rem] flex flex-col items-center pointer-events-auto sm:hidden"
+                >
+                    {/* Editorial separator line */}
+                    <div
+                        className="w-full h-[1px] mb-3"
+                        style={{
+                            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) calc(100% - 15px), transparent 100%)'
+                        }}
+                    />
+                    <div className="flex items-center h-[18px]">
+                        <button
+                            type="button"
+                            onClick={() => modeSwitch.onChange('system')}
+                            className={cn(
+                                "font-raela text-[10px] uppercase tracking-wide transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] select-none",
+                                modeSwitch.mode === 'system' ? "text-[#ebe9e0]/60" : "text-[#ebe9e0]/35 hover:text-[#ebe9e0]/50"
+                            )}
+                        >
+                            System
+                        </button>
+                        <span className="text-[#ebe9e0]/20 text-[10px] select-none mx-2">|</span>
+                        <button
+                            type="button"
+                            onClick={() => modeSwitch.onChange('manual')}
+                            className={cn(
+                                "font-raela text-[10px] uppercase tracking-wide transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] select-none",
+                                modeSwitch.mode === 'manual' ? "text-accent" : "text-[#ebe9e0]/35 hover:text-[#ebe9e0]/50"
+                            )}
+                        >
+                            Manual
+                        </button>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Desktop Mode Toggle — top-left, hidden on mobile */}
             {modeSwitch && (
                 <motion.div
                     initial={{ opacity: 0, x: -5 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: delay + 0.4 }}
-                    className="absolute top-6 left-6 flex items-center h-[18px] pointer-events-auto"
+                    className="absolute top-6 left-6 items-center h-[18px] pointer-events-auto hidden sm:flex"
                 >
                     <button
                         type="button"
                         onClick={() => modeSwitch.onChange('system')}
                         className={cn(
-                            "font-raela text-[10px] sm:text-[11px] uppercase tracking-wide transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] select-none",
+                            "font-raela text-[11px] uppercase tracking-wide transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] select-none",
                             modeSwitch.mode === 'system' ? "text-[#ebe9e0]/60" : "text-[#ebe9e0]/35 hover:text-[#ebe9e0]/50"
                         )}
                     >
@@ -77,7 +118,7 @@ export function ConfiguratorCardHeader({ title, metaLabel, className, delay = 0,
                         type="button"
                         onClick={() => modeSwitch.onChange('manual')}
                         className={cn(
-                            "font-raela text-[10px] sm:text-[11px] uppercase tracking-wide transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] select-none",
+                            "font-raela text-[11px] uppercase tracking-wide transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] select-none",
                             modeSwitch.mode === 'manual' ? "text-accent" : "text-[#ebe9e0]/35 hover:text-[#ebe9e0]/50"
                         )}
                     >
@@ -101,14 +142,15 @@ export function ConfiguratorCardHeader({ title, metaLabel, className, delay = 0,
                 </motion.div>
             )}
 
-
-
-            {/* Editorial Underline */}
+            {/* Editorial Underline — visible on sm+ (desktop), hidden on mobile when toggle is present */}
             <motion.div
                 initial={{ opacity: 0, scaleX: 0.95 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 transition={{ duration: 0.8, delay: delay + 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute top-[3.5rem] left-[15px] right-[15px] h-[1px] origin-center"
+                className={cn(
+                    "absolute top-[3.5rem] left-[15px] right-[15px] h-[1px] origin-center",
+                    modeSwitch ? "hidden sm:block" : ""
+                )}
                 style={{
                     background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) calc(100% - 15px), transparent 100%)'
                 }}
@@ -116,3 +158,4 @@ export function ConfiguratorCardHeader({ title, metaLabel, className, delay = 0,
         </div>
     );
 }
+

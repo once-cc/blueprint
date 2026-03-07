@@ -7,18 +7,22 @@ interface InteractiveColorWheelProps {
     baseHue: number;
     relationship: string;
     onChange: (hue: number) => void;
+    size?: number;
+    className?: string;
 }
 
 export function InteractiveColorWheel({
     baseHue,
     relationship,
-    onChange
+    onChange,
+    size: sizeProp,
+    className: classNameProp
 }: InteractiveColorWheelProps) {
     const wheelRef = useRef<SVGSVGElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
 
-    const size = 200;
+    const size = sizeProp ?? 200;
     const center = size / 2;
     const outerRadius = 90;
     const innerRadius = 50;
@@ -140,9 +144,11 @@ export function InteractiveColorWheel({
             ref={wheelRef}
             viewBox={`0 0 ${size} ${size}`}
             className={cn(
-                "w-48 h-48 cursor-grab select-none touch-none",
-                isDragging && "cursor-grabbing"
+                "cursor-grab select-none touch-none",
+                isDragging && "cursor-grabbing",
+                classNameProp
             )}
+            style={classNameProp ? undefined : { width: size, height: size }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}

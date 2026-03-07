@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { processSteps } from "@/data/blueprint";
 import { useRayPause } from "@/hooks/useRayPause";
 import { FrameworkDesktopCard } from "@/components/marketing/FrameworkDesktopCard";
@@ -76,11 +77,34 @@ function FrameworkMobile() {
 
 export function FrameworkSection() {
     const frameworkRaysRef = useRayPause<HTMLDivElement>();
+    const sectionRef = useRef<HTMLDivElement>(null);
+
+    // Preload framework images when section approaches viewport
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    processSteps.forEach((step) => {
+                        const img = new Image();
+                        img.src = step.imageUrl;
+                    });
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: "100% 0px 100% 0px" }
+        );
+
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
     return (
         // The z-0 is essential here: it allows the BenefitStackSection (which we will give z-20) 
         // to render OVER this sticky framework section as you scroll down.
         // Removed padding-bottom from the section so it doesn't add empty space after the last card pins.
-        <GridSection className="bg-background relative z-0 w-full border-y-0">
+        <GridSection ref={sectionRef} className="bg-background relative z-0 w-full border-y-0">
             {/* Faint Global Editorial Grid */}
             <div className="absolute inset-0 bg-editorial-grid pointer-events-none" />
 

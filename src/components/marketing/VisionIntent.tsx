@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { PlayCircle } from "lucide-react";
 import { DreamInput } from "@/components/ui/dream-input";
 import { LogoGrid } from "@/components/ui/LogoGrid";
 import { Crosshair } from "@/components/ui/crosshair";
@@ -10,9 +11,21 @@ export function VisionIntent() {
     const navigate = useNavigate();
     const [dreamIntent, setDreamIntent] = useState("");
     const raysRef = useRayPause<HTMLDivElement>();
+    const [hasExistingSession, setHasExistingSession] = useState(false);
+
+    useEffect(() => {
+        const id = localStorage.getItem('blueprint_id');
+        const token = localStorage.getItem('blueprint_session_token');
+        setHasExistingSession(!!id && !!token);
+    }, []);
 
     const handleDreamIntentSubmit = () => {
-        localStorage.setItem("blueprint_dream_intent", dreamIntent);
+        localStorage.setItem("dream_intent", dreamIntent);
+        sessionStorage.setItem("blueprint_fresh_entry", "true");
+        navigate("/configurator");
+    };
+
+    const handleResumeSession = () => {
         navigate("/configurator");
     };
 
@@ -69,6 +82,23 @@ export function VisionIntent() {
                                 className="w-full"
                             />
                         </div>
+
+                        {/* Resume existing session CTA */}
+                        <AnimatePresence>
+                            {hasExistingSession && (
+                                <motion.button
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 8 }}
+                                    transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                    onClick={handleResumeSession}
+                                    className="flex items-center gap-2 mt-2 px-5 py-2.5 rounded-full text-sm text-muted-foreground/60 hover:text-white border border-white/[0.06] hover:border-accent/30 bg-white/[0.02] hover:bg-accent/5 transition-all duration-300 group"
+                                >
+                                    <PlayCircle className="w-4 h-4 text-accent/60 group-hover:text-accent transition-colors" />
+                                    <span>Resume Your Blueprint</span>
+                                </motion.button>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 </div>
             </div>

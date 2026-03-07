@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
-import { motion, useMotionValue, useTransform, useAnimationFrame, MotionValue } from "framer-motion";
+import { motion, useMotionValue, useTransform, useAnimationFrame, useMotionValueEvent, MotionValue } from "framer-motion";
 import { capabilityShowcase, type CapabilityShowcase } from "@/data/testimonials";
 
 // We use 4 duplicated sets. Set 0 (offscreen left), Set 1 (main), Set 2, Set 3 (buffer right).
 const MULTIPLIER = 4;
-const SET_LENGTH = capabilityShowcase.length; // 6 items per full set
+const SET_LENGTH = capabilityShowcase.length; // items per full set
 const extendedShowcase = Array.from({ length: MULTIPLIER }).flatMap((_, idx) =>
   capabilityShowcase.map(t => ({ ...t, uniqueKey: `${t.id}-${idx}`, setIndex: idx }))
 );
@@ -34,7 +34,9 @@ export function TestimonialCarousel() {
     function measure() {
       const isDesktop = window.matchMedia("(min-width: 768px)").matches;
       // Exact calculation based on Tailwind classes: card width + gap width
-      const width = isDesktop ? (350 + 32) * SET_LENGTH : (280 + 16) * SET_LENGTH;
+      const cardWidth = isDesktop ? 750 : 680;
+      const gap = isDesktop ? 32 : 16;
+      const width = (cardWidth + gap) * SET_LENGTH;
       setWidth.set(width);
 
       // Start the carousel safely anchored one full set in, so dragging right immediately works
@@ -159,113 +161,262 @@ export function TestimonialCarousel() {
   );
 }
 
-// Optimized Card — uses pure Framer Motion values, ZERO React state, ZERO getBoundingClientRect
+// Optimized Card — pure math positioning, ZERO getBoundingClientRect
 const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcase & { uniqueKey: string }, index: number, x: MotionValue<number>, isMobile: boolean }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isActive, setIsActive] = useState(false);
 
-  // We compute the card's distance from the viewport center using:
-  // card's visual center = initialOffset + x (the carousel motion value)
-  // This avoids getBoundingClientRect entirely.
-  const initialOffset = useMotionValue(0);
+  // --- PURE MATH POSITIONING (no DOM measurement) ---
+  // Every card is identical: same width, same gap. So each card's center
+  // in the flex container's local coordinate space is deterministic.
+  const cardWidth = isMobile ? 680 : 750;
+  const gap = isMobile ? 16 : 32;
+  const s = cardWidth + gap; // stride: 782px desktop, 696px mobile
 
-  // Measure card offset once on mount + resize (not per-frame!)
-  useEffect(() => {
-    function measure() {
-      if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
-      const currentX = x.get();
-      const cardCenter = rect.left + rect.width / 2;
-      initialOffset.set(cardCenter - currentX);
-    }
-    const raf = requestAnimationFrame(measure);
-    window.addEventListener("resize", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", measure);
-    };
-  }, [x, initialOffset]);
+  // Card's local center = index * stride + half a card width
+  const localCenter = index * s + cardWidth / 2;
 
-  // Derive the card's live distance from viewport center using motion values only
-  // cardCenter = initialOffset + x, distance = cardCenter - window.innerWidth / 2
-  const centerDistance = useTransform(
-    [initialOffset, x] as MotionValue[],
-    ([offset, xVal]: number[]) => {
-      const windowCenter = typeof window !== "undefined" ? window.innerWidth / 2 : 600;
-      return (offset + xVal) - windowCenter;
-    }
+  // centerDistance = how far this card's center is from the viewport center
+  // The motion value `x` shifts the entire track, so:
+  // screenPosition = localCenter + x
+  // centerDistance = screenPosition - viewportCenter
+  const centerDistance = useTransform(x, (xVal) => {
+    const windowCenter = typeof window !== "undefined" ? window.innerWidth / 2 : 600;
+    return localCenter + xVal - windowCenter;
+  });
+
+  // Active threshold at 55% of stride
+  useMotionValueEvent(centerDistance, "change", (latest) => {
+    setIsActive(Math.abs(latest) < s * 0.55);
+  });
+
+  // All ranges derived from stride (s) for mathematically uniform transitions
+  // ±1.5s is the full transform range (covers the nearest 1.5 cards on each side)
+
+  // 3D concave depth — peaks at center, pushes back symmetrically
+  const z = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], isMobile ? [120, -200, 120] : [80, -160, 80]);
+
+  // Gentle inward tilt — proportional to stride distance
+  const rotateY = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], isMobile ? [20, 0, -20] : [12, 0, -12]);
+
+  // --- ARTIFACT DOMINANCE EFFECTS ---
+
+  // Opacity: symmetric bell curve anchored to stride positions
+  // 0 → 0.35 → 0.7 → 1 → 0.7 → 0.35 → 0
+  const opacity = useTransform(
+    centerDistance,
+    [-s * 2, -s, -s * 0.5, 0, s * 0.5, s, s * 2],
+    [0, 0.35, 0.7, 1, 0.7, 0.35, 0]
   );
 
-  // Responsive Input Ranges — Smaller viewports hit the edge much faster, so we tighten the math
-  // to make the cards rotate and dip sharply inside a narrower pixel window
-  const distanceLimits = isMobile ? [-400, 0, 400] : [-800, 0, 800];
+  // Scale: 1 at center, 0.88 at ±1.5 strides
+  const scale = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0.88, 1, 0.88]);
 
-  // 3D concave effect: centered cards pushed back, edge cards brought forward
-  // On mobile, we push the center cards further back (-250) and pull edge cards closer (150)
-  const zLimits = isMobile ? [150, -250, 150] : [100, -200, 100];
-  const z = useTransform(centerDistance, distanceLimits, zLimits);
+  // Blueprint Grid Opacity — subtle brightening at center
+  const gridOpacity = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0.3, 0.45, 0.3]);
 
-  // Gentle inward tilt for 3D perspective
-  // On mobile, we radically increase the maximum tilt angle (35 deg vs 20 deg)
-  const rotLimits = isMobile ? [35, 0, -35] : [20, 0, -20];
-  const rotateY = useTransform(centerDistance, distanceLimits, rotLimits);
+  // Blur: 0px at center, 1.5px at ±1.5 strides
+  const rawBlur = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [1.5, 0, 1.5]);
+  const filter = useTransform(rawBlur, (b) => `blur(${b}px)`);
 
-  // Fade edges — aggressively clip visibility on mobile to prevent cards from overflowing the viewport width
-  const opacityInputs = isMobile ? [-500, -250, 0, 250, 500] : [-1000, -600, 0, 600, 1000];
-  const opacity = useTransform(centerDistance, opacityInputs, [0, 1, 1, 1, 0]);
+  const shadowRaw = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0, 1, 0]);
+  const boxShadow = useTransform(shadowRaw, (s) =>
+    `0px ${30 * s}px ${80 * s}px rgba(0,0,0,0.65), 0px ${10 * s}px ${30 * s}px rgba(0,0,0,0.35)`
+  );
+
+  // ID Formatting
+  const idNumber = String((index % SET_LENGTH) + 1).padStart(3, '0');
+
+  // Animation Variants for Sequence Reveal
+  // Sequence narrowed strictly to the metadata content, making the overall experience much softer.
+  const staggerContainer = {
+    hidden: { opacity: 0.85 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.04,
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const staggerItem = {
+    hidden: { opacity: 0.7, y: 2 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
 
   return (
     <motion.div
       ref={cardRef}
-      className="flex-shrink-0 w-[280px] md:w-[350px] aspect-[3/4] relative flex items-center justify-center rounded-xl overflow-hidden bg-black/40 border border-white/10 shadow-2xl"
+      className="flex-shrink-0 w-[680px] md:w-[750px] relative flex items-stretch overflow-hidden bg-[#1C1C1E] border border-white/5 rounded-[24px] select-none px-8 pb-8 pt-3"
       style={{
         z,
         rotateY,
         opacity,
+        scale,
+        filter,
         transformStyle: "preserve-3d"
       }}
     >
-      {item.image ? (
-        <>
-          {/* Dominant Color Radial Glow Backdrop */}
-          {item.glowColor && (
-            <div
-              className="absolute inset-0 pointer-events-none z-0"
-              style={{
-                background: `radial-gradient(circle at center, ${item.glowColor}, transparent 70%)`
-              }}
-            />
-          )}
-          <img
-            src={item.image}
-            alt={item.systemName}
-            className="absolute inset-0 w-full h-full object-contain p-4 z-10"
-            draggable={false}
-          />
-        </>
-      ) : (
-        <div
-          className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between bg-gradient-to-br from-card to-background text-foreground"
-          style={{ transformStyle: "preserve-3d" }}
+      {/* Blueprint background grid lines */}
+      <motion.div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          opacity: gridOpacity,
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: "40px 40px",
+          backgroundPosition: "center center"
+        }}
+      />
+
+      {/* Blueprint cross marks */}
+      <div className="absolute top-12 left-12 w-4 h-4 text-white/20 select-none z-0 pointer-events-none">
+        <svg viewBox="0 0 100 100" className="w-full h-full"><path d="M50 0v100M0 50h100" stroke="currentColor" strokeWidth="2" /></svg>
+      </div>
+      <div className="absolute bottom-12 right-12 w-4 h-4 text-white/20 select-none z-0 pointer-events-none">
+        <svg viewBox="0 0 100 100" className="w-full h-full"><path d="M50 0v100M0 50h100" stroke="currentColor" strokeWidth="2" /></svg>
+      </div>
+      <div className="absolute bottom-12 left-12 w-4 h-4 text-white/20 select-none z-0 pointer-events-none">
+        <svg viewBox="0 0 100 100" className="w-full h-full"><path d="M50 0v100M0 50h100" stroke="currentColor" strokeWidth="2" /></svg>
+      </div>
+      <div className="absolute top-12 right-12 w-4 h-4 text-white/20 select-none z-0 pointer-events-none">
+        <svg viewBox="0 0 100 100" className="w-full h-full"><path d="M50 0v100M0 50h100" stroke="currentColor" strokeWidth="2" /></svg>
+      </div>
+
+      <div className="relative z-10 flex items-stretch gap-8 w-full justify-center" style={{ transformStyle: "preserve-3d" }}>
+
+        {/* Artifact Panel Container */}
+        <motion.div
+          className="relative flex-shrink-0 p-[14px] rounded-[18px] bg-white/[0.04] transition-transform duration-220 ease-out hover:-translate-y-1 hover:scale-[1.01]"
+          initial="hidden"
+          animate={isActive ? "visible" : "hidden"}
+          variants={staggerContainer}
+          style={{
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04), 0 10px 40px rgba(0,0,0,0.6)',
+            transform: "translateZ(30px)",
+            transformStyle: "preserve-3d"
+          }}
         >
-          <p
-            className="text-base md:text-xl font-raela font-medium leading-snug line-clamp-[6]"
-            style={{ transform: "translateZ(40px)" }}
-          >
-            "{item.description}"
-          </p>
+          {/* Corner Frame Marks */}
+          <div className="absolute top-[-8px] left-[-8px] w-4 h-4 border-t border-l border-white/20" />
+          <div className="absolute top-[-8px] right-[-8px] w-4 h-4 border-t border-r border-white/20" />
+          <div className="absolute bottom-[-8px] left-[-8px] w-4 h-4 border-b border-l border-white/20" />
+          <div className="absolute bottom-[-8px] right-[-8px] w-4 h-4 border-b border-r border-white/20" />
 
+          {/* Image */}
           <div
-            className="mt-4"
-            style={{ transform: "translateZ(25px)" }}
+            className="w-[280px] md:w-[350px] aspect-[3/4] relative overflow-hidden rounded-md border border-white/5 bg-transparent"
+            style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d" }}
           >
-            <p className="font-nohemi font-semibold text-base md:text-lg">{item.systemName}</p>
-            <p className="text-xs md:text-sm text-accent lowercase tracking-wide">{item.category}</p>
+            {/* Overlay ID Marker on top right of the image */}
+            <div className="absolute top-4 right-4 z-20 text-[10px] font-mono tracking-[0.2em] font-medium text-white/40 uppercase bg-black/40 backdrop-blur-md px-2 py-1 rounded-[4px] border border-white/10">
+              CS-{idNumber}
+            </div>
+            {item.image ? (
+              <img
+                src={item.image}
+                alt={item.systemName}
+                className="absolute inset-0 w-full h-full object-cover"
+                draggable={false}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-transparent" />
+            )}
+            {/* Bottom Vignette */}
+            <div className="absolute inset-x-0 bottom-0 h-[40%] pointer-events-none" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.4))' }} />
           </div>
-        </div>
-      )}
+        </motion.div>
 
-      {/* Subtle inner shadow overlay to give it physical volume */}
-      <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
+        <motion.div
+          className="w-[270px] flex-shrink-0 bg-white/[0.02] border-l border-white/[0.08] p-7 flex flex-col justify-center gap-6 rounded-r-lg"
+          initial="hidden"
+          animate={isActive ? "visible" : "hidden"}
+          variants={staggerContainer}
+          style={{ transform: "translateZ(20px)" }}
+        >
+          <ArtifactMetadataSpine item={item} isEnhanced={item.isEnhancedArtifact} staggerItem={staggerItem} />
+        </motion.div>
+
+      </div>
+
     </motion.div>
   );
 });
+
+// Extracted Sub-component for Metadata handling
+const ArtifactMetadataSpine = ({ item, isEnhanced, staggerItem }: { item: CapabilityShowcase, isEnhanced?: boolean, staggerItem: any }) => {
+  if (isEnhanced) {
+    return (
+      <>
+        {/* Capability Header */}
+        <motion.div variants={staggerItem} className="flex flex-col gap-1">
+          <p className="text-[10px] text-white/55 tracking-[0.22em] uppercase font-mono">{item.artifactCapability?.title || "CAPABILITY"}</p>
+          <p className="text-[22px] text-white font-medium tracking-[0.02em] leading-tight font-nohemi">{item.artifactCapability?.name || item.systemName}</p>
+        </motion.div>
+
+        {/* Output Label + Outcome Annotation */}
+        <motion.div variants={staggerItem} className="mt-2 flex flex-col gap-1">
+          <p className="text-[10px] text-white/45 tracking-[0.2em] uppercase font-mono">OUTPUT</p>
+          <p className="text-[14px] text-white/75 leading-relaxed max-w-[220px] font-raela">
+            {item.artifactAnnotation || item.description}
+          </p>
+        </motion.div>
+
+        {/* Subtle Divider */}
+        <motion.div variants={staggerItem}>
+          <div className="w-full h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+        </motion.div>
+
+        {/* Dynamic Metadata Fields */}
+        <motion.div variants={staggerItem} className="flex flex-col gap-[22px]">
+          {item.artifactMetadata?.map((field, idx) => (
+            <div key={idx} className="flex flex-col">
+              <span className="text-[10px] text-white/45 tracking-[0.2em] uppercase font-mono">{field.label}</span>
+              <span className="text-[14px] text-white/85 mt-1 font-raela">{field.value}</span>
+            </div>
+          ))}
+        </motion.div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex flex-col gap-4 opacity-50">
+        <div className="w-12 h-px bg-white/20" />
+        <div className="w-full h-px bg-white/10" />
+
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="w-10 h-px bg-white/20" />
+          <div className="w-24 h-1 bg-white/10 rounded-full" />
+        </div>
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="w-16 h-px bg-white/20" />
+          <div className="w-32 h-1 bg-white/10 rounded-full" />
+        </div>
+      </div>
+
+      <div className="w-full h-24 border border-white/10 rounded-sm bg-white/[0.02] opacity-50" />
+
+      <div className="flex flex-col gap-4 opacity-50">
+        <div className="flex flex-col gap-2">
+          <div className="w-12 h-px bg-white/20" />
+          <div className="w-20 h-1 bg-white/10 rounded-full" />
+        </div>
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="w-8 h-px bg-white/20" />
+          <div className="w-28 h-1 bg-white/10 rounded-full" />
+        </div>
+      </div>
+    </>
+  );
+};

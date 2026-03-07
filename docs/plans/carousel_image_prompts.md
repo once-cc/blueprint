@@ -59,6 +59,30 @@ To create your own variations, use this structural formula:
 ### 14. The Local IT Support / Managed Service Provider (MSP)
 > UI/UX Design, website hero section for a reliable local IT support and MSP business. Tech-forward but highly approachable aesthetic. Soft off-white background with bold electric-blue or vibrant purple networking accents. Clean, modern geometric sans-serif typography. A 'Request IT Audit' CTA button. A UI foreground element showing a clean server-uptime graph card or a stylized, vector-based secure cloud network illustration. High-fidelity UI fragment, dribbble style, 4k resolution.
 
+### 15. The Auto Detailing & Vehicle Care Studio
+> UI/UX Design, website hero section for a premium mobile auto detailing and vehicle care business. Bold, high-contrast aesthetic. Deep matte black background with sharp chrome silver and electric red accents. Strong, modern sans-serif typography with a confident headline. A 'Book Your Detail' CTA button. A UI foreground element showing a sleek pricing tier card with service packages or a stunning before-and-after vehicle photo slider. High-fidelity UI fragment, dribbble style, 4k resolution, figma.
+
+### 16. The Boutique Gym / Personal Training Studio
+> UI/UX Design, website hero section for an independent boutique gym and personal training studio. Energetic, modern aesthetic. Dark charcoal background with vibrant neon-green or electric-orange fitness accents. Bold, athletic sans-serif typography with a motivational headline. A prominent 'Start Your Free Trial' CTA button. A UI foreground element showing a clean class schedule widget or a transformation results card with progress metrics. High-fidelity UI fragment, dribbble style, 4k resolution.
+
+### 17. The Independent Real Estate Agent / Property Group
+> UI/UX Design, website hero section for an established independent real estate agent and property group. Sophisticated yet approachable aesthetic. Warm off-white or light stone background with deep navy and muted gold brand accents. Refined serif and clean sans-serif typography pairing. A 'View Listings' CTA button. A UI foreground element showing a sleek property search bar with filter chips or a featured listing card with price, beds, and a high-quality property thumbnail. High-fidelity UI fragment, dribbble style, 4k resolution.
+
+### 18. The Professional Photography / Videography Studio
+> UI/UX Design, website portfolio hero section for a professional photography and videography studio. Immersive, visual-first aesthetic. Deep black background with subtle warm amber accent lighting. Elegant, thin serif typography with a minimalist headline. A 'View Our Work' CTA button. A UI foreground element showing a sleek masonry photo grid or a cinematic video thumbnail with a frosted play button overlay. High-fidelity UI fragment, dribbble style, 4k resolution, clean figma design.
+
+### 19. The Premium Pet Care / Grooming Service
+> UI/UX Design, website hero section for a trusted premium pet grooming and boarding service. Friendly, warm, and polished aesthetic. Soft cream or warm beige background with playful teal and warm coral brand accents. Rounded, approachable sans-serif typography. A 'Book Grooming' CTA button. A UI foreground element showing a clean appointment booking card or a cute illustrated service menu with icons for grooming, boarding, and daycare. High-fidelity UI fragment, dribbble style, 4k resolution.
+
+### 20. The Commercial Cleaning & Facilities Service
+> UI/UX Design, website hero section for a professional commercial cleaning and facilities management company. Clean, corporate, and trustworthy aesthetic. Bright white background with fresh green and professional grey brand accents. Highly legible, modern sans-serif typography. A 'Get a Custom Quote' CTA button. A UI foreground element showing a clean service checklist card with checkmarks or a before-and-after office transformation slider. High-fidelity UI fragment, dribbble style, 4k resolution.
+
+### 21. The Licensed Electrical Contractor
+> UI/UX Design, website hero section for a licensed residential and commercial electrical contractor. Technical, reliable, and modern aesthetic. Dark navy or graphite background with bold electric-yellow and cool white accents. Strong, utilitarian sans-serif typography. A 'Request a Quote' CTA button. A UI foreground element showing a clean service area map widget or a certification badge card displaying licenses and safety ratings. High-fidelity UI fragment, dribbble style, 4k resolution, clean figma design.
+
+### 22. The Local Accounting & Tax Advisory Practice
+> UI/UX Design, website hero section for a trusted local accounting and tax advisory firm. Professional, calm, and authoritative aesthetic. Light grey or warm white background with deep forest-green and muted navy brand accents. Classic, refined serif headline paired with a clean sans-serif body. A 'Schedule a Consultation' CTA button. A UI foreground element showing a clean financial summary dashboard card or an illustrated tax calendar timeline with key filing dates. High-fidelity UI fragment, dribbble style, 4k resolution.
+
 ---
 
 ## Setup & Implementation Pipeline

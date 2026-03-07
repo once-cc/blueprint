@@ -117,12 +117,21 @@ export function useBlueprint() {
           }
 
           const hasProgress = (finalBlueprint.currentStep > 1) ||
-            Object.keys(finalBlueprint.discovery).length > 0 ||
-            finalBlueprint.dreamIntent ||
-            storedDreamIntent;
+            Object.values(finalBlueprint.discovery).some(v => v !== undefined && v !== '' && v !== null);
+
+          // Time-based threshold: only show Welcome Back if last update was > 2 min ago
+          const timeSinceUpdate = Date.now() - new Date(finalBlueprint.updatedAt).getTime();
+          const isStaleSession = timeSinceUpdate > 2 * 60 * 1000; // 2 minutes
+
+          // If user just arrived from the Blueprint page (fresh entry), auto-confirm session
+          const isFreshEntry = sessionStorage.getItem('blueprint_fresh_entry') === 'true';
+          sessionStorage.removeItem('blueprint_fresh_entry');
 
           setBlueprint(finalBlueprint);
-          setSessionStatus({ hasExisting: !!hasProgress, confirmed: !hasProgress });
+          setSessionStatus({
+            hasExisting: !!hasProgress,
+            confirmed: isFreshEntry || !hasProgress || !isStaleSession,
+          });
           await finishLoading();
           return;
         }

@@ -84,6 +84,7 @@ export const useBlueprintStorage = (
                 discovery: currentBlueprint.discovery,
                 design: currentBlueprint.design,
                 deliver: currentBlueprint.deliver,
+                dream_intent: currentBlueprint.dreamIntent ?? null,
                 current_step: currentBlueprint.currentStep,
                 updated_at: new Date().toISOString(),
             };

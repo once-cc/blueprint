@@ -33,7 +33,7 @@ const fadeIn = (delay: number) => ({
 export const DeliveryMobileCard = ({ index, step, isLast }: DeliveryMobileCardProps) => {
     const trackerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(contentRef, { once: true, margin: "-10% 0px -10% 0px" });
+    const isInView = useInView(contentRef, { once: true, margin: "100% 0px -5% 0px" });
 
     // ── Scroll choreography (identical to MobileStackCard) ──
     const { scrollYProgress: descendProgress } = useScroll({

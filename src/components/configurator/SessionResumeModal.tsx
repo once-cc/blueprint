@@ -1,6 +1,6 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlayCircle, RotateCcw, Clock, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { PlayCircle, RotateCcw, Clock, Sparkles, AlertTriangle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface SessionResumeModalProps {
@@ -33,6 +33,47 @@ export function SessionResumeModal({
   currentStep,
   dreamIntent,
 }: SessionResumeModalProps) {
+  const [discardArmed, setDiscardArmed] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetDiscard = useCallback(() => {
+    setDiscardArmed(false);
+    setCountdown(3);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+  }, []);
+
+  const armDiscard = useCallback(() => {
+    setDiscardArmed(true);
+    setCountdown(3);
+
+    // Countdown tick every second
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => prev - 1);
+    }, 1000);
+
+    // Auto-reset after 3s
+    timerRef.current = setTimeout(() => {
+      resetDiscard();
+    }, 3000);
+  }, [resetDiscard]);
+
+  const confirmDiscard = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    onStartFresh();
+  }, [onStartFresh]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   const stepLabel = stepLabels[currentStep] || `Step ${currentStep}`;
@@ -111,14 +152,36 @@ export function SessionResumeModal({
               </div>
             </button>
 
-            {/* Subdued Ghost Button */}
-            <button
-              onClick={onStartFresh}
-              className="flex items-center justify-center gap-2 w-full h-10 text-xs font-medium text-muted-foreground/50 hover:text-white transition-colors duration-300 rounded-lg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Discard & Start Fresh
-            </button>
+            {/* Animated Discard Button — Two Phase */}
+            <AnimatePresence mode="wait">
+              {!discardArmed ? (
+                <motion.button
+                  key="discard-resting"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={armDiscard}
+                  className="flex items-center justify-center gap-2 w-full h-10 text-xs font-medium text-muted-foreground/50 hover:text-white transition-colors duration-300 rounded-lg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Discard & Start Fresh
+                </motion.button>
+              ) : (
+                <motion.button
+                  key="discard-armed"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  onClick={confirmDiscard}
+                  className="flex items-center justify-center gap-2 w-full h-10 text-xs font-medium text-red-400 border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500/40"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  Confirm Delete Session ({countdown})
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>
