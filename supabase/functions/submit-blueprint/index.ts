@@ -118,42 +118,106 @@ async function phase2(
                     : "Essential";
 
             const emailHtml = `
-        <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 24px; background: #0a0a0f; color: #f5f3ee;">
-          <h1 style="font-size: 28px; font-weight: 300; margin-bottom: 24px;">
+        <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
+
+          <!-- Eyebrow -->
+          <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #888888; margin-bottom: 8px;">
+            Crafted Blueprint
+          </p>
+
+          <!-- Headline -->
+          <h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 400; font-style: italic; margin: 0 0 24px 0; color: #111111;">
             Your Blueprint Has Been Crafted
           </h1>
-          <p style="font-size: 16px; line-height: 1.6; color: #b0b0b8;">
+
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
             Hi ${firstName},
           </p>
-          <p style="font-size: 16px; line-height: 1.6; color: #b0b0b8;">
-            Your Blueprint for <strong style="color:#f5f3ee;">${businessName}</strong> is ready.
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 32px;">
+            Your Crafted Blueprint for <strong style="color: #111111;">${businessName}</strong> has been received and is ready for review.
           </p>
-          <div style="padding: 24px; background: #12121a; border: 1px solid #1a1a1f; margin: 24px 0;">
-            <p style="font-size: 13px; color: #7a7a85; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">
+
+          <!-- Blueprint Summary Card -->
+          <div style="padding: 24px; background: #ffffff; border: 1px solid #e5e5e5; margin-bottom: 32px;">
+            <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #888888; margin: 0 0 16px 0;">
               Blueprint Summary
             </p>
-            <table style="width: 100%; font-size: 14px; color: #b0b0b8;">
+            <table style="width: 100%; font-size: 14px; color: #555555; border-collapse: collapse;">
               <tr>
-                <td style="padding: 6px 0; color: #7a7a85;">Complexity Tier</td>
-                <td style="padding: 6px 0; text-align: right;">
-                  <span style="display: inline-block; padding: 4px 12px; background: ${tierLabel === 'Enterprise' ? '#d4a853' : tierLabel === 'Growth' ? '#2150de' : '#4a9b6b'}; color: ${tierLabel === 'Enterprise' ? '#0a0a0f' : '#f5f3ee'}; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888;">Complexity Tier</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right;">
+                  <span style="display: inline-block; padding: 4px 14px; border: 1px solid #111111; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #111111;">
                     ${tierLabel}
                   </span>
                 </td>
               </tr>
               <tr>
-                <td style="padding: 6px 0; color: #7a7a85;">Integrity Score</td>
-                <td style="padding: 6px 0; text-align: right; color: #f5f3ee;">${scores.integrity_score}/100</td>
+                <td style="padding: 8px 0; color: #888888;">Integrity Score</td>
+                <td style="padding: 8px 0; text-align: right; font-family: Georgia, serif; color: #111111;">${scores.integrity_score}/100</td>
               </tr>
             </table>
           </div>
-          ${pdfUrl ? `<div style="margin: 36px 0; text-align: center;">
-            <a href="${pdfUrl}" style="display:inline-block;padding:16px 40px;background:#d4a853;color:#0a0a0f;text-decoration:none;font-weight:500;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;">
+
+          <!-- PDF Download CTA -->
+          ${pdfUrl ? `<div style="text-align: center; margin-bottom: 40px;">
+            <a href="${pdfUrl}" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
               Download Your Blueprint PDF
             </a>
           </div>` : ''}
-          <hr style="border:none;border-top:1px solid #1a1a1f;margin:40px 0;" />
-          <p style="margin-top:48px;font-size:12px;color:#6b6b75;">
+
+          <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 0 0 32px 0;" />
+
+          <!-- What Happens Next -->
+          <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #888888; margin-bottom: 20px;">
+            What happens next
+          </p>
+
+          <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888; width: 28px;">01</td>
+              <td style="padding: 10px 0;">
+                <strong style="color: #111111; font-size: 14px;">Blueprint Review</strong><br/>
+                <span style="color: #888888; font-size: 13px;">Our team reviews your Blueprint within 24 hours.</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">02</td>
+              <td style="padding: 10px 0;">
+                <strong style="color: #111111; font-size: 14px;">Personalised Strategy</strong><br/>
+                <span style="color: #888888; font-size: 13px;">You receive a tailored proposal — no generic templates.</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">03</td>
+              <td style="padding: 10px 0;">
+                <strong style="color: #111111; font-size: 14px;">Strategy Call</strong><br/>
+                <span style="color: #888888; font-size: 13px;">We walk through your roadmap and answer every question.</span>
+              </td>
+            </tr>
+          </table>
+
+          <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0;" />
+
+          <!-- Request Strategy CTA -->
+          <p style="font-size: 14px; color: #555555; text-align: center; margin-bottom: 8px;">
+            <strong style="color: #111111;">Ready to take the next step?</strong>
+          </p>
+          <p style="font-size: 13px; color: #888888; text-align: center; margin-bottom: 20px;">
+            Request a strategy call and we'll be in touch within 24 hours.
+          </p>
+          <div style="text-align: center; margin-bottom: 8px;">
+            <a href="https://cleland.studio/strategy" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
+              Request a Strategy Call
+            </a>
+          </div>
+          <p style="font-size: 11px; color: #aaaaaa; text-align: center; margin-bottom: 0;">
+            No obligation · We'll reach out within 24 hours
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 40px 0 24px 0;" />
+
+          <!-- Footer -->
+          <p style="font-size: 11px; color: #aaaaaa; margin: 0;">
             Cleland Studio<br/>Crafted digital systems for serious operators
           </p>
         </div>
