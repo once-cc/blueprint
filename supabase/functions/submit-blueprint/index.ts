@@ -22,7 +22,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const HMAC_SECRET = Deno.env.get("BLUEPRINT_HMAC_SECRET") || "";
 const OPS_CONSOLE_URL = Deno.env.get("OPS_CONSOLE_URL") || "";
-const FROM_EMAIL = "Cleland Studio <blueprints@cleland.studio>";
+const FROM_EMAIL = "Cleland Studio <crafted@cleland.studio>";
 
 // ── CORS ────────────────────────────────────────────────────
 

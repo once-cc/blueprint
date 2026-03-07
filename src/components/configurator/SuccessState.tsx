@@ -143,7 +143,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
       console.error('Failed to generate PDF:', error);
       toast({
         title: 'PDF generation failed',
-        description: 'Please try again or contact us at blueprints@cleland.studio',
+        description: 'Please try again or contact us at crafted@cleland.studio',
         variant: 'destructive',
       });
     }
@@ -164,7 +164,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
       if (error || !data?.success) {
         toast({
           title: 'Something went wrong',
-          description: 'Please try again or email us directly at blueprints@cleland.studio',
+          description: 'Please try again or email us directly at crafted@cleland.studio',
           variant: 'destructive',
         });
         setIsRequesting(false);

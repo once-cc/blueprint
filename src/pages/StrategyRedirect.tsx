@@ -163,8 +163,8 @@ export default function StrategyRedirect() {
                             </Button>
                             <p className="text-xs text-muted-foreground">
                                 Or email us at{' '}
-                                <a href="mailto:blueprints@cleland.studio" className="text-[#d4a853] hover:underline">
-                                    blueprints@cleland.studio
+                                <a href="mailto:crafted@cleland.studio" className="text-[#d4a853] hover:underline">
+                                    crafted@cleland.studio
                                 </a>
                             </p>
                         </div>
