@@ -1,8 +1,11 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Shield, Phone, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ShinyButton } from '@/components/ui/shiny-button';
 import { Crosshair } from '@/components/ui/crosshair';
+import { AnimatedButtonIcon } from '@/components/ui/AnimatedButtonIcon';
+import paperplaneAnimation from '@/assets/ui/1paperplane.json';
 import { useRayPause } from '@/hooks/useRayPause';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -100,8 +103,14 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
   const { toast } = useToast();
   const raysRef = useRayPause<HTMLDivElement>();
   const [callRequested, setCallRequested] = useState(false);
+  const [isCtaHovered, setIsCtaHovered] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
   const nextStepsRef = useRef<HTMLDivElement>(null);
+
+  // Force scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Smooth scroll to "What happens next"
   const scrollToNextSteps = useCallback(() => {
@@ -126,6 +135,9 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
       toast({
         title: 'PDF downloaded',
         description: 'Your Blueprint PDF has been saved to your device.',
+        className: 'bg-background/80 backdrop-blur-xl border border-[#d4a853]/20 shadow-2xl shadow-black/40',
+        titleClassName: 'font-nohemi font-medium tracking-wide text-white text-sm uppercase',
+        descriptionClassName: 'font-body text-muted-foreground mt-1.5'
       });
     } catch (error) {
       console.error('Failed to generate PDF:', error);
@@ -237,68 +249,69 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           </span>
 
           {/* Headline */}
-          <h1 className="font-nohemi font-medium text-4xl md:text-6xl lg:text-7xl mb-6 tracking-tight leading-[1.15]">
-            Your Strategic Blueprint is <em className="italic font-medium">Ready</em>.
+          <h1 className="font-nohemi font-medium text-4xl md:text-6xl lg:text-7xl mb-6 tracking-tight leading-[1.15] pb-1">
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
+              Your Blueprint is
+            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
+              <em className="italic font-medium">Crafted</em>.
+            </span>
           </h1>
 
           {/* Sub-copy */}
           <p className="font-body type-functional-light text-muted-foreground text-lg max-w-xl mb-3">
-            Your responses have been distilled into a strategic blueprint — defining the digital architecture your business may require next.
+            Your strategic blueprint is complete—mapping the digital architecture required for your next phase of growth.
           </p>
           <p className="font-body type-functional-light text-muted-foreground text-base max-w-xl mb-8">
-            A confirmation and PDF has been sent to your email.
+            The PDF artifact has been dispatched to your email.
           </p>
 
           {/* PDF Download Button */}
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={handleDownloadPdf}
-            className="gap-2.5 text-sm px-8 py-5 border-[#d4a853]/30 hover:border-[#d4a853]/50 hover:bg-[#d4a853]/5 text-foreground cursor-pointer"
-          >
-            <Download className="w-4 h-4 text-[#d4a853]" />
-            Open Your Blueprint
-          </Button>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={handleDownloadPdf}
+              className="relative overflow-hidden group gap-2.5 text-sm px-8 py-6 border-[#d4a853]/30 bg-background/40 backdrop-blur-md hover:border-[#d4a853]/60 hover:bg-[#d4a853]/10 hover:shadow-[0_0_20px_rgba(212,168,83,0.15)] text-foreground hover:text-white transition-all duration-300"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 ease-out z-0 pointer-events-none" />
+              <Download className="w-5 h-5 text-[#d4a853] relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              <span className="relative z-10 font-medium tracking-wide">Open Your Blueprint</span>
+            </Button>
+          </motion.div>
 
           {/* 48-Hour Priority Window */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="flex items-center gap-2.5 mt-10"
+            className="flex items-center gap-2.5 mt-10 bg-background/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/5"
           >
             <Shield className="w-4 h-4 text-[#d4a853]/60 flex-shrink-0" />
             <p className="text-sm text-muted-foreground/80">
-              Our team will review your blueprint and its strategic signals within{' '}
-              <span className="text-foreground/90 font-medium">the next 24 hours</span>.
+              Our studio will evaluate your blueprint within{' '}
+              <span className="text-foreground/90 font-medium">24 hours</span>.
             </p>
           </motion.div>
         </motion.div>
 
-        {/* ── Scroll enticer — faded summit ─────────────────── */}
+        {/* ── Editorial Slit Scroll Indicator ─────────────────── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, transparent 0%, hsl(var(--background)) 100%)',
-          }}
-        />
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: [0, 0.6, 0], y: [0, 8, 0] }}
-          transition={{ delay: 2, duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+          initial={{ opacity: 0, scaleY: 0 }}
+          animate={{ opacity: 1, scaleY: 1 }}
+          transition={{ delay: 1.5, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 sm:h-32 w-px origin-bottom z-0 cursor-pointer overflow-hidden flex flex-col items-center"
           onClick={scrollToNextSteps}
         >
-          <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex justify-center pt-2">
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full bg-[#d4a853]/60"
-              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
+          {/* Base track */}
+          <div className="absolute inset-0 bg-white/10" />
+
+          {/* Animated pulse traveling down the slit */}
+          <motion.div
+            className="w-full h-1/2 bg-gradient-to-b from-transparent via-accent to-transparent"
+            animate={{ y: ['-100%', '200%'] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
+          />
         </motion.div>
       </div>
 
@@ -315,9 +328,11 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-3xl md:text-4xl lg:text-5xl font-nohemi font-medium tracking-tight text-foreground text-center mb-16 md:mb-20"
+          className="text-3xl md:text-4xl lg:text-5xl font-nohemi font-medium tracking-tight text-center mb-16 md:mb-20 pb-1"
         >
-          What Happens Next
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
+            What Happens <em className="italic font-medium pr-4">Next</em>
+          </span>
         </motion.h2>
 
         {/* Steps */}
@@ -336,7 +351,7 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
             {
               step: '03',
               title: 'Walkthrough',
-              description: 'If it makes sense, we can walk through your blueprint, clarify key opportunities, and outline potential next steps.',
+              description: 'If aligned, we’ll host a Clarity Call to walk through your blueprint and prioritize next steps.',
             },
           ].map((item, i) => (
             <motion.div
@@ -367,25 +382,33 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           className="w-full max-w-sm"
         >
           {!callRequested ? (
-            <div className="space-y-4">
-              <Button
-                size="lg"
+            <div className="flex flex-col items-center space-y-4">
+              <ShinyButton
                 onClick={handleRequestCall}
                 disabled={isRequesting}
-                className="w-full gap-2.5 text-base py-6 bg-[#d4a853] hover:bg-[#c49a45] text-[#0a0a0f] font-medium transition-colors cursor-pointer"
+                onMouseEnter={() => setIsCtaHovered(true)}
+                onMouseLeave={() => setIsCtaHovered(false)}
+                className="flex items-center justify-center gap-3 w-full sm:w-auto sm:min-w-[280px] md:min-w-[320px] text-lg shadow-2xl shadow-accent/20"
               >
                 {isRequesting ? (
-                  <>
+                  <span className="flex items-center gap-3">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Sending…
-                  </>
+                  </span>
                 ) : (
-                  <>
-                    <Phone className="w-5 h-5" />
+                  <span className="flex items-center gap-3">
                     Request a Clarity Call
-                  </>
+                    <AnimatedButtonIcon
+                      animationData={paperplaneAnimation}
+                      isActive={isCtaHovered}
+                      staticFrame={90}
+                      playOnVisible={true}
+                      playVisibleDelay={1250}
+                      className="w-7 h-7 ml-1"
+                    />
+                  </span>
                 )}
-              </Button>
+              </ShinyButton>
 
               <p className="text-xs text-muted-foreground/50 text-center">
                 No obligation · We'll respond within 24 hours
