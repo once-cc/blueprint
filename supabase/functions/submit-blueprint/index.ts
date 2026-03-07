@@ -124,7 +124,7 @@ async function phase2(
             const secondaryPurposes = (discovery.secondaryPurposes as string[]) || [];
 
             // Build dynamic summary rows (using · separator)
-            const goalsText = primaryPurpose
+            const objectivesText = primaryPurpose
                 ? [primaryPurpose, ...secondaryPurposes.map(s => escapeHtml(s))].join(' · ')
                 : null;
             const constraintsText = conversionGoals.length
@@ -134,19 +134,29 @@ async function phase2(
             const emailHtml = `
         <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
 
-          <!-- Headline -->
-          <h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 400; font-style: italic; margin: 0 0 24px 0; color: #111111;">
-            Your Strategic Blueprint is Ready
-          </h1>
+          <!-- Eyebrow -->
+          <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #888888; margin-bottom: 8px;">
+            Crafted Blueprint
+          </p>
 
           <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
             Hi ${firstName},
           </p>
           <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
-            Your Crafted Blueprint for <strong style="color: #111111;">${businessName}</strong> is ready.
+            Your Strategic Blueprint for <strong style="color: #111111;">${businessName}</strong> has been prepared for you.
+          </p>
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
+            We've mapped the discovery, design, and delivery of the digital architecture and direction required to support your next stage of growth.
           </p>
           <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 32px;">
-            Your responses have been distilled into a strategic blueprint — defining the digital architecture your business may require next.
+            This document defines this direction before design, development, or investment begins.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 4px;">
+            Several useful signals emerged from your responses.
+          </p>
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 24px;">
+            Below is a short summary.
           </p>
 
           <!-- Blueprint Summary Card -->
@@ -159,9 +169,9 @@ async function phase2(
                 <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888; vertical-align: top;">Primary Constraints</td>
                 <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right; color: #111111;">${constraintsText}</td>
               </tr>` : ''}
-              ${goalsText ? `<tr>
-                <td style="padding: 8px 0; color: #888888; vertical-align: top;">Primary Goals</td>
-                <td style="padding: 8px 0; text-align: right; color: #111111;">${goalsText}</td>
+              ${objectivesText ? `<tr>
+                <td style="padding: 8px 0; color: #888888; vertical-align: top;">Primary Objectives</td>
+                <td style="padding: 8px 0; text-align: right; color: #111111;">${objectivesText}</td>
               </tr>` : ''}
             </table>
           </div>
@@ -169,7 +179,7 @@ async function phase2(
           <!-- PDF Download CTA -->
           ${pdfUrl ? `<div style="text-align: center; margin-bottom: 40px;">
             <a href="${pdfUrl}" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
-              Download Your Blueprint
+              Open Your Blueprint
             </a>
           </div>` : ''}
 
@@ -192,26 +202,26 @@ async function phase2(
               <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">02</td>
               <td style="padding: 10px 0;">
                 <strong style="color: #111111; font-size: 14px;">Introduction</strong><br/>
-                <span style="color: #888888; font-size: 13px;">We'll reach out briefly to introduce ourselves and confirm whether a short strategy call would be valuable.</span>
+                <span style="color: #888888; font-size: 13px;">We'll reach out briefly to introduce ourselves and see whether a deeper strategy conversation would be valuable.</span>
               </td>
             </tr>
             <tr>
               <td style="padding: 10px 16px 10px 0; vertical-align: top; font-family: Georgia, serif; color: #888888;">03</td>
               <td style="padding: 10px 0;">
                 <strong style="color: #111111; font-size: 14px;">Walkthrough</strong><br/>
-                <span style="color: #888888; font-size: 13px;">If appropriate, we'll walk through your blueprint together, clarify key opportunities, and outline possible next steps.</span>
+                <span style="color: #888888; font-size: 13px;">Then, we can walk through your blueprint, clarify key opportunities, and outline potential next steps.</span>
               </td>
             </tr>
           </table>
 
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0;" />
 
-          <!-- Continue the Conversation -->
+          <!-- Request a Clarity Call -->
           <p style="font-size: 14px; color: #555555; text-align: center; margin-bottom: 8px;">
-            <strong style="color: #111111;">Continue the Conversation</strong>
+            <strong style="color: #111111;">Request a Clarity Call</strong>
           </p>
           <p style="font-size: 13px; color: #888888; text-align: center; margin-bottom: 20px;">
-            If you'd like to explore the blueprint further, you can request a short clarity call.
+            If you'd like to explore the blueprint further, you can request a short clarity call here.
           </p>
           <div style="text-align: center; margin-bottom: 8px;">
             <a href="https://cleland.studio/clarity" style="display: inline-block; padding: 14px 36px; border: 1px solid #111111; color: #111111; text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">
