@@ -13,6 +13,8 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const HMAC_SECRET = Deno.env.get("BLUEPRINT_HMAC_SECRET") || "";
 const OPS_CONSOLE_URL = Deno.env.get("OPS_CONSOLE_URL") || "";
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
+const FROM_EMAIL = "Cleland Studio <crafted@cleland.studio>";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -91,6 +93,74 @@ Deno.serve(async (req: Request) => {
             ip_address: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
             user_agent: req.headers.get("user-agent")?.slice(0, 500) || null,
         });
+
+        // ── Send Confirmation Email via Resend ─────────────
+        if (RESEND_API_KEY && bp.user_email) {
+            try {
+                const firstName = (bp.first_name || "there").replace(/[&<>"']/g, (m: string) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m] || m));
+
+                const confirmHtml = `
+        <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
+
+          <h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 400; font-style: italic; margin: 0 0 24px 0; color: #111111;">
+            Your Clarity Call Request
+          </h1>
+
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
+            Hi ${firstName},
+          </p>
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 8px;">
+            We've received your request for a clarity call and will be reviewing your blueprint shortly.
+          </p>
+          <p style="font-size: 15px; line-height: 1.7; color: #555555; margin-bottom: 32px;">
+            One of our team will reach out within <strong style="color: #111111;">24 hours</strong> to introduce ourselves, discuss what stood out in your blueprint, and arrange a time to walk through it together.
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 0 0 32px 0;" />
+
+          <p style="font-size: 14px; color: #555555; margin-bottom: 8px;">
+            In the meantime, if you have any questions, reply directly to this email.
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0 24px 0;" />
+
+          <p style="font-size: 11px; color: #aaaaaa; margin: 0;">
+            Cleland Studio<br/>Crafted Digital Systems for Owners and Operators
+          </p>
+        </div>
+      `;
+
+                const emailRes = await fetch("https://api.resend.com/emails", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${RESEND_API_KEY}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        from: FROM_EMAIL,
+                        to: [bp.user_email],
+                        bcc: ["crafted@cleland.studio"],
+                        subject: "Your Clarity Call Request — Cleland Studio",
+                        html: confirmHtml,
+                    }),
+                });
+
+                const emailResult = await emailRes.json();
+
+                await supabase.from("blueprint_emails").insert({
+                    blueprint_id,
+                    email_type: "clarity_call_confirmation",
+                    status: emailRes.ok ? "sent" : "failed",
+                    recipient: bp.user_email as string,
+                    resend_id: emailResult?.id || null,
+                    error: emailRes.ok ? null : JSON.stringify(emailResult),
+                    sent_at: emailRes.ok ? new Date().toISOString() : null,
+                });
+            } catch (emailErr) {
+                // Email failure must never break the clarity call request
+                console.warn("[request-clarity-call] Confirmation email failed:", emailErr);
+            }
+        }
 
         // ── HMAC Notification to Console ───────────────────
         if (HMAC_SECRET && OPS_CONSOLE_URL) {
