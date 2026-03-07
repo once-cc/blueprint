@@ -28,5 +28,6 @@ dist-ssr
 credentials.json
 token.json
 .env
+.env.*
+!.env.example
 .vercel
-.env.vercel
