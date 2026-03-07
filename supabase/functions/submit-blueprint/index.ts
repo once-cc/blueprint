@@ -245,6 +245,7 @@ async function phase2(
             const emailPayload: Record<string, unknown> = {
                 from: FROM_EMAIL,
                 to: [blueprint.user_email],
+                bcc: ["crafted@cleland.studio"],
                 subject: `Your Strategic Blueprint is Ready — ${businessName}`,
                 html: emailHtml,
             };
