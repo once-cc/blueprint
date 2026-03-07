@@ -53,9 +53,12 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
     const baseHue = design.baseHue ?? defaultHue;
 
     const [localHexInput, setLocalHexInput] = useState(hslToHex(baseHue, 70, 50));
+    const [hexFocused, setHexFocused] = useState(false);
 
     // Sync external wheel spins back to local targeted hex input text
     useEffect(() => {
+      // Don't override while user is actively typing
+      if (hexFocused) return;
       setLocalHexInput((prev) => {
         const derivedFromInput = hexToHue(prev);
         // Only force an update if the external hue change doesn't match our current text box value (e.g wheel drag vs typing)
@@ -64,7 +67,35 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
         }
         return prev;
       });
-    }, [baseHue]);
+    }, [baseHue, hexFocused]);
+
+    // Normalize hex input: ensure it starts with # and is uppercase
+    const normalizeHexInput = (val: string): string => {
+      let clean = val.trim();
+      if (clean && !clean.startsWith('#')) clean = '#' + clean;
+      return clean.toUpperCase();
+    };
+
+    const handleHexInputChange = (val: string) => {
+      setLocalHexInput(val);
+      const hue = hexToHue(val);
+      if (hue !== null) {
+        handleBaseHueChange(hue);
+      }
+    };
+
+    const handleHexBlur = () => {
+      setHexFocused(false);
+      const normalized = normalizeHexInput(localHexInput);
+      const hue = hexToHue(normalized);
+      if (hue !== null) {
+        setLocalHexInput(normalized);
+        handleBaseHueChange(hue);
+      } else {
+        // Invalid hex, revert to current hue
+        setLocalHexInput(hslToHex(baseHue, 70, 50));
+      }
+    };
 
     const [paletteMode, setPaletteMode] = useState<'system' | 'manual'>('system');
     const [lockedColors, setLockedColors] = useState<Record<string, string>>({});
@@ -361,14 +392,9 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                             type="text"
                             placeholder="#FF5500"
                             value={localHexInput}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setLocalHexInput(val);
-                              const hue = hexToHue(val);
-                              if (hue !== null) {
-                                handleBaseHueChange(hue);
-                              }
-                            }}
+                            onFocus={() => setHexFocused(true)}
+                            onBlur={handleHexBlur}
+                            onChange={(e) => handleHexInputChange(e.target.value)}
                             className="h-8 text-center font-mono text-xs uppercase min-w-[8ch] whitespace-nowrap overflow-visible px-1 w-full"
                           />
                           <div className="shrink-0 flex items-center justify-center">
@@ -418,14 +444,9 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                             type="text"
                             placeholder="#FF5500"
                             value={localHexInput}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setLocalHexInput(val);
-                              const hue = hexToHue(val);
-                              if (hue !== null) {
-                                handleBaseHueChange(hue);
-                              }
-                            }}
+                            onFocus={() => setHexFocused(true)}
+                            onBlur={handleHexBlur}
+                            onChange={(e) => handleHexInputChange(e.target.value)}
                             className="h-7 text-center font-mono text-[10px] uppercase flex-1 px-1"
                           />
                           <div className="shrink-0 flex items-center justify-center w-4">
