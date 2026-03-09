@@ -1,14 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const STUDIO_EMAIL = Deno.env.get("STUDIO_EMAIL") || "";
 const FROM_EMAIL = "Cleland Studio <onboarding@resend.dev>";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// CORS headers are now dynamic per-request — see _shared/cors.ts
 
 // Zod schema for comprehensive input validation
 const ContactFormSchema = z.object({
@@ -165,6 +163,8 @@ async function sendEmail(to: string[], subject: string, html: string) {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

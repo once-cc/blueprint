@@ -11,6 +11,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 // ── ENV ─────────────────────────────────────────────────────
 
@@ -20,10 +21,7 @@ const CALENDLY_WEBHOOK_SECRET = Deno.env.get("CALENDLY_WEBHOOK_SECRET") || "";
 
 // ── CORS ────────────────────────────────────────────────────
 
-const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, calendly-webhook-signature",
-};
+// CORS headers are now dynamic per-request — see _shared/cors.ts
 
 // ── Logging ─────────────────────────────────────────────────
 
@@ -110,6 +108,8 @@ function extractBookingInfo(body: CalendlyPayload): {
 // ── MAIN SERVER ─────────────────────────────────────────────
 
 serve(async (req: Request): Promise<Response> => {
+    const corsHeaders = getCorsHeaders(req);
+
     if (req.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
     }

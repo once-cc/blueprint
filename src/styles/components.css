@@ -88,7 +88,6 @@
   border-radius: 0.5rem;
   overflow: hidden;
   background: hsl(var(--muted) / 0.3);
-  will-change: transform, box-shadow;
   transform-origin: center top;
 }
 
@@ -417,6 +416,14 @@
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   animation: gradient-angle 6s linear infinite;
+  animation-play-state: paused; /* PERFORMANCE: Paused by default, only runs on explicit hover */
+}
+
+/* Activate the glow border animation when its parent group is hovered */
+.group-hover\/grid:hover > .animated-glow-border,
+.group-hover\/card:hover > .animated-glow-border,
+.group:hover > .animated-glow-border {
+  animation-play-state: running;
 }
 
 @keyframes gradient-angle {

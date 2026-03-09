@@ -1,15 +1,16 @@
 /**
  * Font Preloader Utility
  * Preloads all typography fonts used in the configurator to prevent FOUT
+ *
+ * Only includes fonts that are actually referenced in typographyConfig.ts
+ * and the CSS design system (base.css variables).
  */
 
 const TYPOGRAPHY_FONTS = [
   { family: 'Inter', weights: [300, 400, 500, 600, 700, 800] },
   { family: 'Playfair Display', weights: [400, 500, 600, 700, 800, 900] },
   { family: 'Syne', weights: [400, 500, 600, 700, 800] },
-  { family: 'Space Grotesk', weights: [300, 400, 500, 600, 700] },
-  { family: 'Cormorant Garamond', weights: [300, 400, 500, 600, 700] },
-  { family: 'Oswald', weights: [400, 500, 600, 700] },
+  { family: 'Cormorant Garamond', weights: [400, 500, 600] },
 ];
 
 /**

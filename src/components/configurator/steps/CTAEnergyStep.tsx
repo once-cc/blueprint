@@ -106,10 +106,7 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
             transition={{ delay: 0.2 }}
             className="space-y-3"
           >
-            <Label className={cn(
-              "text-sm font-medium flex items-center gap-2",
-              discovery.ctaPrimaryLabel?.trim() ? 'text-foreground' : 'text-muted-foreground'
-            )}>
+            <Label className="text-sm font-medium flex items-center gap-2 text-foreground">
               Primary CTA Button Label <span className="text-destructive">*</span>
               {discovery.ctaPrimaryLabel?.trim() && <CheckCircle2 className="w-4 h-4 text-accent" />}
             </Label>

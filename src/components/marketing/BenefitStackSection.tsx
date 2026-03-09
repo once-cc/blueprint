@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useInView } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
-import { useRayPause } from "@/hooks/useRayPause";
 import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
 import { BenefitIconLottie } from "@/components/ui/BenefitIconLottie";
+import noiseTexture from "@/assets/noise/noise.png";
 import clarityAnimation from "@/assets/benefitstack/clarity.json";
 import technicalAnimation from "@/assets/benefitstack/technical.json";
 import longevityAnimation from "@/assets/benefitstack/longevity.json";
@@ -46,7 +46,6 @@ const BENEFIT_COLORS: WordRevealColors = {
 
 export function BenefitStackSection() {
     const containerRef = useRef<HTMLElement>(null);
-    const benefitRaysRef = useRayPause<HTMLDivElement>();
     const textRef = useRef<HTMLDivElement>(null);
     const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
 
@@ -89,22 +88,28 @@ export function BenefitStackSection() {
                 </div>
             </div>
 
-            {/* ══ SUBSTRATE ENHANCEMENT LAYERS (matching ScrollytellSection) ══ */}
+            {/* ══ SUBSTRATE ENHANCEMENT LAYERS ══ */}
+            {/* Consolidated: 6 gradient layers merged into one multi-background div. */}
+            {/* Film grain stays separate (requires mix-blend-soft-light compositing). */}
+            <div
+                className="absolute inset-0 z-0 pointer-events-none"
+                style={{
+                    background: [
+                        'radial-gradient(50% 50% at 85% 80%, hsl(220 40% 30% / 0.08), transparent 60%)',
+                        'radial-gradient(70% 60% at 30% 45%, hsl(37 30% 55% / 0.07), transparent 70%)',
+                        'radial-gradient(ellipse at center, transparent 35%, hsl(220 15% 2% / 0.75) 100%)',
+                        'radial-gradient(60% 50% at 25% 40%, hsl(220 10% 12% / 0.5), transparent 70%)',
+                        'linear-gradient(to bottom, hsl(45 10% 92% / 0.02), transparent 40%)',
+                        'radial-gradient(80% 40% at 50% 100%, hsl(37 91% 55% / 0.03), transparent 70%)',
+                    ].join(', '),
+                }}
+            />
 
-            {/* Bevel Lighting — warm lift from bottom, cool wash from top */}
-            <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.03),transparent_70%)]" />
-            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.02),transparent_40%)]" />
-
-            {/* Film Grain — SVG feTurbulence noise for matte-paper texture */}
-            <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-
-            {/* Luminance Falloff — left-biased radial lift + edge darkening */}
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(60%_50%_at_25%_40%,hsl(220_10%_12%_/_0.5),transparent_70%)]" />
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(220_15%_2%_/_0.75)_100%)]" />
-
-            {/* Chromatic Drift — warm centre, cool corners */}
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(70%_60%_at_30%_45%,hsl(37_30%_55%_/_0.07),transparent_70%)]" />
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(50%_50%_at_85%_80%,hsl(220_40%_30%_/_0.08),transparent_60%)]" />
+            {/* Layer 1: Static Film Grain — Zero-cost tiling image replacement for expensive SVG math */}
+            <div
+                className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25]"
+                style={{ backgroundImage: `url(${noiseTexture})` }}
+            />
 
             {/* Ghost Editorial Grid */}
             <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />
@@ -115,7 +120,10 @@ export function BenefitStackSection() {
                         <span className="text-accent/60">//</span> STRATEGIC CLARITY
                     </span>
 
-                    <h2 className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-center">
+                    <motion.h2
+                        className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-center"
+                        style={{ "--progress": scrollYProgress } as React.CSSProperties}
+                    >
                         {words.map((word, i) => {
                             const start = i / words.length;
                             const end = start + 1 / words.length;
@@ -151,7 +159,7 @@ export function BenefitStackSection() {
                                 </span>
                             );
                         })}
-                    </h2>
+                    </motion.h2>
                 </div>
             </div>
 
@@ -162,14 +170,10 @@ export function BenefitStackSection() {
                     {/* The 2x2 Drawn Grid — Using 'group/grid' to track hover over the whole section */}
                     <div className="group/grid grid grid-cols-1 md:grid-cols-2 bg-transparent border-y border-white/10 divide-y divide-white/10 md:divide-y-0 relative z-0 rounded-none">
 
-                        {/* Drop shadow caster — sits ABOVE the ivory slab so its shadow is visible on the ivory surface */}
-                        <div className="absolute inset-0 pointer-events-none z-[2] shadow-[0_50px_120px_0px_rgba(0,0,0,0.9),0_20px_50px_-5px_rgba(0,0,0,0.7),inset_0_0_0_1px_rgba(0,0,0,0.5)]" />
+                        {/* Drop shadow caster — Replaced heavy boxed math shadow with static radial gradient texture overlay (removed filter: blur to prevent layer repaints) */}
+                        <div className="absolute inset-0 pointer-events-none z-[2] bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.4)_0%,transparent_60%)]" style={{ transform: 'translateY(20px) scaleX(0.8) scaleY(1.2)' }} />
 
-                        {/* Faint Volumetric Atmospheric Light Rays — moved inside grid so they illuminate only through the transparent cards */}
-                        <div ref={benefitRaysRef} className="absolute inset-0 pointer-events-none z-0">
-                            <div className="absolute top-0 left-[-10%] w-[70%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-100" style={{ willChange: 'transform, opacity, filter' }} />
-                            <div className="absolute top-0 right-[-10%] w-[70%] h-full bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-1000 opacity-80" style={{ willChange: 'transform, opacity, filter' }} />
-                        </div>
+
 
                         {/* Faint Global Editorial Grid behind the cards */}
                         <div className="absolute inset-0 bg-editorial-grid pointer-events-none z-0" />
@@ -186,8 +190,8 @@ export function BenefitStackSection() {
                             <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/20" />
                         </div>
 
-                        {/* 1. Global Outline: Visible when idle. Fades out immediately when the grid is hovered (since any hover hits a card) */}
-                        <div className="animated-glow-border opacity-100 group-hover/grid:opacity-0 transition-opacity duration-700 z-10" />
+                        {/* 1. Global Outline: Lightweight box-shadow alternative to mask-composite math */}
+                        <div className="absolute inset-x-[-1px] inset-y-0 pointer-events-none border border-white/0 group-hover/grid:border-white/10 group-hover/grid:shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] transition-all duration-700 z-10" />
 
                         {benefits.map((benefit, i) => (
                             <BenefitCard
@@ -220,12 +224,12 @@ interface BenefitCardProps {
 function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps) {
     const cardRef = useRef<HTMLDivElement>(null);
 
-    // Triggers when the card's top edge crosses 25% up from the bottom of the viewport
-    // Removing `once: true` means `isInView` will flip back to false when it leaves the screen,
-    // allowing the Lottie icon to snap to the static frame and re-trigger upon re-entry.
-    const isInView = useInView(cardRef, {
-        margin: "0px 0px -25% 0px"
-    });
+    // We stagger the trigger boundaries slightly based on the card's index (0-3).
+    // This prevents all 4 Lottie files from parsing their JSON and initializing 
+    // their SVG canvases on the exact same scroll frame, which causes severe jank.
+    const margins = ["0px 0px -25% 0px", "0px 0px -20% 0px", "0px 0px -15% 0px", "0px 0px -10% 0px"] as const;
+    const margin = margins[index] || "0px 0px -10% 0px";
+    const isInView = useInView(cardRef, { margin });
 
     return (
         <div
@@ -255,8 +259,13 @@ function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps
                 }}
             />
 
-            {/* 3. The isolated card outline */}
-            <div className="animated-glow-border opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-10" />
+            {/* 3. The isolated card outline: Lightweight inset shadow approach */}
+            <div
+                className="absolute inset-px pointer-events-none opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-10"
+                style={{
+                    boxShadow: `inset 0 0 0 1px ${benefit.color}60, inset 0 0 20px ${benefit.color}20`
+                }}
+            />
 
             {/* Technical Header */}
             <div className="flex justify-between items-start relative z-10">

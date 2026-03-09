@@ -755,7 +755,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               <div className="w-full text-center">
                 <ConfiguratorCardSurface className="w-full relative overflow-hidden">
                   <ConfiguratorCardHeader title="Energy" metaLabel="SYS.ENERGY" delay={0.3} />
-                  <div className="w-full h-full pt-16 pb-8 px-8">
+                  <div className="w-full h-full pt-16 pb-4 px-8">
                     <VoiceAxisSlider
                       zones={[...ENERGY_ZONES]}
                       value={energyToZone(energy)}
@@ -771,7 +771,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
               <div className="w-full text-center">
                 <ConfiguratorCardSurface className="w-full relative overflow-hidden">
                   <ConfiguratorCardHeader title="Contrast" metaLabel="SYS.CONTRAST" delay={0.35} />
-                  <div className="w-full h-full pt-16 pb-8 px-8">
+                  <div className="w-full h-full pt-16 pb-4 px-8">
                     <VoiceAxisSlider
                       zones={[...CONTRAST_ZONES]}
                       value={contrastToZone(contrast)}

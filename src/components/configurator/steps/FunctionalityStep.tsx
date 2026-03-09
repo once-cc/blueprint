@@ -146,13 +146,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
         <div className="space-y-10">
           {/* Pages Grid */}
           <div>
-            <ConfiguratorModuleTitle className={cn(
-              "mb-4 flex items-center gap-2",
-              selectedPages.length > 0 ? 'text-foreground' : 'text-muted-foreground'
-            )}>
+            <Label className="mb-4 text-sm font-medium flex items-center gap-2 text-foreground">
               Pages Required <span className="text-destructive">*</span>
               {selectedPages.length > 0 && <CheckCircle2 className="w-4 h-4 text-accent" />}
-            </ConfiguratorModuleTitle>
+            </Label>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {PAGE_OPTIONS.map((page, index) => {
                 const Icon = pageIcons[page] || Home;
@@ -218,10 +215,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
             className="space-y-4"
           >
             <div className="space-y-1">
-              <ConfiguratorModuleTitle className="text-foreground block">
+              <ConfiguratorModuleTitle className="text-foreground block text-center">
                 Delivery Focus Areas
               </ConfiguratorModuleTitle>
-              <ConfiguratorBody>
+              <ConfiguratorBody className="text-center">
                 These domains guide how we structure execution.
                 Specific inclusions are confirmed after strategy alignment.
               </ConfiguratorBody>

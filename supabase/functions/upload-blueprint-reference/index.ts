@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 /* ──────────────────────────────────────────────
    ENV
@@ -10,10 +11,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 /* ──────────────────────────────────────────────
    CORS
 ────────────────────────────────────────────── */
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// CORS headers are now dynamic per-request — see _shared/cors.ts
 
 /* ──────────────────────────────────────────────
    TYPES
@@ -39,20 +37,22 @@ function log(step: string, message: string, data?: Record<string, unknown>) {
    MAIN SERVER
 ────────────────────────────────────────────── */
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { 
-      blueprint_id, 
-      session_token, 
-      filename, 
-      content_type, 
+    const {
+      blueprint_id,
+      session_token,
+      filename,
+      content_type,
       file_base64,
       role,
-      label 
+      label
     }: UploadRequest = await req.json();
 
     if (!blueprint_id || !session_token || !filename || !file_base64) {

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 /* ──────────────────────────────────────────────
    ENV
@@ -20,10 +21,7 @@ const APP_BASE_URL = SUPABASE_URL.replace(".supabase.co", ".lovableproject.com")
 /* ──────────────────────────────────────────────
    CORS
 ────────────────────────────────────────────── */
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// CORS headers are now dynamic per-request — see _shared/cors.ts
 
 /* ──────────────────────────────────────────────
    TYPES
@@ -47,7 +45,7 @@ interface BlueprintRecord {
 /* ──────────────────────────────────────────────
    HELPERS
 ────────────────────────────────────────────── */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     "&": "&amp;",
     "<": "&lt;",
@@ -58,7 +56,7 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-async function hashToken(token: string): Promise<string> {
+export async function hashToken(token: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(token);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
@@ -66,18 +64,18 @@ async function hashToken(token: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-function log(step: string, message: string, data?: Record<string, unknown>) {
+export function log(step: string, message: string, data?: Record<string, unknown>) {
   console.log(`[generate-and-send-blueprint] ${step}: ${message}`, data ? JSON.stringify(data) : "");
 }
 
-function logError(step: string, message: string, error?: unknown) {
+export function logError(step: string, message: string, error?: unknown) {
   console.error(`[generate-and-send-blueprint] ${step} ERROR: ${message}`, error);
 }
 
 /* ──────────────────────────────────────────────
    STEP 0: Generate Access Tokens
 ────────────────────────────────────────────── */
-async function generateAccessTokens(
+export async function generateAccessTokens(
   supabase: SupabaseClient,
   blueprintId: string
 ): Promise<{ previewToken: string; downloadToken: string; internalToken: string }> {
@@ -141,7 +139,7 @@ async function generateAccessTokens(
 /* ──────────────────────────────────────────────
    STEP 1: Generate PDF via PDFShift
 ────────────────────────────────────────────── */
-async function generatePdf(blueprintId: string, internalToken: string): Promise<Uint8Array> {
+export async function generatePdf(blueprintId: string, internalToken: string): Promise<Uint8Array> {
   if (!PDFSHIFT_API_KEY) {
     throw new Error("Missing PDFSHIFT_API_KEY secret");
   }
@@ -183,7 +181,7 @@ async function generatePdf(blueprintId: string, internalToken: string): Promise<
 /* ──────────────────────────────────────────────
    STEP 2: Upload PDF to Storage (with randomized path)
 ────────────────────────────────────────────── */
-async function uploadPdf(
+export async function uploadPdf(
   supabase: SupabaseClient,
   blueprintId: string,
   pdfBuffer: Uint8Array
@@ -222,7 +220,7 @@ async function uploadPdf(
 /* ──────────────────────────────────────────────
    STEP 3: Update Blueprint Record
 ────────────────────────────────────────────── */
-async function updateBlueprintRecord(
+export async function updateBlueprintRecord(
   supabase: SupabaseClient,
   blueprintId: string,
   storagePath: string,
@@ -249,7 +247,7 @@ async function updateBlueprintRecord(
 /* ──────────────────────────────────────────────
    STEP 4: Send Emails via Resend
 ────────────────────────────────────────────── */
-async function sendEmails(
+export async function sendEmails(
   blueprint: BlueprintRecord,
   pdfBuffer: Uint8Array,
   previewToken: string,
@@ -435,6 +433,8 @@ async function sendEmails(
    MAIN SERVER
 ────────────────────────────────────────────── */
 serve(async (req: Request): Promise<Response> => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });

@@ -86,7 +86,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
           >
             <ConfiguratorCardSurface className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Tone Balance" metaLabel="SYS.TONE" delay={0.1} />
-              <div className="w-full h-full pt-16 pb-8 px-8">
+              <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
                   zones={TONE_ZONES}
                   value={brandVoice.tone || discovery.tonePrimary}
@@ -107,7 +107,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
           >
             <ConfiguratorCardSurface className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Brand Presence" metaLabel="SYS.PRESENCE" delay={0.2} />
-              <div className="w-full h-full pt-16 pb-8 px-8">
+              <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
                   zones={PRESENCE_ZONES}
                   value={brandVoice.presence}
@@ -128,7 +128,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
           >
             <ConfiguratorCardSurface className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Brand Personality" metaLabel="SYS.PERSONALITY" delay={0.3} />
-              <div className="w-full h-full pt-16 pb-8 px-8">
+              <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
                   zones={PERSONALITY_ZONES}
                   value={brandVoice.personality || discovery.personalityTags?.[0]}
@@ -149,7 +149,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
           >
             <ConfiguratorCardSurface className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Emotional Outcome" metaLabel="SYS.EMOTION" delay={0.4} />
-              <div className="w-full h-full pt-16 pb-8 px-8">
+              <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
                   zones={ENERGY_ZONES}
                   value={brandVoice.visitorFeeling?.energy || discovery.targetFeelings?.[0]}

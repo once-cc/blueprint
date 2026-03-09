@@ -26,8 +26,7 @@ import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 export default function Blueprint() {
   const navigate = useNavigate();
   const { scrollTo: lenisScrollTo } = useLenisScroll();
-  const heroRaysRef = useRayPause<HTMLDivElement>();
-  const testimonialRaysRef = useRayPause<HTMLDivElement>();
+  const globalRaysRef = useRayPause<HTMLDivElement>();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [forceReveal, setForceReveal] = useState(false);
@@ -143,6 +142,16 @@ export default function Blueprint() {
         </AnimatePresence>
 
         {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ GLOBAL VOLUMETRIC LIGHT RAYS ═══ */}
+        {/* Single fixed layer replaces per-section rays. Sits between */}
+        {/* editorial grids (z-0) and section content (z-10+). */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        <div ref={globalRaysRef} className="fixed inset-0 z-[1] pointer-events-none overflow-hidden">
+          <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-xl mix-blend-plus-lighter animate-light-ray-corner-reverse" />
+          <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-lg mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700" />
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
         {/* ═══ HERO: VIDEO & HEADLINE ═══ */}
         {/* ═══════════════════════════════════════════════════════════════ */}
 
@@ -150,12 +159,6 @@ export default function Blueprint() {
           {/* Loopable Hero Video Background */}
           <div className="absolute inset-0 z-0 bg-background overflow-hidden">
             <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10 pointer-events-none" /> {/* Dimming overlay for text legibility */}
-
-            {/* Environmental Volumetric Light Rays (Flipped to match video source: coming from top-right to bottom-left) */}
-            <div ref={heroRaysRef}>
-              <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse" style={{ willChange: 'transform, opacity, filter' }} />
-              <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse delay-700" style={{ willChange: 'transform, opacity, filter' }} />
-            </div>
 
             {/* Top gradient mask to beautifully blend video ceiling removed in favor of CSS mask on video element */}
 
@@ -261,8 +264,7 @@ export default function Blueprint() {
 
         </section >
 
-        {/* Seamless Section Blend Gradient connecting Hero to VisionIntent */}
-        <div className="w-full h-48 bg-gradient-to-b from-transparent via-background/80 to-background relative z-20 -mt-24 pointer-events-none" />
+        {/* The Seamless Section Blend Gradient connecting Hero to VisionIntent was removed in favor of unifying the transition directly within VisionIntent.tsx */}
 
         {/* ═══════════════════════════════════════════════════════════════ */}
         {/* ═══ MAIN CONTENT: MARKETING SECTIONS ═══ */}
@@ -281,12 +283,6 @@ export default function Blueprint() {
         <GridSection className="pt-24 pb-32 bg-background z-20 relative">
           {/* Faint Global Editorial Grid */}
           <div className="absolute inset-0 bg-editorial-grid pointer-events-none" />
-
-          {/* Faint Volumetric Atmospheric Light Rays — clipped to section bounds */}
-          <div ref={testimonialRaysRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            <div className="absolute top-[30%] left-[-15%] w-[60%] h-[180%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-50" style={{ willChange: 'transform, opacity, filter' }} />
-            <div className="absolute top-[-10%] right-[20%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.03] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-500 opacity-40" style={{ willChange: 'transform, opacity, filter' }} />
-          </div>
 
 
 

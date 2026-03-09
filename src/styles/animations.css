@@ -255,13 +255,6 @@ html.theme-transitioning *::after {
    Performance Utilities
    ============================================ */
 
-/* GPU acceleration hint for static elements */
-.gpu-accelerated {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
 /* Containment for isolated rendering */
 .contain-strict {
   contain: strict;

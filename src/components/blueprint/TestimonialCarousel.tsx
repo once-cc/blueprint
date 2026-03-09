@@ -109,8 +109,10 @@ export function TestimonialCarousel() {
           <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
             {/* Outer Faint Rail */}
             <path d="M 0 0 Q 500 200 1000 0" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-            {/* Inner Bright Rail */}
-            <path d="M 0 8 Q 500 208 1000 8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" vectorEffect="non-scaling-stroke" style={{ filter: "drop-shadow(0px 1px 8px rgba(255,255,255,0.15))" }} />
+            {/* Inner Bright Rail Glow (Replaced expensive drop-shadow filter with geometric path scaling) */}
+            <path d="M 0 8 Q 500 208 1000 8" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" vectorEffect="non-scaling-stroke" />
+            {/* Inner Bright Rail Core */}
+            <path d="M 0 8 Q 500 208 1000 8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           </svg>
         </div>
 
@@ -124,8 +126,10 @@ export function TestimonialCarousel() {
         {/* Architectural Track Rails — Bottom Pair (3D Curved Illusion) */}
         <div className="absolute inset-x-[-10vw] bottom-0 h-[50px] md:h-[70px] pointer-events-none z-0 mix-blend-plus-lighter overflow-visible">
           <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
-            {/* Inner Bright Rail */}
-            <path d="M 0 92 Q 500 -108 1000 92" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" vectorEffect="non-scaling-stroke" style={{ filter: "drop-shadow(0px -1px 8px rgba(255,255,255,0.15))" }} />
+            {/* Inner Bright Rail Glow (Replaced expensive drop-shadow filter with geometric path scaling) */}
+            <path d="M 0 92 Q 500 -108 1000 92" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" vectorEffect="non-scaling-stroke" />
+            {/* Inner Bright Rail Core */}
+            <path d="M 0 92 Q 500 -108 1000 92" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
             {/* Outer Faint Rail */}
             <path d="M 0 100 Q 500 -100 1000 100" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           </svg>
@@ -133,7 +137,7 @@ export function TestimonialCarousel() {
 
         <motion.div
           className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing px-0 md:px-0 touch-pan-y"
-          style={{ x, transformStyle: "preserve-3d", touchAction: "pan-y" }}
+          style={{ x, transformStyle: "preserve-3d", touchAction: "pan-y", willChange: "transform" }}
           drag="x"
           dragDirectionLock
           dragConstraints={{ left: -100000, right: 100000 }} // Arbitrarily large limits; our snapping logic prevents hitting ends
@@ -215,14 +219,7 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
   // Blueprint Grid Opacity — subtle brightening at center
   const gridOpacity = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0.3, 0.45, 0.3]);
 
-  // Blur: 0px at center, 1.5px at ±1.5 strides
-  const rawBlur = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [1.5, 0, 1.5]);
-  const filter = useTransform(rawBlur, (b) => `blur(${b}px)`);
-
-  const shadowRaw = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0, 1, 0]);
-  const boxShadow = useTransform(shadowRaw, (s) =>
-    `0px ${30 * s}px ${80 * s}px rgba(0,0,0,0.65), 0px ${10 * s}px ${30 * s}px rgba(0,0,0,0.35)`
-  );
+  // Blur and BoxShadow continuous string calculations removed for 60fps performance gains
 
   // ID Formatting
   const idNumber = String((index % SET_LENGTH) + 1).padStart(3, '0');
@@ -259,8 +256,8 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
         rotateY,
         opacity,
         scale,
-        filter,
-        transformStyle: "preserve-3d"
+        transformStyle: "preserve-3d",
+        willChange: "transform, opacity"
       }}
     >
       {/* Blueprint background grid lines */}

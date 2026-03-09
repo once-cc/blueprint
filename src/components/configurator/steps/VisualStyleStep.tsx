@@ -161,10 +161,7 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
-            <Label className={cn(
-              "text-sm font-medium flex items-center gap-2",
-              design.visualStyle ? 'text-white sm:text-foreground' : 'text-muted-foreground'
-            )}>
+            <Label className="text-sm font-medium flex items-center gap-2 text-foreground">
               Overall Aesthetic <span className="text-destructive">*</span>
               {design.visualStyle && <CheckCircle2 className="w-4 h-4 text-accent" />}
             </Label>

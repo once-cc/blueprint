@@ -8,6 +8,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { signForConsole } from "../_shared/hmac.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -16,16 +17,13 @@ const OPS_CONSOLE_URL = Deno.env.get("OPS_CONSOLE_URL") || "";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const FROM_EMAIL = "Cleland Studio <crafted@cleland.studio>";
 
-const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers":
-        "authorization, x-client-info, apikey, content-type, x-blueprint-token",
-};
+// CORS headers are now dynamic per-request — see _shared/cors.ts
+let _corsHeaders: Record<string, string> = {};
 
 function respond(body: Record<string, unknown>, status = 200) {
     return new Response(JSON.stringify(body), {
         status,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ..._corsHeaders },
     });
 }
 
@@ -50,8 +48,10 @@ async function fetchWithRetry(
 }
 
 Deno.serve(async (req: Request) => {
+    _corsHeaders = getCorsHeaders(req);
+
     if (req.method === "OPTIONS") {
-        return new Response(null, { headers: corsHeaders });
+        return new Response(null, { headers: _corsHeaders });
     }
 
     try {

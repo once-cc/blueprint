@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { springConfig } from '../ui/animationConfig';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
-import { UploadCloud, FileText, AlertCircle, Trash2 } from 'lucide-react';
+import { UploadCloud, FileText, AlertCircle, Trash2, CheckCircle2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ConfiguratorModuleTitle, ConfiguratorHelper } from '@/components/ui/Typography';
 
@@ -321,7 +321,10 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
 
                 {/* Font Weight Preference */}
                 <div className="space-y-3">
-                  <ConfiguratorModuleTitle className="text-foreground/80 block">Font Weight Preference</ConfiguratorModuleTitle>
+                  <Label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    Font Weight Preference
+                    {design.fontWeight && <CheckCircle2 className="w-4 h-4 text-accent" />}
+                  </Label>
                   <RadioGroup
                     value={design.fontWeight}
                     onValueChange={(value) => onUpdate({ fontWeight: value as BlueprintDesign['fontWeight'] })}

@@ -324,6 +324,7 @@ export function formatContractDate(isoDate: string | null): string {
   if (!isoDate) return 'Not provided';
   try {
     const date = new Date(isoDate);
+    if (isNaN(date.getTime())) return 'Not provided';
     return date.toLocaleDateString('en-GB', {
       day: 'numeric',
       month: 'long',

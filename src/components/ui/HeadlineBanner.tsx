@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Crosshair } from './crosshair';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
+import noiseTexture from '@/assets/noise/noise.png';
 
 interface HeadlineBannerProps {
     headline: ReactNode;
@@ -29,23 +30,34 @@ export function HeadlineBanner({
             )}
         >
             <div className="absolute inset-0 border-y border-white/10 bg-[hsl(220_15%_4%)] overflow-hidden pointer-events-none -z-10">
-                {/* Architectural Bevel Lighting */}
-                <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.03),transparent_70%)]" />
-                <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.02),transparent_40%)]" />
-
-                {/* Layer 1: Micro Film Grain — SVG feTurbulence noise */}
+                {/* Consolidated Background Layers — Merged 6 heavy compositor overlaps into a single CSS multi-background string */}
                 <div
-                    className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25] mix-blend-soft-light"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                    className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none"
+                    style={{
+                        background: [
+                            'radial-gradient(80% 40% at 50% 100%, hsl(37 91% 55% / 0.03), transparent 70%)',
+                            'linear-gradient(to bottom, hsl(45 10% 92% / 0.02), transparent 40%)'
+                        ].join(', ')
+                    }}
                 />
 
-                {/* Layer 2: Luminance Falloff — Radial lift for reading focus + edge darkening */}
-                <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(60%_50%_at_25%_40%,hsl(220_10%_12%_/_0.5),transparent_70%)]" />
-                <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(220_15%_2%_/_0.75)_100%)]" />
+                <div
+                    className="absolute inset-0 z-[1] pointer-events-none"
+                    style={{
+                        background: [
+                            'radial-gradient(70% 60% at 30% 45%, hsl(37 30% 55% / 0.07), transparent 70%)',
+                            'radial-gradient(50% 50% at 85% 80%, hsl(220 40% 30% / 0.08), transparent 60%)',
+                            'radial-gradient(60% 50% at 25% 40%, hsl(220 10% 12% / 0.5), transparent 70%)',
+                            'radial-gradient(ellipse at center, transparent 35%, hsl(220 15% 2% / 0.75) 100%)'
+                        ].join(', ')
+                    }}
+                />
 
-                {/* Layer 3: Micro Chromatic Drift — Cool shadows, warm centre */}
-                <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(70%_60%_at_30%_45%,hsl(37_30%_55%_/_0.07),transparent_70%)]" />
-                <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(50%_50%_at_85%_80%,hsl(220_40%_30%_/_0.08),transparent_60%)]" />
+                {/* Layer 1: Static Film Grain — Zero-cost tiling image replacement for expensive SVG math */}
+                <div
+                    className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25]"
+                    style={{ backgroundImage: `url(${noiseTexture})` }}
+                />
 
                 {/* Layer 4: Ghost Editorial Grid */}
                 <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />

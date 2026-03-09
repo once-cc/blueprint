@@ -12,6 +12,8 @@ import { EyebrowBanner } from '@/components/ui/EyebrowBanner';
 import paperplaneAnimation from '@/assets/ui/1paperplane.json';
 import { useRayPause } from '@/hooks/useRayPause';
 import { supabase } from '@/integrations/supabase/client';
+import { useLocation } from 'react-router-dom';
+import noiseTexture from "@/assets/noise/noise.png";
 import { useToast } from '@/hooks/use-toast';
 import type { Blueprint } from '@/types/blueprint';
 
@@ -221,11 +223,12 @@ export function SuccessState({ blueprintId, blueprint }: SuccessStateProps) {
           <Crosshair className="absolute bottom-4 -right-[8.5px] text-white/40" />
         </div>
       </div>
-
-
-
-      {/* Film Grain Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.12] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+      {/* Background Volumetrics */}
+      <div className="fixed inset-0 pointer-events-none z-[1] bg-[radial-gradient(120%_100%_at_50%_-20%,hsl(220_15%_12%),transparent)]" />
+      <div
+        className="fixed inset-0 pointer-events-none z-[2] opacity-[0.25]"
+        style={{ backgroundImage: `url(${noiseTexture})` }}
+      />
 
       {/* ═══════════════════════════════════════════════════════
           CONTENT WRAPPER (Global Stacking Context for Banners)

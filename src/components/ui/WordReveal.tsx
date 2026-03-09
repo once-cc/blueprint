@@ -1,8 +1,9 @@
-import { motion, useTransform, MotionValue } from "framer-motion";
+import React from "react";
+import { MotionValue } from "framer-motion";
 
 export interface WordRevealProps {
-    children: string;
-    progress: MotionValue<number>;
+    children: React.ReactNode;
+    progress?: MotionValue<number>; // Kept for backwards compatibility but unused internally
     range: [number, number];
 }
 
@@ -14,30 +15,41 @@ export interface WordRevealColors {
 }
 
 /**
- * Scroll-driven word reveal — opacity + color interpolation.
- * Accepts color config so a single component serves both dark-on-light
- * and light-on-dark sections.
+ * Scroll-driven word reveal — heavily optimized to use exactly zero JS hooks per word.
+ * Parent controls `--progress` CSS var via Framer Motion, and children use CSS calc() 
+ * and color-mix() to run the interpolation natively on the browser compositor.
  */
-export const Word = ({ children, progress, range, colors }: WordRevealProps & { colors: WordRevealColors }) => {
-    const opacity = useTransform(progress, range, [0.25, 1]);
-    const color = useTransform(progress, range, [colors.from, colors.to]);
-
+export const Word = ({ children, range, colors }: WordRevealProps & { colors: WordRevealColors }) => {
     return (
-        <motion.span className="relative" style={{ opacity, color }}>
+        <span
+            className="relative"
+            style={{
+                "--start": range[0],
+                "--end": range[1],
+                "--color-from": colors.from,
+                "--color-to": colors.to,
+                opacity: "calc(0.25 + 0.75 * clamp(0, (var(--progress, 0) - var(--start)) / (var(--end) - var(--start)), 1))",
+                color: "color-mix(in srgb, var(--color-to) calc(clamp(0, (var(--progress, 0) - var(--start)) / (var(--end) - var(--start)), 1) * 100%), var(--color-from))"
+            } as React.CSSProperties}
+        >
             {children}
-        </motion.span>
+        </span>
     );
 };
 
 /**
  * Scroll-driven highlighted word — opacity only, color comes from parent CSS.
  */
-export const HighlightedWord = ({ children, progress, range }: WordRevealProps) => {
-    const opacity = useTransform(progress, range, [0.4, 1]);
-
+export const HighlightedWord = ({ children, range }: WordRevealProps) => {
     return (
-        <motion.span style={{ opacity }}>
+        <span
+            style={{
+                "--start": range[0],
+                "--end": range[1],
+                opacity: "calc(0.4 + 0.6 * clamp(0, (var(--progress, 0) - var(--start)) / (var(--end) - var(--start)), 1))"
+            } as React.CSSProperties}
+        >
             {children}
-        </motion.span>
+        </span>
     );
 };

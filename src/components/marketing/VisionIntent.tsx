@@ -5,12 +5,10 @@ import { PlayCircle } from "lucide-react";
 import { DreamInput } from "@/components/ui/dream-input";
 import { LogoGrid } from "@/components/ui/LogoGrid";
 import { Crosshair } from "@/components/ui/crosshair";
-import { useRayPause } from "@/hooks/useRayPause";
 
 export function VisionIntent() {
     const navigate = useNavigate();
     const [dreamIntent, setDreamIntent] = useState("");
-    const raysRef = useRayPause<HTMLDivElement>();
     const [hasExistingSession, setHasExistingSession] = useState(false);
 
     useEffect(() => {
@@ -31,19 +29,13 @@ export function VisionIntent() {
 
     return (
         <section id="chatbox-section" className="relative w-full min-h-[600px] md:min-h-[800px] flex flex-col justify-between -mt-32 z-20 pointer-events-none">
-            {/* Background Gradient to blend hero and scrollytell */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-muted/30" />
-
-            {/* Environmental Volumetric Light Rays (Continuing down from Hero) */}
-            {/* Extended clip path allows volumetric bleed upwards into Hero, but strictly stops at bottom and side boundaries */}
-            <div ref={raysRef} className="absolute inset-0 pointer-events-none z-0" style={{ clipPath: 'inset(-50% 0 0 0)' }}>
-                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-100" style={{ willChange: 'transform, opacity, filter' }} />
-                <div className="absolute top-[-10%] right-[15%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-80" style={{ willChange: 'transform, opacity, filter' }} />
-            </div>
+            {/* Background Gradient to blend hero and scrollytell seamlessly */}
+            {/* Using from-background/0 guarantees perfect alpha interpolation against the Hero bg without Safari gray-banding */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background to-muted/30" />
 
             {/* Faded Background Pattern & Rails */}
-            {/* mask-image ensures the grid and rails fade out smoothly at the top to blend from the dark hero section */}
-            <div className="absolute inset-0 z-0 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent,black_200px)]">
+            {/* Extended the mask-image to 400px and set explicit transparent_0% to eliminate any hard ceiling lines */}
+            <div className="absolute inset-0 z-0 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_400px)]">
                 {/* Faint Global Editorial Grid */}
                 <div className="absolute inset-0 bg-editorial-grid" />
 

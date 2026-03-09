@@ -118,17 +118,24 @@ export const FrameworkDesktopCard = ({
                         style={{
                             scale: groupScale,
                             opacity: groupOpacity,
+                            willChange: "transform, opacity" // Force browser to take a static texture snapshot for scaling
                         }}
                         className="relative w-full max-w-[90vw] lg:max-w-[1240px] flex justify-center"
                     >
                         {/* ── Big Title (behind card) ── */}
                         <motion.div
-                            style={{ y: titleY, opacity: titleOpacity }}
+                            style={{ y: titleY, opacity: titleOpacity, willChange: "transform, opacity" }}
                             className="absolute bottom-full w-full flex items-end justify-center pointer-events-none -z-10"
                         >
+                            {/* Hardware acceleration boundary ensures the text clip mask doesn't re-rasterize on scale */}
                             <span
                                 className={`font-nohemi font-bold pt-8 pb-4 select-none whitespace-nowrap uppercase relative inline-block text-transparent bg-clip-text ${theme.bigTitleGradient}`}
-                                style={{ fontSize: "clamp(3rem, 13vw, 190px)", lineHeight: 1 }}
+                                style={{
+                                    fontSize: "clamp(3rem, 13vw, 190px)",
+                                    lineHeight: 1,
+                                    WebkitTransform: "translateZ(0)", // Force GPU layer
+                                    textShadow: "0 20px 40px rgba(0,0,0,0.4)" // Replaced box-shadow with text-shadow per request
+                                }}
                             >
                                 {step.title}
                             </span>
@@ -140,7 +147,7 @@ export const FrameworkDesktopCard = ({
                         {/* ═══════════════════════════════════════════════════ */}
                         <div
                             ref={contentRef}
-                            className="w-full bg-card border border-white/10 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-black/50 relative overflow-hidden rounded-xl h-[550px] lg:h-[640px]"
+                            className="w-full bg-card border border-white/10 ring-1 ring-black/50 relative overflow-hidden rounded-xl h-[550px] lg:h-[640px]"
                         >
                             {/* Structural Ticks */}
                             <motion.div
@@ -171,11 +178,10 @@ export const FrameworkDesktopCard = ({
                                 />
                             </motion.div>
 
-                            {/* ── GRADIENT SCRIMS (Ingrained Canvas Approach) ── */}
-                            {/* Stripping heavy black gradients to let the topographical asset anchor the design. */}
-                            {/* Using a subtle raw dim and an inner edge burn to frame the text without fogging the center. */}
-                            <div className="absolute inset-0 bg-black/25 mix-blend-multiply" />
-                            <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.8)] pointer-events-none" />
+                            {/* ── BACKGROUND DARKENING & VIGNETTE ── */}
+                            {/* Replaced heavy mix-blend-multiply and 120px inner shadows with cheap static overlays/gradients */}
+                            <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.8)_120%)] pointer-events-none" />
 
                             {/* ── EDITORIAL OVERLAYS (non-structural) ── */}
                             <div
@@ -290,7 +296,14 @@ export const FrameworkDesktopCard = ({
                                                 ? fadeUp(0.5, 8)
                                                 : { initial: { opacity: 0 } })}
                                         >
-                                            <span className={`text-transparent bg-clip-text ${theme.headlineGradient} inline-block ${theme.headlineExtra ?? ''} mix-blend-plus-lighter`} style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }}>
+                                            {/* Hardware acceleration boundary for the masked text */}
+                                            <span
+                                                className={`text-transparent bg-clip-text ${theme.headlineGradient} inline-block ${theme.headlineExtra ?? ''} mix-blend-plus-lighter`}
+                                                style={{
+                                                    textShadow: '0px 2px 4px rgba(0,0,0,0.5)', // Replaced expensive CSS filter with text-shadow
+                                                    WebkitTransform: "translateZ(0)" // Force GPU layer
+                                                }}
+                                            >
                                                 {step.title}
                                             </span>
                                         </motion.h3>
@@ -314,15 +327,18 @@ export const FrameworkDesktopCard = ({
                                                     <div className="absolute w-2 h-2 bg-[#d4a853]/20 rounded-full" />
                                                     <motion.div
                                                         initial={{ scale: 0.8, opacity: 0.4 }}
+                                                        // Gate the infinite animation so it pauses when scrolled out of view
                                                         animate={isInView ? {
                                                             scale: [0.8, 1.2, 0.8],
                                                             opacity: [0.4, 1, 0.4],
                                                         } : { scale: 0.8, opacity: 0.4 }}
-                                                        transition={{
+                                                        transition={isInView ? {
                                                             duration: 2.5,
                                                             repeat: Infinity,
                                                             ease: "easeInOut",
                                                             delay: idx * 0.4,
+                                                        } : {
+                                                            duration: 0.5
                                                         }}
                                                         className="w-1.5 h-1.5 bg-[#d4a853] rounded-full shadow-[0_0_8px_#d4a853]"
                                                     />
