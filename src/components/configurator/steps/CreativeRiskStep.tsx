@@ -7,6 +7,7 @@ import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 import { ConfiguratorCardHeader } from '../ui/ConfiguratorCardHeader';
 import { cn } from '@/lib/utils';
 import { Shield, Sparkles, Rocket } from 'lucide-react';
+import { ConfiguratorModuleTitle, MotionConfiguratorBody } from '@/components/ui/Typography';
 
 interface CreativeRiskStepProps {
   deliver: BlueprintDeliver;
@@ -181,7 +182,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             transition={{ delay: 0.5 }}
             className="p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-border/40 dark:border-border/50 bg-card/80 backdrop-blur-sm"
           >
-            <h4 className="text-sm font-medium text-foreground mb-2">What This Means</h4>
+            <ConfiguratorModuleTitle className="text-foreground/80 mb-4 block">What This Means</ConfiguratorModuleTitle>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
               {[
                 {
@@ -222,15 +223,16 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 >
                   <p className="font-medium text-foreground/80 mb-1">{item.label}</p>
                   <AnimatePresence mode="wait">
-                    <motion.p
+                    <MotionConfiguratorBody
                       key={`${item.label}-${riskTolerance}`}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
+                      className="text-sm text-muted-foreground"
                     >
                       {item.getValue()}
-                    </motion.p>
+                    </MotionConfiguratorBody>
                   </AnimatePresence>
                 </motion.div>
               ))}

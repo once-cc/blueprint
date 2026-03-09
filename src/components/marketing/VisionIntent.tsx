@@ -37,8 +37,8 @@ export function VisionIntent() {
             {/* Environmental Volumetric Light Rays (Continuing down from Hero) */}
             {/* Extended clip path allows volumetric bleed upwards into Hero, but strictly stops at bottom and side boundaries */}
             <div ref={raysRef} className="absolute inset-0 pointer-events-none z-0" style={{ clipPath: 'inset(-50% 0 0 0)' }}>
-                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-100" />
-                <div className="absolute top-[-10%] right-[15%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-80" />
+                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-100" style={{ willChange: 'transform, opacity, filter' }} />
+                <div className="absolute top-[-10%] right-[15%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-80" style={{ willChange: 'transform, opacity, filter' }} />
             </div>
 
             {/* Faded Background Pattern & Rails */}

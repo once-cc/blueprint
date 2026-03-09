@@ -5,6 +5,7 @@ import { StepLayout } from '../StepLayout';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 import { ConfiguratorCardHeader } from '../ui/ConfiguratorCardHeader';
+import { ConfiguratorModuleTitle, ConfiguratorBody } from '@/components/ui/Typography';
 
 interface BrandVoiceStepProps {
   discovery: BlueprintDiscovery;
@@ -168,17 +169,17 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
               transition={{ delay: 0.5 }}
               className="pt-6 border-t border-border/30 text-center"
             >
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+              <ConfiguratorModuleTitle className="text-muted-foreground mb-3 inline-block">
                 Your Brand Voice
-              </p>
-              <p className="text-sm text-foreground/80 leading-relaxed">
+              </ConfiguratorModuleTitle>
+              <ConfiguratorBody>
                 A <span className="text-accent font-medium">{brandVoice.tone || 'Neutral'}</span> brand
                 with <span className="text-accent font-medium">{brandVoice.presence || 'Balanced'}</span> presence,
                 expressing <span className="text-accent font-medium">{brandVoice.personality || 'Authentic'}</span> personality
                 {brandVoice.visitorFeeling?.energy && (
                   <>, leaving visitors feeling <span className="text-accent font-medium">{brandVoice.visitorFeeling.energy}</span></>
                 )}.
-              </p>
+              </ConfiguratorBody>
             </motion.div>
           )}
         </div>

@@ -17,6 +17,8 @@ import footerBg from "@/assets/footer.webp";
 import { GridSection } from "@/components/ui/grid-section";
 import { Crosshair } from "@/components/ui/crosshair";
 import { AnimatedButtonIcon } from "@/components/ui/AnimatedButtonIcon";
+import { HeadlineBanner } from "@/components/ui/HeadlineBanner";
+import { EyebrowBanner } from "@/components/ui/EyebrowBanner";
 import paperplaneAnimation from "@/assets/ui/1paperplane.json";
 
 
@@ -65,10 +67,15 @@ export default function Blueprint() {
         inputEl.focus({ preventScroll: true });
       }
 
-      // Use Lenis for smooth scroll — avoids dual-scroll-authority conflict
-      // Lenis handles easing and momentum naturally
+      // Dynamically align the bottom of the section to the bottom of the viewport.
+      // This guarantees the Architectural Primitives marquee (LogoGrid) at the
+      // section's foot stays visible on every screen size.
+      const sectionHeight = el.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const bottomAlignOffset = sectionHeight - viewportHeight + 24; // 24px breathing room
+
       lenisScrollTo(el, {
-        offset: -window.innerHeight * (window.innerWidth < 768 ? 0.25 : 0.35),
+        offset: bottomAlignOffset,
         duration: 1.8,
       });
     }
@@ -130,7 +137,7 @@ export default function Blueprint() {
               initial={{ opacity: 1, backdropFilter: "blur(60px)" }}
               exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
               transition={{ duration: 1.2, ease: "easeInOut" }}
-              className="fixed inset-0 z-[100] bg-background/95 pointer-events-none flex items-center justify-center"
+              className="fixed inset-0 z-[100] bg-black pointer-events-none flex items-center justify-center"
             />
           )}
         </AnimatePresence>
@@ -146,8 +153,8 @@ export default function Blueprint() {
 
             {/* Environmental Volumetric Light Rays (Flipped to match video source: coming from top-right to bottom-left) */}
             <div ref={heroRaysRef}>
-              <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse" />
-              <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse delay-700" />
+              <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[150%] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse" style={{ willChange: 'transform, opacity, filter' }} />
+              <div className="absolute top-[-20%] right-[10%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter pointer-events-none z-10 animate-light-ray-corner-reverse delay-700" style={{ willChange: 'transform, opacity, filter' }} />
             </div>
 
             {/* Top gradient mask to beautifully blend video ceiling removed in favor of CSS mask on video element */}
@@ -198,12 +205,12 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
-                  className="heading-editorial text-[3.5rem] sm:text-[4rem] leading-[1.05] md:text-7xl lg:text-8xl tracking-tight drop-shadow-md pb-1"
+                  className="heading-editorial text-[14vw] min-[400px]:text-[4.25rem] sm:text-[4.5rem] leading-[1.05] md:text-[5.5rem] lg:text-8xl tracking-tight drop-shadow-md pb-1"
                 >
-                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
-                    The <em className="italic font-medium pr-4">Crafted</em>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block pt-2 -mt-2 pb-2 -mb-2">
+                    The <em className="italic font-medium pr-2 md:pr-4">Crafted</em>
                   </span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block pt-2 -mt-2 pb-3 -mb-3">
                     Blueprint.
                   </span>
                 </motion.h1>
@@ -277,83 +284,36 @@ export default function Blueprint() {
 
           {/* Faint Volumetric Atmospheric Light Rays — clipped to section bounds */}
           <div ref={testimonialRaysRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            <div className="absolute top-[30%] left-[-15%] w-[60%] h-[180%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-50" />
-            <div className="absolute top-[-10%] right-[20%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.03] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-500 opacity-40" />
+            <div className="absolute top-[30%] left-[-15%] w-[60%] h-[180%] bg-gradient-to-r from-transparent via-white/5 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-50" style={{ willChange: 'transform, opacity, filter' }} />
+            <div className="absolute top-[-10%] right-[20%] w-[40%] h-[150%] bg-gradient-to-l from-transparent via-white/[0.03] to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-500 opacity-40" style={{ willChange: 'transform, opacity, filter' }} />
           </div>
 
-          {/* True Edge Docking Rails spanning the entire section height */}
-          <div className="absolute inset-0 pointer-events-none z-0 flex justify-center">
-            <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
-              <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
-                <div className="absolute top-0 bottom-0 left-0 w-px bg-white/10" />
-                <div className="absolute top-0 bottom-0 right-0 w-px bg-white/10" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Testimonial Banner Block — Full substrate treatment matching ScrollyTell section */}
           {/* Reduced vertical padding and bottom margin to draw the carousel closer to the banner */}
-          <div className="w-full py-12 mb-8 relative z-10 border-y border-white/10 bg-[hsl(220_15%_4%)] overflow-hidden">
-            {/* Architectural Bevel Lighting */}
-            <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.03),transparent_70%)]" />
-            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.02),transparent_40%)]" />
-
-            {/* Layer 1: Micro Film Grain — SVG feTurbulence noise */}
-            <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.25] mix-blend-soft-light" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-
-            {/* Layer 2: Luminance Falloff — Radial lift for reading focus + edge darkening */}
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(60%_50%_at_25%_40%,hsl(220_10%_12%_/_0.5),transparent_70%)]" />
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(220_15%_2%_/_0.75)_100%)]" />
-
-            {/* Layer 3: Micro Chromatic Drift — Cool shadows, warm centre */}
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(70%_60%_at_30%_45%,hsl(37_30%_55%_/_0.07),transparent_70%)]" />
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(50%_50%_at_85%_80%,hsl(220_40%_30%_/_0.08),transparent_60%)]" />
-
-            {/* Layer 4: Ghost Editorial Grid */}
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />
-
-            {/* Crosshairs intersecting the docking rails on the horizontal banner borders */}
-            <div className="absolute inset-0 pointer-events-none flex justify-center z-20">
-              <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
-                <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
-                  <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40" />
-                  <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/40" />
-                  <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/40" />
-                  <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/40" />
-                </div>
-              </div>
-            </div>
-
-            <div className="container mx-auto px-6 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <h2 className="font-nohemi font-medium text-[clamp(1.75rem,8.5vw,6rem)] md:text-5xl lg:text-6xl leading-[1.05] tracking-tight mb-4">
-                  {/* We use inline-block so the gradient spans the ENTIRE physical bounding box, rather than recalculating per-line */}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-500 inline-block">
-                    What the Blueprint Makes Possible
-                  </span>
-                </h2>
-                <p className="text-lg md:text-xl font-body text-transparent bg-clip-text bg-gradient-to-b from-zinc-300 to-zinc-600 max-w-2xl mx-auto">
-                  Conversion-led websites, operational dashboards, client portals, booking systems — all engineered from a strategic architecture.
-                </p>
-              </motion.div>
-            </div>
-          </div>
+          <HeadlineBanner
+            className="mb-8"
+            dockingRails="both"
+            headline={
+              <h2 className="font-nohemi font-medium text-[clamp(1.75rem,8.5vw,6rem)] md:text-5xl lg:text-6xl leading-[1.05] tracking-tight mb-4">
+                {/* We use inline-block so the gradient spans the ENTIRE physical bounding box, rather than recalculating per-line */}
+                <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 to-zinc-500 inline-block">
+                  What the Blueprint Makes Possible
+                </span>
+              </h2>
+            }
+            subheadline={
+              <p className="text-lg md:text-xl font-body text-transparent bg-clip-text bg-gradient-to-b from-zinc-300 to-zinc-600 max-w-2xl mx-auto">
+                Conversion-led websites, operational dashboards, client portals, booking systems — all engineered from a strategic architecture.
+              </p>
+            }
+          />
 
           {/* Editorial label — echoes "Architectural Primitives" treatment */}
-          <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative z-10">
-            <div className="w-full md:max-w-[90vw] lg:max-w-[1240px]">
-              <div className="w-full h-px bg-white/10" />
-              <p className="w-full text-center text-[10px] uppercase tracking-[0.5em] text-white/20 py-3 bg-background/80">
-                Engineered Visions
-              </p>
-              <div className="w-full h-px bg-white/10" />
-            </div>
-          </div>
+          <EyebrowBanner>
+            Engineered Visions
+          </EyebrowBanner>
 
           {/* Full-width carousel */}
           <div className="py-8">
@@ -372,7 +332,7 @@ export default function Blueprint() {
       {/* Final CTA Section (Pinned Reveal Footer) */}
       <footer
         ref={footerRef}
-        className="fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden"
+        className={`fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden transition-opacity duration-1000 ${isReady ? 'opacity-100' : 'opacity-0'}`}
       >
         {/* Architectural Schematic Grid for Footer (Reveals from underneath) */}
         <div className="absolute inset-0 pointer-events-none flex justify-center h-full w-full z-10">

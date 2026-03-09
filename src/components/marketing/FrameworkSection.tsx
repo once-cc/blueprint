@@ -111,8 +111,8 @@ export function FrameworkSection() {
             {/* Environmental Volumetric Light Rays (Replicating Hero over entire section scroll) */}
             <div ref={frameworkRaysRef} className="absolute inset-0 z-0 pointer-events-none">
                 <div className="sticky top-0 w-full h-screen overflow-hidden">
-                    <div className="absolute top-[-10vh] right-[-20vw] w-[60vw] h-[150vh] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-80" />
-                    <div className="absolute top-[-20vh] right-[10vw] w-[40vw] h-[150vh] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-60" />
+                    <div className="absolute top-[-10vh] right-[-20vw] w-[60vw] h-[150vh] bg-gradient-to-l from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner-reverse opacity-80" style={{ willChange: 'transform, opacity, filter' }} />
+                    <div className="absolute top-[-20vh] right-[10vw] w-[40vw] h-[150vh] bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-700 opacity-60" style={{ willChange: 'transform, opacity, filter' }} />
                 </div>
             </div>
 

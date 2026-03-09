@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation } from '../ui/animationConfig';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
+import { ConfiguratorModuleTitle, ConfiguratorBody } from '@/components/ui/Typography';
 
 interface FunctionalityStepProps {
   deliver: BlueprintDeliver;
@@ -145,13 +146,13 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
         <div className="space-y-10">
           {/* Pages Grid */}
           <div>
-            <Label className={cn(
-              "text-sm font-medium mb-4 block flex items-center gap-2",
+            <ConfiguratorModuleTitle className={cn(
+              "mb-4 flex items-center gap-2",
               selectedPages.length > 0 ? 'text-foreground' : 'text-muted-foreground'
             )}>
               Pages Required <span className="text-destructive">*</span>
               {selectedPages.length > 0 && <CheckCircle2 className="w-4 h-4 text-accent" />}
-            </Label>
+            </ConfiguratorModuleTitle>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {PAGE_OPTIONS.map((page, index) => {
                 const Icon = pageIcons[page] || Home;
@@ -217,13 +218,13 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
             className="space-y-4"
           >
             <div className="space-y-1">
-              <Label className="text-sm font-medium text-foreground">
+              <ConfiguratorModuleTitle className="text-foreground block">
                 Delivery Focus Areas
-              </Label>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              </ConfiguratorModuleTitle>
+              <ConfiguratorBody>
                 These domains guide how we structure execution.
                 Specific inclusions are confirmed after strategy alignment.
-              </p>
+              </ConfiguratorBody>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -329,9 +330,9 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
           >
             {/* Timeline */}
             <div>
-              <Label className="text-sm font-medium text-foreground mb-4 block">
+              <ConfiguratorModuleTitle className="mb-4 block">
                 Timeline
-              </Label>
+              </ConfiguratorModuleTitle>
               <RadioGroup
                 value={deliver.timeline || ''}
                 onValueChange={(value) => onUpdate({ timeline: value as BlueprintDeliver['timeline'] })}
@@ -360,9 +361,9 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
 
             {/* Budget */}
             <div>
-              <Label className="text-sm font-medium text-foreground mb-4 block">
+              <ConfiguratorModuleTitle className="mb-4 block">
                 Budget Range
-              </Label>
+              </ConfiguratorModuleTitle>
               <RadioGroup
                 value={deliver.budget || ''}
                 onValueChange={(value) => onUpdate({ budget: value as BlueprintDeliver['budget'] })}

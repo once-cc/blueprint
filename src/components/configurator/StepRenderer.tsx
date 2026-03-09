@@ -30,6 +30,7 @@ export interface StepRendererProps {
     onBack: () => void;
     onNext: () => void;
     onGoToStep: (step: number) => void;
+    onReviseVision?: () => void;
     stepRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
 }
 
@@ -46,6 +47,7 @@ export function StepRenderer({
     onBack,
     onNext,
     onGoToStep,
+    onReviseVision,
     stepRefs,
 }: StepRendererProps) {
     const setRef = (index: number) => (el: HTMLDivElement | null) => {
@@ -171,6 +173,7 @@ export function StepRenderer({
                         onGoToStep={onGoToStep}
                         onSubmit={onSubmit}
                         onBack={onBack}
+                        onReviseVision={onReviseVision}
                     />
                 </Suspense>
             );

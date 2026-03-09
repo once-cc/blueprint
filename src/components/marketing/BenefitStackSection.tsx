@@ -167,8 +167,8 @@ export function BenefitStackSection() {
 
                         {/* Faint Volumetric Atmospheric Light Rays — moved inside grid so they illuminate only through the transparent cards */}
                         <div ref={benefitRaysRef} className="absolute inset-0 pointer-events-none z-0">
-                            <div className="absolute top-0 left-[-10%] w-[70%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-100" />
-                            <div className="absolute top-0 right-[-10%] w-[70%] h-full bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-1000 opacity-80" />
+                            <div className="absolute top-0 left-[-10%] w-[70%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent blur-3xl mix-blend-plus-lighter animate-light-ray-corner opacity-100" style={{ willChange: 'transform, opacity, filter' }} />
+                            <div className="absolute top-0 right-[-10%] w-[70%] h-full bg-gradient-to-l from-transparent via-white/5 to-transparent blur-2xl mix-blend-plus-lighter animate-light-ray-corner-reverse delay-1000 opacity-80" style={{ willChange: 'transform, opacity, filter' }} />
                         </div>
 
                         {/* Faint Global Editorial Grid behind the cards */}

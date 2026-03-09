@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation, checkSpring } from '../ui/animationConfig';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
+import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
 
 interface ConversionGoalsLayerProps {
   availableGoals: ConversionGoalOption[];
@@ -59,22 +60,20 @@ export const ConversionGoalsLayer = forwardRef<HTMLDivElement, ConversionGoalsLa
         <div className="w-full max-w-4xl space-y-6">
           {/* Question */}
           <div className="text-center space-y-2">
-            <motion.h2
+            <MotionConfiguratorQuestion
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
             >
               What specific outcomes should your platform support?
-            </motion.h2>
-            <motion.p
+            </MotionConfiguratorQuestion>
+            <MotionConfiguratorBody
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="text-muted-foreground"
             >
               Select at least one goal. These will shape your site's structure.
-            </motion.p>
+            </MotionConfiguratorBody>
           </div>
 
           {/* Fallback notice */}

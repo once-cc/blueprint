@@ -9,6 +9,7 @@ import { springConfig } from '../ui/animationConfig';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
 import { UploadCloud, FileText, AlertCircle, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ConfiguratorModuleTitle, ConfiguratorHelper } from '@/components/ui/Typography';
 
 interface TypographyMotionStepProps {
   design: BlueprintDesign;
@@ -277,7 +278,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                       transition={{ duration: 0.25, ease: 'easeOut' }}
                       className="p-5 rounded-xl border border-border/50 bg-card/50 overflow-hidden"
                     >
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-4">Preview</p>
+                      <ConfiguratorModuleTitle className="text-muted-foreground mb-4 block">Preview</ConfiguratorModuleTitle>
                       <AnimatePresence mode="popLayout">
                         {(() => {
                           const style = typographyStyles.find(s => s.value === currentTypography);
@@ -320,7 +321,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
 
                 {/* Font Weight Preference */}
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-foreground">Font Weight Preference</Label>
+                  <ConfiguratorModuleTitle className="text-foreground/80 block">Font Weight Preference</ConfiguratorModuleTitle>
                   <RadioGroup
                     value={design.fontWeight}
                     onValueChange={(value) => onUpdate({ fontWeight: value as BlueprintDesign['fontWeight'] })}
@@ -387,8 +388,8 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                       <UploadCloud className="w-5 h-5 text-muted-foreground" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-foreground">Click to upload or drag and drop</p>
-                      <p className="text-xs text-muted-foreground">WOFF or WOFF2 only. Maximum 6 files, up to 3MB each.</p>
+                      <p className="text-sm font-medium text-foreground/90">Click to upload or drag and drop</p>
+                      <ConfiguratorHelper>WOFF or WOFF2 only. Maximum 6 files, up to 3MB each.</ConfiguratorHelper>
                     </div>
                     {uploadError && (
                       <div className="mt-2 text-xs font-medium text-red-500/90 flex items-center gap-1.5 bg-red-500/10 px-3 py-1.5 rounded-full">
@@ -402,7 +403,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                 {/* Uploaded Files */}
                 {files.length > 0 && (
                   <div className="space-y-3">
-                    <Label className="text-sm font-medium text-foreground">Uploaded Files</Label>
+                    <ConfiguratorModuleTitle className="text-foreground/80 block">Uploaded Files</ConfiguratorModuleTitle>
                     <div className="grid gap-3">
                       {files.map(file => (
                         <div key={file.id} className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90 overflow-x-auto min-w-0">
@@ -459,7 +460,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.25, delay: 0.05 }}
                         >
-                          <Label className="text-sm font-medium text-foreground">Type Roles</Label>
+                          <ConfiguratorModuleTitle className="text-foreground/80 block">Type Roles</ConfiguratorModuleTitle>
                         </motion.div>
                         <div className="grid gap-2">
                           {['h1', 'h2', 'h3', 'eyebrow', 'body', 'button'].map((roleKey, index) => {
@@ -514,7 +515,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                     animate={{ opacity: 1, y: 0 }}
                     className="p-5 rounded-xl border border-border/50 bg-card/50 overflow-hidden"
                   >
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-4">Preview</p>
+                    <ConfiguratorModuleTitle className="text-muted-foreground mb-4 block">Preview</ConfiguratorModuleTitle>
                     <div className="space-y-4">
                       {/* Eyebrow */}
                       {roles.eyebrow && (() => {

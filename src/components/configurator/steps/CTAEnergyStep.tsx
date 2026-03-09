@@ -117,7 +117,7 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               value={discovery.ctaPrimaryLabel || ''}
               onChange={(e) => onUpdate({ ctaPrimaryLabel: e.target.value })}
               placeholder="e.g., Book a Call, Get Started, Shop Now"
-              className="max-w-md"
+              className="max-w-md text-sm"
             />
           </motion.div>
 

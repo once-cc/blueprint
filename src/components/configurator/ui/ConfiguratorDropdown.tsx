@@ -127,7 +127,7 @@ export function ConfiguratorDropdown({
                 </span>
               )}
               <span
-                className="text-lg text-foreground truncate w-full"
+                className="text-sm md:text-base text-foreground truncate w-full"
                 style={{
                   fontFamily: selectedItem?.fontFamily,
                   fontWeight: selectedItem?.fontWeight,

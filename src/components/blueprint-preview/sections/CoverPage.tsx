@@ -23,8 +23,10 @@ export function CoverPage({ contract }: CoverPageProps) {
       {/* Main content */}
       <div className="relative z-10">
         {/* Title */}
-        <h1 className="bp-cover-title">Crafted Blueprint</h1>
-        
+        <h1 className="bp-cover-title text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700">
+          The Crafted Blueprint
+        </h1>
+
         {/* Subtitle */}
         <p className="bp-cover-subtitle">
           A Studio-Crafted Direction for Digital Design

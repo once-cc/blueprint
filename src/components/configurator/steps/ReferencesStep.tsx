@@ -12,6 +12,7 @@ import { ReferenceGridItem } from '../ui/ReferenceGridItem';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { ConfiguratorModuleTitle, ConfiguratorHelper } from '@/components/ui/Typography';
 import {
   Upload, Link as LinkIcon, Image, FileText, X,
   Plus, ExternalLink, Loader2, Palette, Type, Layout, Sparkles, Maximize2,
@@ -524,10 +525,10 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
               ) : (
                 <>
                   <Upload className="w-8 h-8 text-muted-foreground mb-3" />
-                  <p className="text-sm font-medium text-foreground">Upload Files</p>
-                  <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
+                  <p className="text-sm font-medium text-foreground/90">Upload Files</p>
+                  <ConfiguratorHelper className="mt-1 hidden sm:block">
                     Images or PDFs • Max 20MB • Drag & drop
-                  </p>
+                  </ConfiguratorHelper>
                 </>
               )}
             </motion.div>
@@ -540,7 +541,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
               className="flex flex-col items-center justify-center p-8 rounded-xl border-2 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm border-border/40 dark:border-border/50 hover:border-border"
             >
               <LinkIcon className="w-8 h-8 text-muted-foreground mb-3" />
-              <p className="text-sm font-medium text-foreground mb-3">Add Website Link</p>
+              <ConfiguratorModuleTitle className="text-foreground/80 mb-3 block">Add Website Link</ConfiguratorModuleTitle>
               <div className="flex gap-2 w-full max-w-xs">
                 <Input
                   value={linkUrl}
@@ -570,9 +571,9 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
               >
                 {/* Header with view toggle */}
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium text-foreground">
+                  <ConfiguratorModuleTitle className="text-foreground/80 mt-1">
                     Your References ({references.length})
-                  </Label>
+                  </ConfiguratorModuleTitle>
                   <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/30 border border-border/30">
                     <Button
                       variant="ghost"
@@ -604,9 +605,9 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
                 </div>
 
                 {/* Drag hint */}
-                <p className="text-xs text-muted-foreground hidden sm:block">
+                <ConfiguratorHelper className="hidden sm:block">
                   Drag to reorder • Most important references first
-                </p>
+                </ConfiguratorHelper>
 
                 {/* List View with Drag & Drop */}
                 {viewMode === 'list' && (

@@ -105,23 +105,23 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {/* Act Label */}
           <motion.p
             variants={itemVariants}
-            className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-1.5"
+            className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em] text-accent mb-1.5"
           >
             {actLabels[act]}
           </motion.p>
 
-          {/* Title — slightly increased scale on mobile/small viewports */}
+          {/* Title — updated to standard premium display gradient */}
           <motion.h1
             variants={itemVariants}
-            className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-nohemi font-medium tracking-[-0.02em] text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 mb-1.5 pb-1 drop-shadow-md relative inline-block w-full"
+            className="text-2xl sm:text-3xl md:text-4xl font-nohemi font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 drop-shadow-sm mb-1.5 pb-1 relative inline-block w-full"
           >
             {title}
           </motion.h1>
 
-          {/* Framing — relaxed leading for readability (#11) */}
+          {/* Framing — standard text size and optimized text wrapping */}
           <motion.p
             variants={itemVariants}
-            className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-snug"
+            className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl"
           >
             {framing}
           </motion.p>
@@ -130,7 +130,7 @@ export const StepLayout = forwardRef<HTMLDivElement, StepLayoutProps>(
           {helperText && (
             <motion.p
               variants={itemVariants}
-              className="text-xs sm:text-sm text-muted-foreground/70 mt-2"
+              className="text-xs text-muted-foreground/70 leading-snug mt-2"
             >
               {helperText}
             </motion.p>

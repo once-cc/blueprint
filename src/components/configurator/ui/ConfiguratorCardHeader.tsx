@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ConfiguratorModuleTitle, ConfiguratorMeta } from "@/components/ui/Typography";
 
 interface ConfiguratorCardHeaderProps {
     title: string;
@@ -46,9 +47,9 @@ export function ConfiguratorCardHeader({ title, metaLabel, className, delay = 0,
                     {/* Title with Amber Dots */}
                     <div className="flex items-center gap-3">
                         <div className="w-1 h-1 rounded-full bg-accent/80" />
-                        <h4 className="font-raela text-xs sm:text-[13px] font-medium uppercase tracking-[0.2em] text-[#ebe9e0] select-none">
+                        <ConfiguratorModuleTitle className="text-[#ebe9e0] select-none">
                             {title}
-                        </h4>
+                        </ConfiguratorModuleTitle>
                         <div className="w-1 h-1 rounded-full bg-accent/80" />
                     </div>
                 </div>
@@ -135,9 +136,9 @@ export function ConfiguratorCardHeader({ title, metaLabel, className, delay = 0,
                     transition={{ duration: 0.6, delay: delay + 0.4 }}
                     className="absolute top-6 right-6 flex items-center gap-2 pointer-events-auto"
                 >
-                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#ebe9e0]/[0.08] select-none">
+                    <ConfiguratorMeta className="text-[#ebe9e0]/[0.08] select-none">
                         {metaLabel}
-                    </span>
+                    </ConfiguratorMeta>
                     <div className="w-[3px] h-[3px] rounded-full bg-accent/70" />
                 </motion.div>
             )}

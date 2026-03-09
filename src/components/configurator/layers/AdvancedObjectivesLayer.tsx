@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { springConfig, cardHover, cardTap, getContentShift } from '../ui/animationConfig';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
+import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
 
 interface AdvancedObjectivesLayerProps {
   questions: AdvancedQuestion[];
@@ -41,22 +42,20 @@ export function AdvancedObjectivesLayer({
         data-lenis-prevent
       >
         <div className="text-center space-y-4 max-w-md">
-          <motion.h2
+          <MotionConfiguratorQuestion
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
           >
             You're all set
-          </motion.h2>
-          <motion.p
+          </MotionConfiguratorQuestion>
+          <MotionConfiguratorBody
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="text-muted-foreground"
           >
             No additional details needed for your selections. Continue to the next step.
-          </motion.p>
+          </MotionConfiguratorBody>
         </div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -97,22 +96,20 @@ export function AdvancedObjectivesLayer({
       <div className="w-full max-w-2xl space-y-8">
         {/* Question */}
         <div className="text-center space-y-2">
-          <motion.h2
+          <MotionConfiguratorQuestion
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
           >
             Would you like to get more specific?
-          </motion.h2>
-          <motion.p
+          </MotionConfiguratorQuestion>
+          <MotionConfiguratorBody
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="text-muted-foreground"
           >
             These optional details help us tailor your blueprint. Skip if unsure.
-          </motion.p>
+          </MotionConfiguratorBody>
         </div>
 
         {/* Questions */}

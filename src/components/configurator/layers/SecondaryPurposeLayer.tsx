@@ -6,6 +6,7 @@ import { PurposeCard } from '../ui/PurposeCard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
+import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
 
 interface SecondaryPurposeLayerProps {
   primaryPurpose?: PrimaryPurpose;
@@ -72,22 +73,20 @@ export const SecondaryPurposeLayer = forwardRef<HTMLDivElement, SecondaryPurpose
         <div className="w-full max-w-3xl space-y-6">
           {/* Question */}
           <div className="text-center space-y-2">
-            <motion.h2
+            <MotionConfiguratorQuestion
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
             >
               Do you have any secondary objectives?
-            </motion.h2>
-            <motion.p
+            </MotionConfiguratorQuestion>
+            <MotionConfiguratorBody
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="text-muted-foreground"
             >
               Many businesses serve more than one goal. Select all that apply, or skip.
-            </motion.p>
+            </MotionConfiguratorBody>
           </div>
 
           {/* Purpose Cards */}

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/popover';
 import { SITE_TOPIC_OPTIONS } from '../data/foundationsData';
 import { AnimationDirection, getLayerVariants } from '../utils/layerAnimations';
+import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
 
 interface SiteTopicLayerProps {
   selected?: string;
@@ -80,12 +81,12 @@ export const SiteTopicLayer = forwardRef<HTMLDivElement, SiteTopicLayerProps>(
         <div className="max-w-2xl mx-auto w-full space-y-8">
           {/* Question */}
           <div className="space-y-3 text-center px-6 md:px-0">
-            <h2 className="text-2xl md:text-3xl font-nohemi font-medium text-foreground">
+            <MotionConfiguratorQuestion>
               What is your platform primarily about?
-            </h2>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            </MotionConfiguratorQuestion>
+            <MotionConfiguratorBody className="max-w-md mx-auto">
               This helps us understand your industry context and tailor the blueprint that follows.
-            </p>
+            </MotionConfiguratorBody>
           </div>
 
           {/* Searchable Combobox */}

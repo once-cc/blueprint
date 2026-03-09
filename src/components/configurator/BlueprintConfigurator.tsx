@@ -396,6 +396,7 @@ export function BlueprintConfigurator() {
                       onBack={() => goToStep(currentStep - 1)}
                       onNext={() => goToStep(currentStep + 1)}
                       onGoToStep={goToStep}
+                      onReviseVision={() => setIsDreamIntentEditing(true)}
                       stepRefs={stepRefs}
                     />
                   </Suspense>

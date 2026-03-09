@@ -4,6 +4,7 @@ import { PrimaryPurpose } from '@/types/blueprint';
 import { PURPOSE_OPTIONS } from '../data/foundationsData';
 import { PurposeCard } from '../ui/PurposeCard';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
+import { MotionConfiguratorQuestion, MotionConfiguratorBody, MotionConfiguratorHelper } from '@/components/ui/Typography';
 
 interface PrimaryPurposeLayerProps {
   selected: PrimaryPurpose | undefined;
@@ -29,22 +30,20 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
         <div className="w-full max-w-3xl space-y-6">
           {/* Question */}
           <div className="text-center space-y-2">
-            <motion.h2
+            <MotionConfiguratorQuestion
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-2xl md:text-3xl font-nohemi font-medium text-foreground"
             >
               What is the primary purpose of your digital platform?
-            </motion.h2>
-            <motion.p
+            </MotionConfiguratorQuestion>
+            <MotionConfiguratorBody
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="text-muted-foreground"
             >
               This defines the core reason your site exists.
-            </motion.p>
+            </MotionConfiguratorBody>
           </div>
 
           {/* Purpose Cards */}
@@ -70,14 +69,14 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
           </div>
 
           {/* Hint */}
-          <motion.p
+          <MotionConfiguratorHelper
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-center text-xs text-muted-foreground/60"
+            className="text-center"
           >
             Select to continue
-          </motion.p>
+          </MotionConfiguratorHelper>
         </div>
       </motion.div>
     );

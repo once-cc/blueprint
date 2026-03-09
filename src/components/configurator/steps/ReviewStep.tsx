@@ -14,6 +14,7 @@ import { UserDetailsForm, UserDetailsData } from '../ui/UserDetailsForm';
 import { z } from 'zod';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { riskToZone } from './CreativeRiskStep';
+import { ConfiguratorModuleTitle, ConfiguratorBody } from '@/components/ui/Typography';
 
 interface ReviewStepProps {
   blueprint: Blueprint;
@@ -22,6 +23,7 @@ interface ReviewStepProps {
   onGoToStep: (step: number) => void;
   onSubmit: (userDetails?: { firstName?: string; lastName?: string; userEmail?: string; businessName?: string }) => Promise<boolean>;
   onBack: () => void;
+  onReviseVision?: () => void;
 }
 
 const userDetailsSchema = z.object({
@@ -86,7 +88,8 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
     onUpdateUserDetails,
     onGoToStep,
     onSubmit,
-    onBack
+    onBack,
+    onReviseVision
   }, ref) {
     const isMobile = useIsMobile();
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
@@ -309,20 +312,20 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
           />
 
           {/* Blueprint Summary */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {sections.map((section, sectionIndex) => (
               <motion.div
                 key={section.act}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + sectionIndex * 0.1 }}
-                className="space-y-3"
+                className="space-y-2 md:space-y-3"
               >
                 <div className="flex items-center gap-2">
                   <section.icon className="w-4 h-4 text-accent" />
-                  <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                  <ConfiguratorModuleTitle className="text-muted-foreground mt-0.5">
                     Act {sectionIndex + 1}: {section.act}
-                  </h3>
+                  </ConfiguratorModuleTitle>
                 </div>
 
                 {/* Desktop: Grid layout */}
@@ -336,26 +339,38 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                       return (
                         <div
                           key={step.step}
-                          className="p-4 rounded-xl border border-border/40 dark:border-border/50 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm group hover:border-border hover:bg-card/90"
+                          className="relative p-4 rounded-xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] transition-all duration-[220ms] ease-out group hover:border-accent/30"
                         >
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <step.icon className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-foreground">
-                                {step.title}
-                              </span>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onGoToStep(step.step)}
-                              className="h-7 w-7 p-0 text-muted-foreground hover:text-accent"
-                            >
-                              <Pencil className="w-3 h-3" />
-                            </Button>
-                          </div>
+                          {/* Bottom gold glow */}
+                          <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />
+                          {/* Top-down light */}
+                          <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.04),transparent_40%)]" />
+                          {/* Corner Ticks */}
+                          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/[0.08] rounded-tl-[inherit] pointer-events-none" />
+                          <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/[0.08] rounded-tr-[inherit] pointer-events-none" />
+                          <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/[0.08] rounded-bl-[inherit] pointer-events-none" />
+                          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/[0.08] rounded-br-[inherit] pointer-events-none" />
 
-                          {renderStepContent(step)}
+                          <div className="relative z-10">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <step.icon className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-sm font-medium text-foreground">
+                                  {step.title}
+                                </span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onGoToStep(step.step)}
+                                className="h-7 w-7 p-0 text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:shadow-accent/10"
+                              >
+                                <Pencil className="w-3 h-3 transition-transform duration-200 group-hover:scale-110" />
+                              </Button>
+                            </div>
+
+                            {renderStepContent(step)}
+                          </div>
                         </div>
                       );
                     })}
@@ -364,7 +379,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
 
                 {/* Mobile: Collapsible dropdowns */}
                 {isMobile && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {section.steps.map((step) => {
                       const isExpanded = expandedSteps[step.step] || false;
                       const summary = getSummary(step.step);
@@ -374,17 +389,26 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                       return (
                         <div
                           key={step.step}
-                          className="rounded-xl border border-border/40 dark:border-border/50 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm overflow-hidden group hover:border-border hover:bg-card/90"
+                          className="relative rounded-xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] transition-all duration-[220ms] ease-out group hover:border-accent/30"
                         >
+                          {/* Bottom gold glow */}
+                          <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />
+                          {/* Top-down light */}
+                          <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.04),transparent_40%)]" />
+                          {/* Corner Ticks */}
+                          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/[0.08] rounded-tl-[inherit] pointer-events-none" />
+                          <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/[0.08] rounded-tr-[inherit] pointer-events-none" />
+                          <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/[0.08] rounded-bl-[inherit] pointer-events-none" />
+                          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/[0.08] rounded-br-[inherit] pointer-events-none" />
                           {/* Collapsible header */}
                           <button
                             type="button"
                             onClick={() => toggleStep(step.step)}
-                            className="w-full p-4 flex items-center justify-between text-left"
+                            className="relative z-10 w-full py-2.5 px-3 flex items-center justify-between text-left"
                           >
                             <div className="flex items-center gap-2">
                               <step.icon className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-foreground">
+                              <span className="text-sm font-medium text-foreground/80">
                                 {step.title}
                               </span>
                               {hasContent && (
@@ -415,7 +439,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => onGoToStep(step.step)}
-                                      className="h-7 px-2 text-xs text-muted-foreground hover:text-accent"
+                                      className="h-7 px-2 text-xs text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:shadow-accent/10"
                                     >
                                       <Pencil className="w-3 h-3 mr-1" />
                                       Edit
@@ -461,12 +485,17 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="p-5 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-accent/50 bg-card/80 backdrop-blur-sm text-center"
+              onClick={onReviseVision}
+              className="relative p-5 rounded-xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] text-center cursor-pointer transition-all duration-[220ms] ease-out hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5"
             >
-              <p className="text-xs uppercase tracking-wider text-accent mb-2">Your Vision</p>
-              <p className={cn("italic", blueprint.dreamIntent ? "text-foreground" : "text-muted-foreground")}>
-                {blueprint.dreamIntent ? `"${blueprint.dreamIntent}"` : "Not yet configured."}
-              </p>
+              {/* Top-down light */}
+              <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.04),transparent_40%)]" />
+              <div className="relative z-10">
+                <ConfiguratorModuleTitle className="text-accent mb-2 block">Your Vision</ConfiguratorModuleTitle>
+                <ConfiguratorBody className={cn("italic", blueprint.dreamIntent ? "text-foreground" : "text-muted-foreground")}>
+                  {blueprint.dreamIntent ? `"${blueprint.dreamIntent}"` : "Not yet configured."}
+                </ConfiguratorBody>
+              </div>
             </motion.div>
           </div>
         </div>

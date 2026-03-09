@@ -21,15 +21,17 @@ const brandPairs = [
 export function LogoGrid() {
     const gridRef = useRayPause<HTMLDivElement>();
     return (
-        <div ref={gridRef} className="w-full relative border-y border-white/10 bg-background/80">
+        <div ref={gridRef} className="w-full relative isolate border-y border-white/10">
+            {/* Opaque background layer — sits at -z-10 to mask -z-20 crosshairs */}
+            <div className="absolute inset-0 bg-background/80 -z-10 pointer-events-none" />
             <div className="w-full flex justify-center container mx-auto px-4 md:px-6 relative">
                 <div className="w-full md:max-w-[90vw] lg:max-w-[1240px] relative">
 
                     {/* Crosshairs at the primary grid intersections matching ScrollytellSection */}
-                    <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40 z-20" />
-                    <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/40 z-20" />
-                    <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/40 z-20" />
-                    <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/40 z-20" />
+                    <Crosshair className="absolute -top-[8.5px] -left-[8.5px] text-white/40 -z-20" />
+                    <Crosshair className="absolute -top-[8.5px] -right-[8.5px] text-white/40 -z-20" />
+                    <Crosshair className="absolute -bottom-[8.5px] -left-[8.5px] text-white/40 -z-20" />
+                    <Crosshair className="absolute -bottom-[8.5px] -right-[8.5px] text-white/40 -z-20" />
 
                     <div className="absolute -top-16 left-0 w-full z-10">
                         <div className="w-full h-px bg-white/10" />

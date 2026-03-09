@@ -231,7 +231,10 @@ export const VoiceAxisSlider = memo(forwardRef<HTMLDivElement, VoiceAxisSliderPr
             return (
               <div
                 key={zone}
-                className="absolute top-0 -translate-x-1/2 w-[80px] text-center z-10"
+                className={cn(
+                  "absolute top-0 -translate-x-1/2 w-[80px] text-center z-10",
+                  !isActive && "hidden md:block"
+                )}
                 style={{ left: `${percentage}%` }}
               >
                 <button
