@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
 import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
-import noiseTexture from "@/assets/noise/noise.png";
+const noiseTexture = "/noise/noise.png";
 
 const SCROLLYTELL_COLORS: WordRevealColors = {
     from: "hsla(220, 12%, 50%, 0.25)",

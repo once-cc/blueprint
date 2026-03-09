@@ -13,7 +13,7 @@ import paperplaneAnimation from '@/assets/ui/1paperplane.json';
 import { useRayPause } from '@/hooks/useRayPause';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from 'react-router-dom';
-import noiseTexture from "@/assets/noise/noise.png";
+const noiseTexture = "/noise/noise.png";
 import { useToast } from '@/hooks/use-toast';
 import type { Blueprint } from '@/types/blueprint';
 

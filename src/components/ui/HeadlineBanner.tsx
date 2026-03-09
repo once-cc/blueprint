@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Crosshair } from './crosshair';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
-import noiseTexture from '@/assets/noise/noise.png';
+const noiseTexture = "/noise/noise.png";
 
 interface HeadlineBannerProps {
     headline: ReactNode;

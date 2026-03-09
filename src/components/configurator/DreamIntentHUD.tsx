@@ -4,7 +4,7 @@ import { Eye, Pencil, Check, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRayPause } from '@/hooks/useRayPause';
 import { useIsMobile } from '@/hooks/use-mobile';
-import noiseTexture from "@/assets/noise/noise.png";
+const noiseTexture = "/noise/noise.png";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ShinyButton } from '@/components/ui/shiny-button';

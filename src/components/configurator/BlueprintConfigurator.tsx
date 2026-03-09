@@ -34,7 +34,7 @@ import { StepRenderer } from './StepRenderer';
 import { BlueprintReference, ReferenceRole } from '@/types/blueprint';
 import { supabase } from '@/integrations/supabase/client';
 import { getBlueprintClient } from '@/lib/blueprintClient';
-import noiseTexture from "@/assets/noise/noise.png";
+const noiseTexture = "/noise/noise.png";
 
 type TransitionState = { from: ConfiguratorAct; to: ConfiguratorAct } | null;
 

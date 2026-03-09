@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import noiseTexture from "@/assets/noise/noise.png";
+const noiseTexture = "/noise/noise.png";
 import { springConfig } from './animationConfig';
 
 export interface ConfiguratorCardSurfaceProps {

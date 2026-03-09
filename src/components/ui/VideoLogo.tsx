@@ -1,5 +1,5 @@
-import staticLogo from '@/assets/logo-static.webp';
-import animatedLogoUrl from '@/assets/logo-animation.webm';
+const staticLogo = "/logo-static.webp";
+const animatedLogoUrl = "/logo-animation.webm";
 
 interface VideoLogoProps {
     size?: 'sm' | 'md' | 'lg' | 'custom';

@@ -3,7 +3,7 @@ import { motion, useScroll, useInView } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
 import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
 import { BenefitIconLottie } from "@/components/ui/BenefitIconLottie";
-import noiseTexture from "@/assets/noise/noise.png";
+const noiseTexture = "/noise/noise.png";
 import clarityAnimation from "@/assets/benefitstack/clarity.json";
 import technicalAnimation from "@/assets/benefitstack/technical.json";
 import longevityAnimation from "@/assets/benefitstack/longevity.json";
