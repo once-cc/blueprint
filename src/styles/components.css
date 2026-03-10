@@ -405,10 +405,10 @@
   pointer-events: none;
   padding: 1px;
   /* The border thickness */
+  /* Fallback background if none is provided inline */
   background: conic-gradient(from calc(var(--gradient-angle) * 1),
       transparent 25%,
       hsl(45, 100%, 50%) 45%,
-      hsl(30, 100%, 50%) 50%,
       hsl(38, 85%, 55%) 55%,
       transparent 75%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -417,11 +417,13 @@
   mask-composite: exclude;
   animation: gradient-angle 6s linear infinite;
   animation-play-state: paused; /* PERFORMANCE: Paused by default, only runs on explicit hover */
+  will-change: transform, opacity; /* Promote to dedicated layer */
 }
 
 /* Activate the glow border animation when its parent group is hovered */
 .group-hover\/grid:hover > .animated-glow-border,
 .group-hover\/card:hover > .animated-glow-border,
+.group-hover\/card:hover .animated-glow-border,
 .group:hover > .animated-glow-border {
   animation-play-state: running;
 }

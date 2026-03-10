@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { processSteps } from "@/data/blueprint";
+import { TextRevealParagraph } from "@/components/ui/TextRevealParagraph";
 
 export interface FrameworkDesktopCardProps {
     index: number;
@@ -30,12 +31,12 @@ const CARD_THEMES: CardColorTheme[] = [
     },
     {
         // Design — warm parchment tones
-        bigTitleGradient: "bg-gradient-to-t from-background from-[45%] via-[#c3bdaf]/15 to-[#c3bdaf]/40",
+        bigTitleGradient: "bg-gradient-to-t from-black from-[20%] via-[#2a2924] to-[#4d4b44]",
         headlineGradient: "bg-gradient-to-b from-[#c3bdaf] to-[#c3bdaf]/60",
     },
     {
         // Delivery — ivory/cream tones
-        bigTitleGradient: "bg-gradient-to-t from-background from-[45%] via-[#e8e0d4]/15 to-[#e8e0d4]/40",
+        bigTitleGradient: "bg-gradient-to-t from-black from-[20%] via-[#302f2b] to-[#5c5b52]",
         headlineGradient: "bg-gradient-to-b from-[#e8e0d4] to-[#e8e0d4]/60",
         headlineExtra: "pr-1",
     },
@@ -86,7 +87,7 @@ export const FrameworkDesktopCard = ({
     const titleOpacity = useTransform(
         popProgress,
         [delayPop, delayPop + 0.2, 1],
-        [index === 0 ? 1 : 0, 1, 1]
+        [0, 1, 1] // Restored fade-in mapped perfectly to the Discovery timing
     );
 
     const { scrollYProgress: descendProgress } = useScroll({
@@ -97,12 +98,15 @@ export const FrameworkDesktopCard = ({
     const groupScale = useTransform(descendProgress, [0, 1], [1, isLast ? 1 : 0.85]);
     const groupOpacity = useTransform(
         descendProgress,
-        [0, 0.1, 0.85],
-        [1, isLast ? 1 : 1, isLast ? 1 : 0]
+        [0, 0.1, 0.55],
+        [1, isLast ? 1 : 1, isLast ? 1 : 0.2]
     );
 
     // Derive body copy lines from data model
     const bodyLines = step.description.split("\n");
+
+    // The user requested that only the first card (Discovery) retains the staggered fade/lift math.
+    const shouldAnimateIn = index === 0;
 
     return (
         <div
@@ -118,13 +122,13 @@ export const FrameworkDesktopCard = ({
                         style={{
                             scale: groupScale,
                             opacity: groupOpacity,
-                            willChange: "transform, opacity" // Force browser to take a static texture snapshot for scaling
+                            willChange: "transform, opacity"
                         }}
                         className="relative w-full max-w-[90vw] lg:max-w-[1240px] flex justify-center"
                     >
                         {/* ── Big Title (behind card) ── */}
                         <motion.div
-                            style={{ y: titleY, opacity: titleOpacity, willChange: "transform, opacity" }}
+                            style={{ y: titleY, opacity: titleOpacity }}
                             className="absolute bottom-full w-full flex items-end justify-center pointer-events-none -z-10"
                         >
                             {/* Hardware acceleration boundary ensures the text clip mask doesn't re-rasterize on scale */}
@@ -134,7 +138,6 @@ export const FrameworkDesktopCard = ({
                                     fontSize: "clamp(3rem, 13vw, 190px)",
                                     lineHeight: 1,
                                     WebkitTransform: "translateZ(0)", // Force GPU layer
-                                    textShadow: "0 20px 40px rgba(0,0,0,0.4)" // Replaced box-shadow with text-shadow per request
                                 }}
                             >
                                 {step.title}
@@ -150,12 +153,7 @@ export const FrameworkDesktopCard = ({
                             className="w-full bg-card border border-white/10 ring-1 ring-black/50 relative overflow-hidden rounded-xl h-[550px] lg:h-[640px]"
                         >
                             {/* Structural Ticks */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 1, delay: 0.2 }}
-                                className="absolute inset-0 pointer-events-none z-20 rounded-[inherit]"
-                            >
+                            <div className="absolute inset-0 pointer-events-none z-20 rounded-[inherit]">
                                 {/* Top Left */}
                                 <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/20 rounded-tl-[inherit]" />
                                 {/* Top Right */}
@@ -164,19 +162,17 @@ export const FrameworkDesktopCard = ({
                                 <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-white/20 rounded-bl-[inherit]" />
                                 {/* Bottom Right */}
                                 <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/20 rounded-br-[inherit]" />
-                            </motion.div>
+                            </div>
                             {/* ── BACKGROUND IMAGE ── */}
-                            <motion.div
-                                className="absolute inset-0"
-                                {...(isInView ? fadeIn(0) : { initial: { opacity: 0 } })}
-                            >
+                            <div className="absolute inset-0">
                                 <img
                                     src={step.imageUrl}
                                     alt={step.title}
                                     loading="lazy"
+                                    decoding="async"
                                     className="w-full h-full object-cover"
                                 />
-                            </motion.div>
+                            </div>
 
                             {/* ── BACKGROUND DARKENING & VIGNETTE ── */}
                             {/* Replaced heavy mix-blend-multiply and 120px inner shadows with cheap static overlays/gradients */}
@@ -224,44 +220,27 @@ export const FrameworkDesktopCard = ({
                             {/* ═══════════════════════════════════════════════ */}
                             <div className="absolute inset-0 z-10 p-8 lg:p-12 flex flex-col justify-between">
                                 {/* ── Amber accent axis line ── */}
-                                <motion.div
-                                    className="absolute top-0 left-8 lg:left-12 w-px h-full bg-[#d4a853]/10"
-                                    {...(isInView
-                                        ? {
-                                            initial: { opacity: 0 },
-                                            animate: { opacity: 1 },
-                                            transition: {
-                                                duration: 0.6,
-                                                delay: 0.2,
-                                                ease: EASE_ARCH,
-                                            },
-                                        }
-                                        : { initial: { opacity: 0 } })}
-                                />
+                                <div className="absolute top-0 left-8 lg:left-12 w-px h-full bg-[#d4a853]/10" />
 
                                 {/* ── TOP ZONE: Label + Body (40/60 structural grid) ── */}
                                 <div className="grid grid-cols-[35%_1fr]">
                                     <div>
                                         <motion.span
-                                            className="font-nohemi font-medium tracking-[0.2em] text-[10px] md:text-xs text-[#d4a853] uppercase flex items-center gap-2 mb-4"
-                                            {...(isInView ? fadeUp(0.3, 6) : { initial: { opacity: 0 } })}
+                                            className="font-nohemi italic font-medium text-base lg:text-lg text-[#d4a853] flex items-center gap-2 mb-4"
+                                            {...(isInView || !shouldAnimateIn ? (shouldAnimateIn ? fadeUp(0.3, 6) : { initial: { opacity: 1, y: 0 } }) : { initial: { opacity: 0 } })}
                                         >
-                                            <span className="text-[#d4a853]/60">//</span> 0{index + 1}
+                                            <span className="opacity-50">//</span> 0{index + 1}
                                         </motion.span>
+                                        <div className="h-px bg-white/[0.15] mb-4 w-24" />
 
-                                        <div className="flex flex-col gap-1">
-                                            {bodyLines.map((line, idx) => (
-                                                <motion.p
-                                                    key={idx}
-                                                    className="text-sm lg:text-base text-white leading-relaxed"
-                                                    style={{ fontFamily: "var(--font-body)" }}
-                                                    {...(isInView
-                                                        ? fadeUp(0.4 + idx * 0.08, 6)
-                                                        : { initial: { opacity: 0 } })}
-                                                >
-                                                    {line}
-                                                </motion.p>
-                                            ))}
+                                        <div className="flex flex-col gap-1" style={{ fontFamily: "var(--font-body)" }}>
+                                            <TextRevealParagraph
+                                                lines={bodyLines}
+                                                className="mb-0 md:mb-0" // override default mb-14
+                                                textClassName="text-sm lg:text-base leading-relaxed"
+                                                activeColor="rgba(255,255,255,0.6)"
+                                                inactiveColor="rgba(255,255,255,0.15)"
+                                            />
                                         </div>
                                     </div>
                                     {/* Right 40% — imagery breathing room */}
@@ -272,33 +251,14 @@ export const FrameworkDesktopCard = ({
                                 <div className="flex justify-between items-end gap-8">
                                     {/* Left: Divider + Headline */}
                                     <div>
-                                        <motion.div
-                                            className="h-px bg-white/[0.15] mb-4 w-24"
-                                            {...(isInView
-                                                ? {
-                                                    initial: {
-                                                        scaleX: 0,
-                                                        transformOrigin: "left",
-                                                    },
-                                                    animate: { scaleX: 1 },
-                                                    transition: {
-                                                        duration: 0.6,
-                                                        delay: 0.6,
-                                                        ease: EASE_ARCH,
-                                                    },
-                                                }
-                                                : { initial: { scaleX: 0 } })}
-                                        />
-                                        <motion.h3
+                                        <div className="h-px bg-white/[0.15] mb-4 w-24" />
+                                        <h3
                                             className="tracking-tight text-4xl lg:text-6xl leading-none"
                                             style={{ fontFamily: "var(--font-editorial)" }}
-                                            {...(isInView
-                                                ? fadeUp(0.5, 8)
-                                                : { initial: { opacity: 0 } })}
                                         >
                                             {/* Hardware acceleration boundary for the masked text */}
                                             <span
-                                                className={`text-transparent bg-clip-text ${theme.headlineGradient} inline-block ${theme.headlineExtra ?? ''} mix-blend-plus-lighter`}
+                                                className={`text-transparent bg-clip-text ${theme.headlineGradient} inline-block ${theme.headlineExtra ?? ''}`}
                                                 style={{
                                                     textShadow: '0px 2px 4px rgba(0,0,0,0.5)', // Replaced expensive CSS filter with text-shadow
                                                     WebkitTransform: "translateZ(0)" // Force GPU layer
@@ -306,32 +266,25 @@ export const FrameworkDesktopCard = ({
                                             >
                                                 {step.title}
                                             </span>
-                                        </motion.h3>
+                                        </h3>
                                     </div>
 
                                     {/* Right: Metadata rows */}
                                     <div className="flex flex-col gap-2.5">
                                         {step.bullets.map((item, idx) => (
-                                            <motion.div
+                                            <div
                                                 key={idx}
-                                                className="flex items-center gap-3 border border-white/[0.08] bg-black/25 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4),0_1px_0_rgba(255,255,255,0.03)] px-4 py-2.5 rounded-sm"
-                                                {...(isInView
-                                                    ? {
-                                                        initial: { opacity: 0, y: 8 },
-                                                        animate: { opacity: 1, y: 0 },
-                                                        transition: { duration: 0.8, delay: 0.9 + idx * 0.25, ease: EASE_ARCH }
-                                                    }
-                                                    : { initial: { opacity: 0, y: 8 } })}
+                                                className="flex items-center gap-3 border-y border-white/[0.08] px-4 py-2.5"
                                             >
                                                 <div className="relative w-4 h-4 shrink-0 flex items-center justify-center">
                                                     <div className="absolute w-2 h-2 bg-[#d4a853]/20 rounded-full" />
                                                     <motion.div
-                                                        initial={{ scale: 0.8, opacity: 0.4 }}
+                                                        initial={{ scale: 0.8, opacity: 0.5 }}
                                                         // Gate the infinite animation so it pauses when scrolled out of view
                                                         animate={isInView ? {
                                                             scale: [0.8, 1.2, 0.8],
-                                                            opacity: [0.4, 1, 0.4],
-                                                        } : { scale: 0.8, opacity: 0.4 }}
+                                                            opacity: [0.5, 1, 0.5],
+                                                        } : { scale: 0.8, opacity: 0.5 }}
                                                         transition={isInView ? {
                                                             duration: 2.5,
                                                             repeat: Infinity,
@@ -344,12 +297,12 @@ export const FrameworkDesktopCard = ({
                                                     />
                                                 </div>
                                                 <span
-                                                    className="text-xs text-white/85 uppercase tracking-[0.15em] leading-none"
-                                                    style={{ fontFamily: "var(--font-body)", textShadow: "0 -1px 1px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.04)" }}
+                                                    className={`text-xs uppercase tracking-[0.15em] leading-none text-transparent bg-clip-text ${theme.headlineGradient}`}
+                                                    style={{ fontFamily: "var(--font-body)", textShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
                                                 >
                                                     {item}
                                                 </span>
-                                            </motion.div>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>

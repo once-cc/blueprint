@@ -1,10 +1,7 @@
 import { useRef, useEffect } from "react";
 import { processSteps } from "@/data/blueprint";
 import { FrameworkDesktopCard } from "@/components/marketing/FrameworkDesktopCard";
-import { MobileStackCard } from "@/components/marketing/MobileStackCard";
-import { DiscoveryMobileCard } from "@/components/marketing/DiscoveryMobileCard";
-import { DesignMobileCard } from "@/components/marketing/DesignMobileCard";
-import { DeliveryMobileCard } from "@/components/marketing/DeliveryMobileCard";
+import { FrameworkMobileCard } from "@/components/marketing/FrameworkMobileCard";
 import { Crosshair } from "@/components/ui/crosshair";
 import { GridSection } from "@/components/ui/grid-section";
 
@@ -35,40 +32,14 @@ function FrameworkMobile() {
                 <div className="absolute top-0 bottom-0 left-4 w-px bg-white/10 pointer-events-none z-20" />
                 <div className="absolute top-0 bottom-0 right-4 w-px bg-white/10 pointer-events-none z-20" />
 
-                {processSteps.map((step, i) => {
-                    // Discovery (index 0) → media-forward architectural card
-                    if (i === 0) {
-                        return (
-                            <DiscoveryMobileCard
-                                key={i}
-                                index={i}
-                                step={step}
-                                isLast={i === processSteps.length - 1}
-                            />
-                        );
-                    }
-                    if (i === 1) {
-                        return (
-                            <DesignMobileCard
-                                key={i}
-                                index={i}
-                                step={step}
-                                isLast={i === processSteps.length - 1}
-                            />
-                        );
-                    }
-                    if (i === 2) {
-                        return (
-                            <DeliveryMobileCard
-                                key={i}
-                                index={i}
-                                step={step}
-                                isLast={i === processSteps.length - 1}
-                            />
-                        );
-                    }
-                    return null;
-                })}
+                {processSteps.map((step, i) => (
+                    <FrameworkMobileCard
+                        key={i}
+                        index={i}
+                        step={step}
+                        isLast={i === processSteps.length - 1}
+                    />
+                ))}
             </div>
         </div>
     );

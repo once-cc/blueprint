@@ -66,6 +66,7 @@ export function LogoGrid() {
                                         className="flex flex-col w-full marquee-track-vertical"
                                         style={{
                                             animationDuration: `${duration}s`,
+                                            willChange: "transform"
                                         }}
                                     >
                                         {/* We map the pair multiple times to create the infinite scroll illusion */}

@@ -1,16 +1,37 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { processSteps } from "@/data/blueprint";
+import { TextRevealParagraph } from "@/components/ui/TextRevealParagraph";
 
-export interface DesignMobileCardProps {
+export interface FrameworkMobileCardProps {
     index: number;
     step: typeof processSteps[0];
     isLast: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Motion constants
+// Per-card color theming — unified mobile map
 // ═══════════════════════════════════════════════════════════════
+
+interface CardColorTheme {
+    headlineGradient: string;
+    headlineExtra?: string;
+}
+
+const CARD_THEMES: CardColorTheme[] = [
+    {
+        // Discovery
+        headlineGradient: "bg-gradient-to-b from-zinc-200 to-zinc-600",
+    },
+    {
+        // Design
+        headlineGradient: "bg-gradient-to-b from-[#c3bdaf] to-[#c3bdaf]/60",
+    },
+    {
+        // Delivery
+        headlineGradient: "bg-gradient-to-b from-[#e8e0d4] to-[#e8e0d4]/60",
+    },
+];
 
 const EASE_ARCH: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -26,16 +47,14 @@ const fadeIn = (delay: number) => ({
     transition: { duration: 0.4, delay, ease: EASE_ARCH },
 });
 
-// ═══════════════════════════════════════════════════════════════
-// Component
-// ═══════════════════════════════════════════════════════════════
-
-export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps) => {
+export const FrameworkMobileCard = ({ index, step, isLast }: FrameworkMobileCardProps) => {
     const trackerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const isInView = useInView(contentRef, { once: true, margin: "-10% 0px -10% 0px" });
 
-    // ── Scroll choreography (identical to MobileStackCard) ──
+    const theme = CARD_THEMES[index] ?? CARD_THEMES[0];
+
+    // ── Scroll choreography ──
     const { scrollYProgress: descendProgress } = useScroll({
         target: trackerRef,
         offset: ["start 0px", "start -100vh"],
@@ -45,7 +64,7 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
     const groupOpacity = useTransform(
         descendProgress,
         [0, 0.6, 1],
-        [1, isLast ? 1 : 1, isLast ? 1 : 0]
+        [1, isLast ? 1 : 1, isLast ? 1 : 0.2]
     );
 
     const bodyLines = step.description.split("\n");
@@ -58,13 +77,11 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
         >
             <div className="sticky top-0 h-[100vh] w-full px-4 flex flex-col items-center justify-center -translate-y-[2vh]" style={{ zIndex: index }}>
                 <motion.div
-                    style={{ scale: groupScale, opacity: groupOpacity }}
-                    className="w-full relative shadow-[0_40px_80px_-15px_rgba(0,0,0,0.9)] ring-1 ring-black/50 rounded-xl"
+                    style={{ scale: groupScale, opacity: groupOpacity, willChange: "transform, opacity" }}
+                    className="w-full relative ring-1 ring-black/50 rounded-xl"
                 >
 
-                    {/* ═══════════════════════════════════════════════════ */}
-                    {/* CARD SHELL — Bounded height, image as full-bleed   */}
-                    {/* ═══════════════════════════════════════════════════ */}
+                    {/* CARD SHELL */}
                     <div
                         ref={contentRef}
                         className="w-full bg-card border border-white/10 rounded-xl relative overflow-hidden h-[620px] max-h-[82vh]"
@@ -76,16 +93,13 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                             transition={{ duration: 1, delay: 0.2 }}
                             className="absolute inset-0 pointer-events-none z-20 rounded-[inherit]"
                         >
-                            {/* Top Left */}
                             <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/20 rounded-tl-[inherit]" />
-                            {/* Top Right */}
                             <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-white/20 rounded-tr-[inherit]" />
-                            {/* Bottom Left */}
                             <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-white/20 rounded-bl-[inherit]" />
-                            {/* Bottom Right */}
                             <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/20 rounded-br-[inherit]" />
                         </motion.div>
-                        {/* ── BACKGROUND IMAGE ── */}
+
+                        {/* BACKGROUND IMAGE */}
                         <motion.div
                             className="absolute inset-0"
                             {...(isInView ? fadeIn(0) : { initial: { opacity: 0 } })}
@@ -94,15 +108,16 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                                 src={step.imageUrl}
                                 alt={step.title}
                                 loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover"
                             />
                         </motion.div>
 
-                        {/* ── GRADIENT SCRIMS (Ingrained Canvas Approach) ── */}
+                        {/* GRADIENT SCRIMS */}
                         <div className="absolute inset-0 bg-black/30 mix-blend-multiply" />
                         <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] pointer-events-none" />
 
-                        {/* ── EDITORIAL OVERLAYS ── */}
+                        {/* EDITORIAL OVERLAYS */}
                         <div
                             className="absolute inset-0 pointer-events-none z-[1]"
                             aria-hidden="true"
@@ -120,9 +135,7 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                             />
                         </div>
 
-                        {/* ═══════════════════════════════════════════════ */}
-                        {/* READING FIELD MASK — Left 60% controlled zone  */}
-                        {/* ═══════════════════════════════════════════════ */}
+                        {/* READING FIELD MASK */}
                         <div
                             className="absolute inset-y-0 left-0 w-[60%] z-[5] pointer-events-none"
                             style={{
@@ -131,11 +144,9 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                             }}
                         />
 
-                        {/* ═══════════════════════════════════════════════ */}
-                        {/* CONTENT OVERLAY — Copy layered on image        */}
-                        {/* ═══════════════════════════════════════════════ */}
+                        {/* CONTENT OVERLAY */}
                         <div className="absolute inset-0 z-10 p-5 flex flex-col justify-between">
-                            {/* ── Amber accent axis ── */}
+                            {/* Amber accent axis */}
                             <motion.div
                                 className="absolute top-0 left-5 w-px h-full bg-[#d4a853]/10"
                                 {...(isInView
@@ -151,35 +162,31 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                                     : { initial: { opacity: 0 } })}
                             />
 
-                            {/* ── TOP ZONE: Label + Body (60/40 structural grid for mobile) ── */}
+                            {/* TOP ZONE */}
                             <div className="grid grid-cols-[50%_1fr]">
                                 <div>
                                     <motion.span
-                                        className="font-nohemi font-medium tracking-[0.2em] text-[10px] text-[#d4a853] uppercase flex items-center gap-2 mb-3"
+                                        className="font-nohemi italic font-medium text-base text-[#d4a853] flex items-center gap-2 mb-4"
                                         {...(isInView ? fadeUp(0.3, 6) : { initial: { opacity: 0 } })}
                                     >
-                                        <span className="text-[#d4a853]/60">//</span> 02
+                                        <span className="opacity-50">//</span> 0{index + 1}
                                     </motion.span>
+                                    <div className="h-px bg-white/[0.15] mb-4 w-24" />
 
-                                    <div className="flex flex-col gap-0.5">
-                                        {bodyLines.map((line, idx) => (
-                                            <motion.p
-                                                key={idx}
-                                                className="text-[13px] text-white leading-relaxed"
-                                                style={{ fontFamily: "var(--font-body)" }}
-                                                {...(isInView
-                                                    ? fadeUp(0.4 + idx * 0.08, 6)
-                                                    : { initial: { opacity: 0 } })}
-                                            >
-                                                {line}
-                                            </motion.p>
-                                        ))}
+                                    <div className="flex flex-col gap-1" style={{ fontFamily: "var(--font-body)" }}>
+                                        <TextRevealParagraph
+                                            lines={bodyLines}
+                                            className="mb-0 md:mb-0"
+                                            textClassName="text-[13px] leading-relaxed"
+                                            activeColor="rgba(255,255,255,0.6)"
+                                            inactiveColor="rgba(255,255,255,0.15)"
+                                        />
                                     </div>
                                 </div>
                                 <div />
                             </div>
 
-                            {/* ── BOTTOM ZONE: Headline + Metadata ── */}
+                            {/* BOTTOM ZONE */}
                             <div className="flex flex-col gap-4">
                                 {/* Headline */}
                                 <div>
@@ -207,7 +214,7 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                                             ? fadeUp(0.5, 8)
                                             : { initial: { opacity: 0 } })}
                                     >
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#c3bdaf] to-[#c3bdaf]/60 inline-block mix-blend-plus-lighter" style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }}>
+                                        <span className={`text-transparent bg-clip-text ${theme.headlineGradient} inline-block ${theme.headlineExtra ?? ""}`} style={{ textShadow: '0px 2px 4px rgba(0,0,0,0.5)' }}>
                                             {step.title}
                                         </span>
                                     </motion.h3>
@@ -216,25 +223,18 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                                 {/* Metadata rows */}
                                 <div className="flex flex-col gap-2">
                                     {step.bullets.map((item, idx) => (
-                                        <motion.div
+                                        <div
                                             key={idx}
-                                            className="flex items-center gap-3 border border-white/[0.08] bg-black/25 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4),0_1px_0_rgba(255,255,255,0.03)] px-3 py-2 rounded-sm"
-                                            {...(isInView
-                                                ? {
-                                                    initial: { opacity: 0, y: 8 },
-                                                    animate: { opacity: 1, y: 0 },
-                                                    transition: { duration: 0.8, delay: 0.9 + idx * 0.25, ease: EASE_ARCH }
-                                                }
-                                                : { initial: { opacity: 0, y: 8 } })}
+                                            className="flex items-center gap-3 border-y border-white/[0.08] px-3 py-2"
                                         >
                                             <div className="relative w-4 h-4 shrink-0 flex items-center justify-center">
                                                 <div className="absolute w-2 h-2 bg-[#d4a853]/20 rounded-full" />
                                                 <motion.div
-                                                    initial={{ scale: 0.8, opacity: 0.4 }}
+                                                    initial={{ scale: 0.8, opacity: 0.5 }}
                                                     animate={isInView ? {
                                                         scale: [0.8, 1.2, 0.8],
-                                                        opacity: [0.4, 1, 0.4],
-                                                    } : { scale: 0.8, opacity: 0.4 }}
+                                                        opacity: [0.5, 1, 0.5],
+                                                    } : { scale: 0.8, opacity: 0.5 }}
                                                     transition={{
                                                         duration: 2.5,
                                                         repeat: Infinity,
@@ -245,12 +245,12 @@ export const DesignMobileCard = ({ index, step, isLast }: DesignMobileCardProps)
                                                 />
                                             </div>
                                             <span
-                                                className="text-[11px] text-white/85 uppercase tracking-[0.15em] leading-none"
-                                                style={{ fontFamily: "var(--font-body)", textShadow: "0 -1px 1px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.04)" }}
+                                                className={`text-[11px] uppercase tracking-[0.15em] leading-none text-transparent bg-clip-text ${theme.headlineGradient}`}
+                                                style={{ fontFamily: "var(--font-body)", textShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
                                             >
                                                 {item}
                                             </span>
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

@@ -129,12 +129,12 @@ export default function Blueprint() {
       <div
         className="min-h-screen bg-background text-foreground relative z-10 shadow-[0_50px_100px_40px_rgba(0,0,0,1)] flex flex-col"
       >
-        {/* Splash Screen Overlay - Option D: Blur Dissolve */}
+        {/* Splash Screen Overlay - Removed backdropFilter for scroll performance */}
         <AnimatePresence>
           {!isReady && (
             <motion.div
-              initial={{ opacity: 1, backdropFilter: "blur(60px)" }}
-              exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 1.2, ease: "easeInOut" }}
               className="fixed inset-0 z-[100] bg-black pointer-events-none flex items-center justify-center"
             />
@@ -157,10 +157,16 @@ export default function Blueprint() {
 
         <section ref={heroRef} className="relative min-h-screen flex items-center justify-center pt-24 pb-32">
           {/* Loopable Hero Video Background */}
-          <div className="absolute inset-0 z-0 bg-background overflow-hidden">
+          <div
+            className="absolute inset-0 z-0 bg-background overflow-hidden"
+            style={{
+              // Force the container onto its own GPU layer so it doesn't drag down the rest of the page when scrolling
+              WebkitTransform: "translateZ(0)",
+              transform: "translateZ(0)",
+              willChange: "transform"
+            }}
+          >
             <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10 pointer-events-none" /> {/* Dimming overlay for text legibility */}
-
-            {/* Top gradient mask to beautifully blend video ceiling removed in favor of CSS mask on video element */}
 
             <video
               ref={videoRef}
@@ -173,11 +179,12 @@ export default function Blueprint() {
               disablePictureInPicture
               preload="auto"
               onCanPlayThrough={() => setIsVideoLoaded(true)}
-              className="absolute bottom-[10%] left-[50%] -translate-x-[50%] w-[180%] max-w-none h-auto md:w-full md:h-full md:top-0 md:left-0 md:translate-x-0 md:bottom-auto md:object-cover opacity-80 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_100%)] md:[mask-image:none]"
+              // Removed the heavy [mask-image] on mobile which forces the browser to re-rasterize the video on scroll
+              className="absolute bottom-[10%] left-[50%] -translate-x-[50%] w-[180%] max-w-none h-auto md:w-full md:h-full md:top-0 md:left-0 md:translate-x-0 md:bottom-auto md:object-cover opacity-80 pointer-events-none"
               style={{ paddingBottom: '2px' }} /* Tiny offset often needed to hide 1px video edge bleed */
             />
-            {/* Soft gradient mask blending video to background at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+            {/* Soft gradient mask blending video to background at bottom - cheaper than masking the video itself */}
+            <div className="absolute bottom-0 left-0 right-0 h-[30vh] bg-gradient-to-t from-background via-background/80 to-transparent z-10 pointer-events-none" />
           </div>
 
           <div className="container mx-auto px-8 md:px-12 lg:px-6 relative z-20">
@@ -191,6 +198,7 @@ export default function Blueprint() {
                   initial={{ y: 30 }}
                   animate={isReady ? { y: 0 } : { y: 30 }}
                   transition={{ delay: 0.2, duration: 1.2, ease: "easeOut" }}
+                  style={{ willChange: "transform" }}
                   className="mb-3"
                 >
                   <div
@@ -208,7 +216,8 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
-                  className="heading-editorial text-[14vw] min-[400px]:text-[4.25rem] sm:text-[4.5rem] leading-[1.05] md:text-[5.5rem] lg:text-8xl tracking-tight drop-shadow-md pb-1"
+                  style={{ willChange: "transform, opacity", textShadow: "0px 4px 12px rgba(0,0,0,0.5)" }}
+                  className="heading-editorial text-[14vw] min-[400px]:text-[4.25rem] sm:text-[4.5rem] leading-[1.05] md:text-[5.5rem] lg:text-8xl tracking-tight pb-1"
                 >
                   <span className="text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 block pt-2 -mt-2 pb-2 -mb-2">
                     The <em className="italic font-medium pr-2 md:pr-4">Crafted</em>
@@ -223,7 +232,8 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-                  className="font-body type-functional-light text-[1rem] md:text-xl text-zinc-300 leading-relaxed drop-shadow-sm max-w-[32ch] mt-[-0.5rem]"
+                  style={{ willChange: "transform, opacity", textShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
+                  className="font-body type-functional-light text-[1rem] md:text-xl text-zinc-300 leading-relaxed max-w-[32ch] mt-[-0.5rem]"
                 >
                   A complimentary strategic blueprint that defines what to build — before you invest in building it.
                 </motion.p>
@@ -233,6 +243,7 @@ export default function Blueprint() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+                  style={{ willChange: "transform, opacity" }}
                   className="flex items-center justify-center md:justify-start gap-4 flex-wrap mt-2 w-full md:w-auto"
                 >
                   <ShinyButton
@@ -280,7 +291,7 @@ export default function Blueprint() {
         {/* ═══════════════════════════════════════════════════════════════ */}
 
         {/* Restored top/bottom padding to ensure the footer reveal has enough scroll track to function properly */}
-        <GridSection className="pt-24 pb-32 bg-background z-20 relative">
+        <GridSection className="pt-16 pb-20 md:pt-24 md:pb-32 bg-background z-20 relative">
           {/* Faint Global Editorial Grid */}
           <div className="absolute inset-0 bg-editorial-grid pointer-events-none" />
 

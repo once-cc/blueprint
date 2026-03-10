@@ -1,39 +1,40 @@
-import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useInView } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useInView, useScroll, useMotionValueEvent } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
-import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
-import { BenefitIconLottie } from "@/components/ui/BenefitIconLottie";
+import { type WordRevealColors } from "@/components/ui/WordReveal";
+import { TextRevealParagraph } from "@/components/ui/TextRevealParagraph";
+import { BenefitIconWebP } from "@/components/ui/BenefitIconWebP";
 const noiseTexture = "/noise/noise.png";
-import clarityAnimation from "@/assets/benefitstack/clarity.json";
-import technicalAnimation from "@/assets/benefitstack/technical.json";
-import longevityAnimation from "@/assets/benefitstack/longevity.json";
-import confidenceAnimation from "@/assets/benefitstack/confidence.json";
+import clarityIcon from "@/assets/benefitstack/Clarity.webp";
+import technicalIcon from "@/assets/benefitstack/Technical.webp";
+import longevityIcon from "@/assets/benefitstack/Longevity.webp";
+import confidenceIcon from "@/assets/benefitstack/Confidence.webp";
 
 const benefits = [
     {
         title: "Total Clarity",
         description: "See exactly what will be built. How it converts. And why each decision exists — before committing to execution.\nNo ambiguity.\nNo surprises.",
-        animationData: clarityAnimation,
-        color: "hsl(220 12% 40%)" // Muted metallic
+        iconSrc: clarityIcon,
+        color: "hsl(38 85% 55%)" // Accent amber
     },
     {
         title: "Zero Technical Overload",
         description: "Everything is defined as one cohesive system.\nNo guesswork.\nNo patchwork.\nNo operational confusion.\nWe secure the strategic foundation so the engineering begins flawlessly.",
-        animationData: technicalAnimation,
-        color: "hsl(38 85% 55%)" // Accent gold
+        iconSrc: technicalIcon,
+        color: "hsl(38 85% 55%)" // Accent amber
     },
     {
         title: "Designed for Longevity",
         description: "True premium design survives rapid scaling.\nThe Blueprint engineers your digital presence with enterprise-grade foresight, ensuring your platform never outgrows its foundations.",
-        animationData: longevityAnimation,
+        iconSrc: longevityIcon,
         staticFrame: 90,
-        color: "hsl(142 71% 45%)" // Success green
+        color: "hsl(38 85% 55%)" // Accent amber
     },
     {
         title: "Decision Confidence",
         description: "Move past abstract ideas and endless revision cycles.\nThe Blueprint provides absolute visual and technical certainty before a single line of code is written.\nYou design the direction once.",
-        animationData: confidenceAnimation,
-        color: "hsl(221 83% 53%)" // Trust blue
+        iconSrc: confidenceIcon,
+        color: "hsl(38 85% 55%)" // Accent amber
     }
 ];
 
@@ -49,18 +50,45 @@ export function BenefitStackSection() {
     const textRef = useRef<HTMLDivElement>(null);
     const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
 
-    const { scrollYProgress } = useScroll({
-        target: textRef,
-        // Start revealing when the text enters the bottom 85% of the screen.
-        // Finish revealing when the BOTTOM of the text reaches 45% of the viewport (just above the center line).
-        // Since there is a mb-24 (96px) gap below the text, the TOP of the cards below 
-        // will be positioned at exactly ~55% of the viewport (just under 50%) when the animation completes.
-        offset: ["start 85%", "end 45%"]
+    // Track scroll direction so the grid can animate in reverse when scrolling back up
+    const { scrollY } = useScroll();
+    const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+
+    useMotionValueEvent(scrollY, "change", (current) => {
+        const diff = current - scrollY.getPrevious()!;
+        if (diff > 5) {
+            setScrollDirection("down");
+        } else if (diff < -5) {
+            setScrollDirection("up");
+        }
     });
 
+    const paragraphs = [
+        [
+            "Why start with a Blueprint?"
+        ],
+        [
+            "Because building first and thinking later is expensive.",
+        ],
+        [
+            "Define it once.",
+            "Build with direction.",
+            "Avoid revisions, delays, and fragmented systems."
+        ],
+        [
+            "Time saved.",
+            "Money protected.",
+            "Systems aligned."
+        ]
+    ];
 
-    const introText = "Why Start With a Blueprint? Because building first and thinking later is expensive. Define it properly once. Build with direction. Avoid the cost of revisions, delays, and fragmented systems. Time saved. Money protected. Momentum preserved.";
-    const words = introText.split(" ");
+    const amberWords = [
+        "Blueprint?", "direction.", "saved.", "protected.", "aligned."
+    ];
+
+    const dimWords = [
+        "expensive.", "revisions,", "delays,", "fragmented"
+    ];
 
     return (
         <GridSection
@@ -89,19 +117,11 @@ export function BenefitStackSection() {
             </div>
 
             {/* ══ SUBSTRATE ENHANCEMENT LAYERS ══ */}
-            {/* Consolidated: 6 gradient layers merged into one multi-background div. */}
-            {/* Film grain stays separate (requires mix-blend-soft-light compositing). */}
+            {/* PERFORMANCE UPDATE: Removed 6 stacked CSS radial gradients in favor of a single solid base color + static vignette to stop scroll tearing. */}
             <div
                 className="absolute inset-0 z-0 pointer-events-none"
                 style={{
-                    background: [
-                        'radial-gradient(50% 50% at 85% 80%, hsl(220 40% 30% / 0.08), transparent 60%)',
-                        'radial-gradient(70% 60% at 30% 45%, hsl(37 30% 55% / 0.07), transparent 70%)',
-                        'radial-gradient(ellipse at center, transparent 35%, hsl(220 15% 2% / 0.75) 100%)',
-                        'radial-gradient(60% 50% at 25% 40%, hsl(220 10% 12% / 0.5), transparent 70%)',
-                        'linear-gradient(to bottom, hsl(45 10% 92% / 0.02), transparent 40%)',
-                        'radial-gradient(80% 40% at 50% 100%, hsl(37 91% 55% / 0.03), transparent 70%)',
-                    ].join(', '),
+                    background: 'radial-gradient(ellipse at center, transparent 35%, hsl(220 15% 4% / 0.95) 100%)',
                 }}
             />
 
@@ -120,46 +140,16 @@ export function BenefitStackSection() {
                         <span className="text-accent/60">//</span> STRATEGIC CLARITY
                     </span>
 
-                    <motion.h2
-                        className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-center"
-                        style={{ "--progress": scrollYProgress } as React.CSSProperties}
-                    >
-                        {words.map((word, i) => {
-                            const start = i / words.length;
-                            const end = start + 1 / words.length;
-
-                            const isSingleBreak = ["Blueprint?", "once.", "direction.", "saved.", "protected."].some(w => word.includes(w));
-                            const isDoubleBreak = ["expensive.", "systems."].some(w => word.includes(w));
-
-                            const isHighlighted = ["Blueprint?", "expensive.", "direction.", "systems.", "saved.", "protected.", "preserved."].some(w => word.includes(w));
-
-                            if (isHighlighted) {
-                                return (
-                                    <span key={i}>
-                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pl-[0.15em] -ml-[0.15em] pr-[0.3em]">
-                                            <HighlightedWord progress={scrollYProgress} range={[start, end]}>
-                                                {word}
-                                            </HighlightedWord>
-                                        </span>
-                                        {i !== words.length - 1 && " "}
-                                        {isSingleBreak && <br />}
-                                        {isDoubleBreak && <><br /><br /></>}
-                                    </span>
-                                );
-                            }
-
-                            return (
-                                <span key={i}>
-                                    <Word progress={scrollYProgress} range={[start, end]} colors={BENEFIT_COLORS}>
-                                        {word}
-                                    </Word>
-                                    {i !== words.length - 1 && " "}
-                                    {isSingleBreak && <br />}
-                                    {isDoubleBreak && <><br /><br /></>}
-                                </span>
-                            );
-                        })}
-                    </motion.h2>
+                    <h2 className="font-nohemi font-medium text-2xl md:text-4xl lg:text-5xl leading-[1.2] tracking-tight block w-full text-center">
+                        {paragraphs.map((lines, i) => (
+                            <TextRevealParagraph
+                                key={i}
+                                lines={lines}
+                                amberWords={amberWords}
+                                dimWords={dimWords}
+                            />
+                        ))}
+                    </h2>
                 </div>
             </div>
 
@@ -200,6 +190,7 @@ export function BenefitStackSection() {
                                 index={i}
                                 isHovered={hoveredCardIndex === i}
                                 setHovered={setHoveredCardIndex}
+                                scrollDirection={scrollDirection}
                             />
                         ))}
                     </div>
@@ -211,7 +202,7 @@ export function BenefitStackSection() {
 
 // ═══════════════════════════════════════════════════════════════
 // Sub-Component: BenefitCard
-// Extracted to maintain isolated useInView state for staggered lottie animations
+// Extracted to maintain isolated useInView state for staggered animations
 // ═══════════════════════════════════════════════════════════════
 
 interface BenefitCardProps {
@@ -219,17 +210,32 @@ interface BenefitCardProps {
     index: number;
     isHovered: boolean;
     setHovered: (i: number | null) => void;
+    scrollDirection: "down" | "up";
 }
 
-function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps) {
+function BenefitCard({ benefit, index, isHovered, setHovered, scrollDirection }: BenefitCardProps) {
     const cardRef = useRef<HTMLDivElement>(null);
 
-    // We stagger the trigger boundaries slightly based on the card's index (0-3).
-    // This prevents all 4 Lottie files from parsing their JSON and initializing 
-    // their SVG canvases on the exact same scroll frame, which causes severe jank.
-    const margins = ["0px 0px -25% 0px", "0px 0px -20% 0px", "0px 0px -15% 0px", "0px 0px -10% 0px"] as const;
-    const margin = margins[index] || "0px 0px -10% 0px";
-    const isInView = useInView(cardRef, { margin });
+    // Each card row decoupled into its own intersection observer
+    const isInView = useInView(cardRef, { margin: "-20% 0px -20% 0px", once: false });
+
+    // 60fps Optimization: 
+    // CSS layout animations stagger generously (0ms, 150ms, 300ms) over the grid cards
+    // Lotties/WebPs wait an additional generous 250ms after the CSS layout has finished allocating before parsing
+
+    // ENTRANCE logic: 
+    // - Scrolling down: Row 1 plays, then Row 2 triggers independently when it scrolls into view.
+    // - Since rows are decoupled now, we only need to stagger horizontally between the two columns (even/odd)
+    // - We use index % 2 to get the column (0 for left, 1 for right)
+    let delayIndex;
+    if (isInView) {
+        delayIndex = scrollDirection === "down" ? (index % 2) : (1 - (index % 2));
+    } else {
+        delayIndex = scrollDirection === "down" ? (1 - (index % 2)) : (index % 2);
+    }
+
+    const cssDelay = delayIndex * 300;
+    const lottieDelay = delayIndex * 300 + 250;
 
     return (
         <div
@@ -239,7 +245,12 @@ function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps
             // Card is 'group/card'. 
             // On grid hover: all cards get a faint white glow.
             // On card hover: this card isolates and gets a strong branded radial glow, while others fade back.
-            className="group/card relative p-8 md:p-12 flex flex-col gap-8 transition-all duration-500"
+            className={`group/card relative p-8 md:p-12 flex flex-col gap-8 transition-all duration-700 hover:-translate-y-1 z-10 hover:z-20 ${isInView ? "opacity-100 xl:translate-y-0" : "opacity-0 xl:translate-y-8"
+                }`}
+            style={{
+                transitionDelay: `${cssDelay}ms`,
+                willChange: "transform, opacity"
+            }}
         >
             {/* Conditionally render the structural dividing lines inside the cards so the hover glow perfectly traces them */}
             {/* Top inner border (for bottom row) */}
@@ -248,8 +259,8 @@ function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps
             {index % 2 !== 0 && <div className="hidden md:block absolute top-0 bottom-0 left-0 w-px bg-white/5 z-[5]" />}
 
             {/* Background Hover Illuminations */}
-            {/* 1. The collective grid glow */}
-            <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover/grid:opacity-100 group-hover/card:!opacity-0 transition-opacity duration-700 pointer-events-none z-0" />
+            {/* 1. The collective grid glow - SCROLL PERFORMANCE OPTIMIZATION: Removed opacity transition, made static faint background to prevent whole-grid layer repaints */}
+            <div className="absolute inset-0 bg-white/[0.01] pointer-events-none z-0" />
 
             {/* 2. The isolated card glow */}
             <div
@@ -267,6 +278,14 @@ function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps
                 }}
             />
 
+            {/* RESTORED: Premium glowing border, optimized by opacity fading so it costs zero GPU when not hovered */}
+            <div
+                className="animated-glow-border opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 pointer-events-none"
+                style={{
+                    background: `conic-gradient(from calc(var(--gradient-angle) * 1), transparent 25%, ${benefit.color} 45%, ${benefit.color} 55%, transparent 75%)`
+                }}
+            />
+
             {/* Technical Header */}
             <div className="flex justify-between items-start relative z-10">
                 <div className="flex flex-col gap-2">
@@ -277,17 +296,14 @@ function BenefitCard({ benefit, index, isHovered, setHovered }: BenefitCardProps
                         {benefit.title}
                     </h3>
                 </div>
-                <BenefitIconLottie
-                    animationData={benefit.animationData}
-                    color={benefit.color}
+                <BenefitIconWebP
+                    src={benefit.iconSrc}
                     isActive={isHovered}
-                    hasPlayedOnce={isInView}
-                    staticFrame={benefit.staticFrame}
                 />
             </div>
 
             {/* Annotation copy */}
-            <p className="font-body type-functional-light text-sm md:text-base text-zinc-300 leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-white transition-colors duration-500">
+            <p className="font-body type-functional-light text-sm md:text-base text-zinc-300 opacity-80 leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-white group-hover/card:opacity-100 transition-all duration-500">
                 {benefit.description}
             </p>
         </div>

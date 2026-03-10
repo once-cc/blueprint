@@ -79,6 +79,7 @@ export function DreamIntentHUD({
             duration: 0.7,
           }
         }}
+        style={{ willChange: "transform" }}
         className="fixed top-4 left-4 z-50"
       >
         <motion.button
@@ -105,6 +106,7 @@ export function DreamIntentHUD({
                 animate={{ opacity: 1, maxWidth: isMobile ? 110 : 300 }}
                 exit={{ opacity: 0, maxWidth: 0 }}
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
+                style={{ willChange: "transform, opacity, max-width" }}
                 className={`text-muted-foreground truncate overflow-hidden whitespace-nowrap ${isMobile ? 'text-xs' : 'text-sm'}`}
               >
                 {truncatedIntent || 'Set Your Vision..'}

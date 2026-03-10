@@ -90,7 +90,7 @@ export function TestimonialCarousel() {
   });
 
   return (
-    <div ref={containerRef} className="relative w-full overflow-hidden py-24 bg-transparent select-none">
+    <div ref={containerRef} className="relative w-full overflow-hidden py-12 md:py-24 bg-transparent select-none">
 
       {/* 3D Scene Container */}
       <div
@@ -292,7 +292,7 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
 
         {/* Artifact Panel Container */}
         <motion.div
-          className="relative flex-shrink-0 p-[14px] rounded-[18px] bg-white/[0.04] transition-transform duration-220 ease-out hover:-translate-y-1 hover:scale-[1.01]"
+          className="relative flex flex-col flex-shrink-0 p-[14px] rounded-[18px] bg-white/[0.04] transition-transform duration-220 ease-out hover:-translate-y-1 hover:scale-[1.01] h-full"
           initial="hidden"
           animate={isActive ? "visible" : "hidden"}
           variants={staggerContainer}
@@ -311,8 +311,8 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
 
           {/* Image */}
           <div
-            className="w-[280px] md:w-[350px] aspect-[3/4] relative overflow-hidden rounded-md border border-white/5 bg-transparent"
-            style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d" }}
+            className="w-[300px] md:w-[350px] flex-grow aspect-auto md:aspect-[3/4] relative overflow-hidden rounded-md border border-white/5 bg-transparent"
+            style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d", minHeight: "260px" }}
           >
             {/* Overlay ID Marker on top right of the image */}
             <div className="absolute top-4 right-4 z-20 text-[10px] font-mono tracking-[0.2em] font-medium text-white/40 uppercase bg-black/40 backdrop-blur-md px-2 py-1 rounded-[4px] border border-white/10">
@@ -334,7 +334,7 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
         </motion.div>
 
         <motion.div
-          className="w-[270px] flex-shrink-0 bg-white/[0.02] border-l border-white/[0.08] p-7 flex flex-col justify-center gap-6 rounded-r-lg"
+          className="w-[270px] flex-shrink-0 bg-white/[0.02] border-l border-white/[0.08] p-5 md:p-7 flex flex-col justify-center gap-3 md:gap-6 rounded-r-lg"
           initial="hidden"
           animate={isActive ? "visible" : "hidden"}
           variants={staggerContainer}

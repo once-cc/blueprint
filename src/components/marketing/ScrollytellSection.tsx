@@ -1,24 +1,40 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { motion } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
-import { Word, HighlightedWord, type WordRevealColors } from "@/components/ui/WordReveal";
+import { TextRevealParagraph } from "@/components/ui/TextRevealParagraph";
 const noiseTexture = "/noise/noise.png";
-
-const SCROLLYTELL_COLORS: WordRevealColors = {
-    from: "hsla(220, 12%, 50%, 0.25)",
-    to: "hsl(45, 10%, 92%)",
-};
 
 export function ScrollytellSection() {
     const containerRef = useRef<HTMLElement>(null);
 
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start center", "end center"],
-    });
+    const paragraphs = [
+        [
+            "Success comes from what most miss.",
+            "\u00A0",
+            "Mistaking motion for direction.",
+            "Chasing features instead of foundation.",
+            "Spending capital without return."
+        ],
+        [
+            "So we created the 3D Framework."
+        ],
+        [
+            "Discovery removes uncertainty.",
+            "Design removes misperception.",
+            "Delivery removes fragmentation."
+        ],
+        [
+            "The Crafted Blueprint for your next asset."
+        ]
+    ];
 
-    const text = "Most digital projects fail before they're built. They begin with assumptions. They skip alignment. They rush execution. We don't. Discovery removes uncertainty. Design removes misperception. Delivery removes fragmentation. Nothing is built without clarity.";
-    const words = text.split(" ");
+    const amberWords = [
+        "Success", "direction.", "foundation.", "return.", "Discovery", "Design", "Delivery", "asset."
+    ];
+
+    const dimWords = [
+        "miss.", "Mistaking", "Chasing", "Spending", "uncertainty.", "misperception.", "fragmentation."
+    ];
 
     return (
         <GridSection ref={containerRef} className="relative py-24 md:py-32 overflow-hidden z-20 bg-[hsl(220_15%_4%)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.15),inset_0_2px_15px_rgba(0,0,0,0.8)]">
@@ -59,62 +75,31 @@ export function ScrollytellSection() {
             </div>
 
             <div className="container mx-auto px-10 md:px-6 overflow-hidden relative z-10">
-                <div className="max-w-[90ch] mx-auto text-left relative flex flex-col md:block">
+                <div className="max-w-4xl mx-auto text-center flex flex-col items-center relative">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="mb-8 md:mb-0 md:absolute md:top-2 md:left-0"
+                        style={{ willChange: "transform, opacity" }}
+                        className="mb-8"
                     >
-                        <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center gap-2">
+                        <span className="font-nohemi font-medium tracking-widest text-[10px] md:text-sm text-accent uppercase flex items-center justify-center gap-2">
                             <span className="text-accent/60">//</span> The Foundation
                         </span>
                     </motion.div>
 
-                    <motion.h2
-                        className="font-nohemi font-medium text-3xl md:text-5xl lg:text-6xl leading-[1.2] tracking-tight block w-full text-left"
-                        style={{ "--progress": scrollYProgress } as React.CSSProperties}
+                    <h2
+                        className="font-nohemi font-medium text-2xl md:text-4xl lg:text-5xl leading-[1.2] tracking-tight block w-full text-center"
                     >
-                        {/* Indent element to push the first line over on desktop */}
-                        <div className="hidden md:block float-left w-[160px] lg:w-[200px] h-4" aria-hidden="true" />
-
-                        {words.map((word, i) => {
-                            const start = i / words.length;
-                            const end = start + 1 / words.length;
-
-                            // Add line breaks after specific sentences to match exactly the user's requested layout
-                            const isSingleBreak = word.includes("built.") || word.includes("uncertainty.") || word.includes("misperception.") || word.includes("fragmentation.");
-                            const isDoubleBreak = word.includes("execution.") || word.includes("don't.");
-
-                            const isHighlighted = ["fail", "assumptions.", "alignment.", "rush", "execution.", "don't.", "uncertainty.", "misperception.", "fragmentation.", "clarity."].some(w => word.includes(w));
-
-                            if (isHighlighted) {
-                                return (
-                                    <span key={i}>
-                                        <span className="relative italic font-nohemi font-medium text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[50%] to-zinc-950 pl-[0.15em] -ml-[0.15em] pr-[0.3em]">
-                                            <HighlightedWord progress={scrollYProgress} range={[start, end]}>
-                                                {word}
-                                            </HighlightedWord>
-                                        </span>
-                                        {i !== words.length - 1 && " "}
-                                        {isSingleBreak && <br />}
-                                        {isDoubleBreak && <><br /><br /></>}
-                                    </span>
-                                );
-                            }
-
-                            return (
-                                <span key={i}>
-                                    <Word progress={scrollYProgress} range={[start, end]} colors={SCROLLYTELL_COLORS}>
-                                        {word}
-                                    </Word>
-                                    {i !== words.length - 1 && " "}
-                                    {isSingleBreak && <br />}
-                                    {isDoubleBreak && <><br /><br /></>}
-                                </span>
-                            );
-                        })}
-                    </motion.h2>
+                        {paragraphs.map((lines, i) => (
+                            <TextRevealParagraph
+                                key={i}
+                                lines={lines}
+                                amberWords={amberWords}
+                                dimWords={dimWords}
+                            />
+                        ))}
+                    </h2>
                 </div>
             </div>
         </GridSection>
