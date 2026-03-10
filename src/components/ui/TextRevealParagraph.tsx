@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useInView, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -37,12 +37,29 @@ export function TextRevealParagraph({
     const { scrollY } = useScroll();
     const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
 
+    // Track whether the element is above the viewport (exited from the top)
+    const [exitSide, setExitSide] = useState<"top" | "bottom" | null>(null);
+
     useMotionValueEvent(scrollY, "change", (current) => {
         const diff = current - scrollY.getPrevious()!;
         if (diff > 5) {
             setScrollDirection("down");
         } else if (diff < -5) {
             setScrollDirection("up");
+        }
+
+        // Determine which side the element has exited from
+        if (textRef.current) {
+            const rect = textRef.current.getBoundingClientRect();
+            if (rect.bottom < 0) {
+                // Element has scrolled above the viewport
+                setExitSide("top");
+            } else if (rect.top > window.innerHeight) {
+                // Element is below the viewport
+                setExitSide("bottom");
+            } else {
+                setExitSide(null);
+            }
         }
     });
 
@@ -93,9 +110,28 @@ export function TextRevealParagraph({
                     segments.push(<span key="end">{currentNormalChunk}</span>);
                 }
 
-                // Reverse the delay index if scrolling upwards
+                // Determine stagger delay based on entry/exit direction:
+                // - Entering (scrolling down into view): top-to-bottom (natural order)
+                // - Exiting top (scrolled past, above viewport): top-to-bottom (first line exits first)
+                // - Exiting bottom (scrolling back up, below viewport): bottom-to-top (last line exits first)
+                // - Re-entering from above (scrolling back up): bottom-to-top (reverse cascade in)
                 const totalLines = lines.length;
-                const delayIndex = scrollDirection === "down" ? lIdx : (totalLines - 1 - lIdx);
+                let delayIndex: number;
+
+                if (isTextInView) {
+                    // Entering view: stagger based on scroll direction
+                    delayIndex = scrollDirection === "down" ? lIdx : (totalLines - 1 - lIdx);
+                } else {
+                    // Exiting view: stagger based on which side it's exiting from
+                    if (exitSide === "top") {
+                        // Exited above viewport — first line should exit first (top-to-bottom)
+                        delayIndex = lIdx;
+                    } else {
+                        // Exited below viewport or unknown — last line exits first (bottom-to-top)
+                        delayIndex = totalLines - 1 - lIdx;
+                    }
+                }
+
                 const delayMs = delayIndex * 300;
 
                 return (
