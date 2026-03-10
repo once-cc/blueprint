@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useCallback } from "react";
-import { useInView, useScroll, useMotionValueEvent } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { useInView, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export interface TextRevealParagraphProps {
@@ -11,6 +11,8 @@ export interface TextRevealParagraphProps {
     textClassName?: string;
     activeColor?: string;
     inactiveColor?: string;
+    globalLineOffset?: number;
+    scrollDirection?: "down" | "up";
 }
 
 const BENEFIT_COLORS = {
@@ -26,42 +28,14 @@ export function TextRevealParagraph({
     className,
     textClassName,
     activeColor = BENEFIT_COLORS.to,
-    inactiveColor = BENEFIT_COLORS.from
+    inactiveColor = BENEFIT_COLORS.from,
+    globalLineOffset = 0,
+    scrollDirection = "down"
 }: TextRevealParagraphProps) {
     const textRef = useRef<HTMLSpanElement>(null);
     const isTextInView = useInView(textRef, { margin: "0px 0px -20% 0px", once: false });
 
     const totalWords = lines.reduce((acc, line) => acc + line.split(" ").length, 0);
-
-    // Track scroll direction so the text can cascade in reverse when scrolling back up
-    const { scrollY } = useScroll();
-    const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
-
-    // Track whether the element is above the viewport (exited from the top)
-    const [exitSide, setExitSide] = useState<"top" | "bottom" | null>(null);
-
-    useMotionValueEvent(scrollY, "change", (current) => {
-        const diff = current - scrollY.getPrevious()!;
-        if (diff > 5) {
-            setScrollDirection("down");
-        } else if (diff < -5) {
-            setScrollDirection("up");
-        }
-
-        // Determine which side the element has exited from
-        if (textRef.current) {
-            const rect = textRef.current.getBoundingClientRect();
-            if (rect.bottom < 0) {
-                // Element has scrolled above the viewport
-                setExitSide("top");
-            } else if (rect.top > window.innerHeight) {
-                // Element is below the viewport
-                setExitSide("bottom");
-            } else {
-                setExitSide(null);
-            }
-        }
-    });
 
     useEffect(() => {
         if (onStateChange) {
@@ -69,91 +43,95 @@ export function TextRevealParagraph({
         }
     }, [isTextInView, totalWords, onStateChange]);
 
-    let wordCounter = 0;
+    const totalLines = lines.length;
 
     return (
         <span ref={textRef} className={cn("block mb-10 md:mb-14 last:mb-0", className)}>
             {lines.map((line, lIdx) => {
                 const words = line.split(" ");
-                const segments: React.ReactNode[] = [];
-                let currentNormalChunk = "";
-
-                words.forEach((word, wIdx) => {
-                    const cleanWord = word.replace(/[.,]/g, ''); // For matching purposes
-                    const isAmber = amberWords.some(w => word.includes(w) || cleanWord === w);
-                    const isDim = dimWords.some(w => word.includes(w) || cleanWord === w);
-
-                    if (isAmber || isDim) {
-                        if (currentNormalChunk) {
-                            segments.push(<span key={`n${wIdx}`}>{currentNormalChunk}</span>);
-                            currentNormalChunk = "";
-                        }
-
-                        const highlightClass = isAmber
-                            ? "text-[hsl(38_85%_55%)] italic font-medium" // Option B: Accent amber without expensive drop-shadow
-                            : "text-zinc-600 italic font-medium"; // Dim actions
-
-                        segments.push(
-                            <span
-                                key={`h${wIdx}`}
-                                className={cn("relative font-nohemi inline-block transition-colors duration-700", highlightClass)}
-                            >
-                                {word}
-                            </span>
-                        );
-                        if (wIdx !== words.length - 1) segments.push(<span key={`s${wIdx}`}> </span>);
-                    } else {
-                        currentNormalChunk += word + (wIdx !== words.length - 1 ? " " : "");
-                    }
-                });
-                if (currentNormalChunk) {
-                    segments.push(<span key="end">{currentNormalChunk}</span>);
-                }
-
-                // Determine stagger delay based on entry/exit direction:
-                // - Entering (scrolling down into view): top-to-bottom (natural order)
-                // - Exiting top (scrolled past, above viewport): top-to-bottom (first line exits first)
-                // - Exiting bottom (scrolling back up, below viewport): bottom-to-top (last line exits first)
-                // - Re-entering from above (scrolling back up): bottom-to-top (reverse cascade in)
-                const totalLines = lines.length;
                 let delayIndex: number;
 
+                // 1. Calculate the foundational line delay identical to our offset sequencing
                 if (isTextInView) {
-                    // Entering view: stagger based on scroll direction
-                    delayIndex = scrollDirection === "down" ? lIdx : (totalLines - 1 - lIdx);
+                    delayIndex = scrollDirection === "down"
+                        ? (globalLineOffset * 0.7) + lIdx
+                        : (globalLineOffset * 0.7) + (totalLines - 1 - lIdx);
                 } else {
-                    // Exiting view: stagger based on which side it's exiting from
-                    if (exitSide === "top") {
-                        // Exited above viewport — first line should exit first (top-to-bottom)
-                        delayIndex = lIdx;
-                    } else {
-                        // Exited below viewport or unknown — last line exits first (bottom-to-top)
-                        delayIndex = totalLines - 1 - lIdx;
-                    }
+                    delayIndex = scrollDirection === "down"
+                        ? (globalLineOffset * 0.7) + lIdx
+                        : (globalLineOffset * 0.7) + (totalLines - 1 - lIdx);
                 }
 
-                const delayMs = delayIndex * 300;
+                // Instead of staggering whole lines by 200ms, line chunks still start at 200ms, 
+                // but child words increment off that foundation.
+                const lineBaseDelayS = (delayIndex * 200) / 1000;
 
                 return (
-                    <span key={lIdx} className="block relative">
-                        <span
-                            className={cn("block transition-all duration-1000 ease-out", textClassName)}
-                            style={{
-                                color: activeColor,
-                                WebkitMaskImage: `linear-gradient(to left, rgba(0,0,0,0.05) 40%, black 60%)`,
-                                WebkitMaskSize: '300% 100%',
-                                // 100% 0% puts the pure black on the far left (hidden).
-                                // 0% 0% shifts the mask entirely to the right (fully revealed).
-                                WebkitMaskPosition: isTextInView ? '0% 0%' : '100% 0%',
-                                maskImage: `linear-gradient(to left, rgba(0,0,0,0.05) 40%, black 60%)`,
-                                maskSize: '300% 100%',
-                                maskPosition: isTextInView ? '0% 0%' : '100% 0%',
-                                transitionDelay: `${delayMs}ms`,
-                                transitionProperty: 'all, mask-position, -webkit-mask-position',
-                            }}
-                        >
-                            {segments}
-                        </span>
+                    <span key={lIdx} className={cn("block relative", textClassName)}>
+                        {words.map((word, wIdx) => {
+                            const cleanWord = word.replace(/[.,]/g, '');
+                            const isAmber = amberWords.some(w => word.includes(w) || cleanWord === w);
+                            const isDim = dimWords.some(w => word.includes(w) || cleanWord === w);
+
+                            let highlightClass = "";
+                            let finalColor = activeColor;
+
+                            // Framer Motion struggles to cross-fade `color` with `linear-gradient` via standard CSS properties.
+                            // To animate gradients on text, we must:
+                            // 1. Maintain the CSS inline `-webkit-text-fill-color: transparent` to punch out the letters
+                            // 2. Animate opacity instead of color, letting the background gradient class show through.
+                            const hasGradientClass = isAmber || isDim;
+
+                            if (isAmber) {
+                                highlightClass = "text-transparent bg-clip-text bg-gradient-to-b from-[hsl(38_85%_55%)] from-[10%] to-[hsl(38_85%_30%)] italic font-medium";
+                            } else if (isDim) {
+                                highlightClass = "text-transparent bg-clip-text bg-gradient-to-b from-zinc-600 from-[30%] to-zinc-800 italic font-medium";
+                            }
+
+                            // Calculate individual character/word micro-stagger incremented from the base line delay
+                            // We offset every word sequentially across the line by a fast 0.05 seconds (50ms).
+                            const wordSequenceDelay = scrollDirection === "down" ? wIdx : (words.length - 1 - wIdx);
+                            const animationDelayS = lineBaseDelayS + (wordSequenceDelay * 0.04);
+
+                            // If we have a gradient class, we DO NOT animate Framer Motion's `color` property.
+                            // Doing so overrides the CSS `transparent` fill, breaking the gradient backgrounds.
+
+                            return (
+                                <span key={wIdx} className="inline-block whitespace-pre-wrap">
+                                    <motion.span
+                                        initial={{
+                                            opacity: 0.2,
+                                            ...(hasGradientClass ? {} : { color: inactiveColor })
+                                        }}
+                                        animate={
+                                            isTextInView
+                                                ? {
+                                                    opacity: 1,
+                                                    ...(hasGradientClass ? {} : { color: activeColor })
+                                                }
+                                                : {
+                                                    opacity: 0.2,
+                                                    ...(hasGradientClass ? {} : { color: inactiveColor })
+                                                }
+                                        }
+                                        transition={{
+                                            duration: 0.4,
+                                            delay: animationDelayS,
+                                            ease: "easeOut",
+                                            opacity: { duration: 0.5, delay: animationDelayS },
+                                            ...(hasGradientClass ? {} : { color: { duration: 0.8, delay: animationDelayS } })
+                                        }}
+                                        className={cn("relative inline-block", highlightClass)}
+                                        style={hasGradientClass
+                                            ? { paddingRight: "0.15em", marginRight: "-0.15em", WebkitTextFillColor: "transparent" }
+                                            : {}}
+                                    >
+                                        {word}
+                                    </motion.span>
+                                    {wIdx !== words.length - 1 && " "}
+                                </span>
+                            );
+                        })}
                     </span>
                 );
             })}

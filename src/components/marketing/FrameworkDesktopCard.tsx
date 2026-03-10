@@ -26,17 +26,17 @@ interface CardColorTheme {
 const CARD_THEMES: CardColorTheme[] = [
     {
         // Discovery — dark title, neutral headline
-        bigTitleGradient: "bg-gradient-to-t from-black from-[20%] via-zinc-900 to-zinc-700",
+        bigTitleGradient: "bg-gradient-to-t from-black from-[40%] via-zinc-900 to-zinc-700",
         headlineGradient: "bg-gradient-to-b from-zinc-200 to-zinc-600",
     },
     {
         // Design — warm parchment tones
-        bigTitleGradient: "bg-gradient-to-t from-black from-[20%] via-[#2a2924] to-[#4d4b44]",
+        bigTitleGradient: "bg-gradient-to-t from-black from-[40%] via-[#2a2924] to-[#4d4b44]",
         headlineGradient: "bg-gradient-to-b from-[#c3bdaf] to-[#c3bdaf]/60",
     },
     {
         // Delivery — ivory/cream tones
-        bigTitleGradient: "bg-gradient-to-t from-black from-[20%] via-[#302f2b] to-[#5c5b52]",
+        bigTitleGradient: "bg-gradient-to-t from-black from-[40%] via-[#302f2b] to-[#5c5b52]",
         headlineGradient: "bg-gradient-to-b from-[#e8e0d4] to-[#e8e0d4]/60",
         headlineExtra: "pr-1",
     },

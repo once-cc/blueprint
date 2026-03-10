@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimationFrame, useMotionValueEvent, MotionValue } from "framer-motion";
 import { capabilityShowcase, type CapabilityShowcase } from "@/data/testimonials";
 
-// We use 4 duplicated sets. Set 0 (offscreen left), Set 1 (main), Set 2, Set 3 (buffer right).
-const MULTIPLIER = 4;
+// We use 3 duplicated sets. Set 0 (offscreen left), Set 1 (main), Set 2 (buffer right).
+const MULTIPLIER = 3;
 const SET_LENGTH = capabilityShowcase.length; // items per full set
 const extendedShowcase = Array.from({ length: MULTIPLIER }).flatMap((_, idx) =>
   capabilityShowcase.map(t => ({ ...t, uniqueKey: `${t.id}-${idx}`, setIndex: idx }))
@@ -14,10 +14,16 @@ export function TestimonialCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isVisible = useRef(false);
 
-  // Shared mobile breakpoint — single listener instead of 24 per-card listeners
+  // Shared mobile breakpoint and window width — single listener instead of per-card listeners
   const [isMobile, setIsMobile] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => {
+      setIsMobile(window.innerWidth < 768);
+      setWindowWidth(window.innerWidth);
+    };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
@@ -105,7 +111,7 @@ export function TestimonialCarousel() {
         </div>
 
         {/* Architectural Track Rails — Top Pair (3D Curved Illusion) */}
-        <div className="absolute inset-x-[-10vw] top-0 h-[50px] md:h-[70px] pointer-events-none z-0 mix-blend-plus-lighter overflow-visible">
+        <div className="absolute inset-x-[-10vw] top-0 h-[50px] md:h-[70px] pointer-events-none z-0 overflow-visible">
           <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
             {/* Outer Faint Rail */}
             <path d="M 0 0 Q 500 200 1000 0" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
@@ -124,7 +130,7 @@ export function TestimonialCarousel() {
         </div>
 
         {/* Architectural Track Rails — Bottom Pair (3D Curved Illusion) */}
-        <div className="absolute inset-x-[-10vw] bottom-0 h-[50px] md:h-[70px] pointer-events-none z-0 mix-blend-plus-lighter overflow-visible">
+        <div className="absolute inset-x-[-10vw] bottom-0 h-[50px] md:h-[70px] pointer-events-none z-0 overflow-visible">
           <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
             {/* Inner Bright Rail Glow (Replaced expensive drop-shadow filter with geometric path scaling) */}
             <path d="M 0 92 Q 500 -108 1000 92" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" vectorEffect="non-scaling-stroke" />
@@ -156,6 +162,7 @@ export function TestimonialCarousel() {
               index={idx}
               x={x}
               isMobile={isMobile}
+              windowWidth={windowWidth}
             />
           ))}
         </motion.div>
@@ -166,10 +173,8 @@ export function TestimonialCarousel() {
 }
 
 // Optimized Card — pure math positioning, ZERO getBoundingClientRect
-const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcase & { uniqueKey: string }, index: number, x: MotionValue<number>, isMobile: boolean }) => {
+const Card = React.memo(({ item, index, x, isMobile, windowWidth }: { item: CapabilityShowcase & { uniqueKey: string }, index: number, x: MotionValue<number>, isMobile: boolean, windowWidth: number }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isActive, setIsActive] = useState(false);
-
   // --- PURE MATH POSITIONING (no DOM measurement) ---
   // Every card is identical: same width, same gap. So each card's center
   // in the flex container's local coordinate space is deterministic.
@@ -185,13 +190,8 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
   // screenPosition = localCenter + x
   // centerDistance = screenPosition - viewportCenter
   const centerDistance = useTransform(x, (xVal) => {
-    const windowCenter = typeof window !== "undefined" ? window.innerWidth / 2 : 600;
+    const windowCenter = windowWidth / 2;
     return localCenter + xVal - windowCenter;
-  });
-
-  // Active threshold at 55% of stride
-  useMotionValueEvent(centerDistance, "change", (latest) => {
-    setIsActive(Math.abs(latest) < s * 0.55);
   });
 
   // All ranges derived from stride (s) for mathematically uniform transitions
@@ -215,9 +215,6 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
 
   // Scale: 1 at center, 0.88 at ±1.5 strides
   const scale = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0.88, 1, 0.88]);
-
-  // Blueprint Grid Opacity — subtle brightening at center
-  const gridOpacity = useTransform(centerDistance, [-s * 1.5, 0, s * 1.5], [0.3, 0.45, 0.3]);
 
   // Blur and BoxShadow continuous string calculations removed for 60fps performance gains
 
@@ -250,21 +247,20 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
   return (
     <motion.div
       ref={cardRef}
-      className="flex-shrink-0 w-[680px] md:w-[750px] relative flex items-stretch overflow-hidden bg-[#1C1C1E] border border-white/5 rounded-[24px] select-none px-8 pb-8 pt-3"
+      className="flex-shrink-0 w-[680px] md:w-[750px] relative flex items-stretch overflow-hidden bg-[#1C1C1E] border border-white/5 rounded-[24px] select-none px-8 pb-8 pt-3 [content-visibility:auto] [contain-intrinsic-size:680px_350px] md:[contain-intrinsic-size:750px_350px]"
       style={{
         z,
         rotateY,
         opacity,
         scale,
-        transformStyle: "preserve-3d",
-        willChange: "transform, opacity"
+        transformStyle: "preserve-3d"
       }}
     >
       {/* Blueprint background grid lines */}
-      <motion.div
+      <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          opacity: gridOpacity,
+          opacity: 0.35,
           backgroundImage: `
             linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
@@ -294,11 +290,15 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
         <motion.div
           className="relative flex flex-col flex-shrink-0 p-[14px] rounded-[18px] bg-white/[0.04] transition-transform duration-220 ease-out hover:-translate-y-1 hover:scale-[1.01] h-full"
           initial="hidden"
-          animate={isActive ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ margin: "0px -40% 0px -40%", once: false, amount: "some" }}
           variants={staggerContainer}
           style={{
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04), 0 10px 40px rgba(0,0,0,0.6)',
+            boxShadow: `
+              inset 0 0 0 1px rgba(255,255,255,0.04), 
+              0 4px 12px rgba(0,0,0,0.85)
+            `,
             transform: "translateZ(30px)",
             transformStyle: "preserve-3d"
           }}
@@ -315,7 +315,7 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
             style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d", minHeight: "260px" }}
           >
             {/* Overlay ID Marker on top right of the image */}
-            <div className="absolute top-4 right-4 z-20 text-[10px] font-mono tracking-[0.2em] font-medium text-white/40 uppercase bg-black/40 backdrop-blur-md px-2 py-1 rounded-[4px] border border-white/10">
+            <div className="absolute top-4 right-4 z-20 text-[10px] font-mono tracking-[0.2em] font-medium text-white/40 uppercase bg-black/80 px-2 py-1 rounded-[4px] border border-white/10">
               CS-{idNumber}
             </div>
             {item.image ? (
@@ -336,7 +336,8 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
         <motion.div
           className="w-[270px] flex-shrink-0 bg-white/[0.02] border-l border-white/[0.08] p-5 md:p-7 flex flex-col justify-center gap-3 md:gap-6 rounded-r-lg"
           initial="hidden"
-          animate={isActive ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ margin: "0px -40% 0px -40%", once: false, amount: "some" }}
           variants={staggerContainer}
           style={{ transform: "translateZ(20px)" }}
         >
@@ -350,7 +351,7 @@ const Card = React.memo(({ item, index, x, isMobile }: { item: CapabilityShowcas
 });
 
 // Extracted Sub-component for Metadata handling
-const ArtifactMetadataSpine = ({ item, isEnhanced, staggerItem }: { item: CapabilityShowcase, isEnhanced?: boolean, staggerItem: any }) => {
+const ArtifactMetadataSpine = ({ item, isEnhanced, staggerItem }: { item: CapabilityShowcase, isEnhanced?: boolean, staggerItem?: any }) => {
   if (isEnhanced) {
     return (
       <>

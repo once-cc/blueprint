@@ -1,11 +1,22 @@
-import { useRef } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
 import { TextRevealParagraph } from "@/components/ui/TextRevealParagraph";
 const noiseTexture = "/noise/noise.png";
 
 export function ScrollytellSection() {
     const containerRef = useRef<HTMLElement>(null);
+    const { scrollY } = useScroll();
+    const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+
+    useMotionValueEvent(scrollY, "change", (current) => {
+        const diff = current - scrollY.getPrevious()!;
+        if (diff > 5) {
+            setScrollDirection("down");
+        } else if (diff < -5) {
+            setScrollDirection("up");
+        }
+    });
 
     const paragraphs = [
         [
@@ -35,6 +46,9 @@ export function ScrollytellSection() {
     const dimWords = [
         "miss.", "Mistaking", "Chasing", "Spending", "uncertainty.", "misperception.", "fragmentation."
     ];
+
+    const allParagraphsLength = paragraphs.reduce((acc, p) => acc + p.length, 0);
+    let lineCountSoFar = 0;
 
     return (
         <GridSection ref={containerRef} className="relative py-24 md:py-32 overflow-hidden z-20 bg-[hsl(220_15%_4%)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.15),inset_0_2px_15px_rgba(0,0,0,0.8)]">
@@ -91,14 +105,27 @@ export function ScrollytellSection() {
                     <h2
                         className="font-nohemi font-medium text-2xl md:text-4xl lg:text-5xl leading-[1.2] tracking-tight block w-full text-center"
                     >
-                        {paragraphs.map((lines, i) => (
-                            <TextRevealParagraph
-                                key={i}
-                                lines={lines}
-                                amberWords={amberWords}
-                                dimWords={dimWords}
-                            />
-                        ))}
+                        {paragraphs.map((lines, i) => {
+                            // When scrolling down, Paragraph 1 enters first (offset 0), Paragraph 2 second (offset 5)
+                            // When scrolling up, Paragraph 4 enters first. Its offset should be 0.
+                            const offsetDown = lineCountSoFar;
+                            const offsetUp = allParagraphsLength - lineCountSoFar - lines.length;
+
+                            const offset = scrollDirection === "down" ? offsetDown : offsetUp;
+
+                            lineCountSoFar += lines.length;
+
+                            return (
+                                <TextRevealParagraph
+                                    key={i}
+                                    lines={lines}
+                                    amberWords={amberWords}
+                                    dimWords={dimWords}
+                                    globalLineOffset={offset}
+                                    scrollDirection={scrollDirection}
+                                />
+                            );
+                        })}
                     </h2>
                 </div>
             </div>

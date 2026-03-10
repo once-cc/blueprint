@@ -90,6 +90,9 @@ export function BenefitStackSection() {
         "expensive.", "revisions,", "delays,", "fragmented"
     ];
 
+    const allParagraphsLength = paragraphs.reduce((acc, p) => acc + p.length, 0);
+    let lineCountSoFar = 0;
+
     return (
         <GridSection
             ref={containerRef}
@@ -132,7 +135,7 @@ export function BenefitStackSection() {
             />
 
             {/* Ghost Editorial Grid */}
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-[0.12]" />
+            <div className="absolute inset-0 z-[1] pointer-events-none bg-editorial-grid opacity-40" />
 
             <div className="container mx-auto px-6 mb-12 md:mb-24 relative z-[25]">
                 <div ref={textRef} className="max-w-4xl mx-auto text-center flex flex-col items-center relative">
@@ -141,14 +144,25 @@ export function BenefitStackSection() {
                     </span>
 
                     <h2 className="font-nohemi font-medium text-2xl md:text-4xl lg:text-5xl leading-[1.2] tracking-tight block w-full text-center">
-                        {paragraphs.map((lines, i) => (
-                            <TextRevealParagraph
-                                key={i}
-                                lines={lines}
-                                amberWords={amberWords}
-                                dimWords={dimWords}
-                            />
-                        ))}
+                        {paragraphs.map((lines, i) => {
+                            const offsetDown = lineCountSoFar;
+                            const offsetUp = allParagraphsLength - lineCountSoFar - lines.length;
+
+                            const offset = scrollDirection === "down" ? offsetDown : offsetUp;
+
+                            lineCountSoFar += lines.length;
+
+                            return (
+                                <TextRevealParagraph
+                                    key={i}
+                                    lines={lines}
+                                    amberWords={amberWords}
+                                    dimWords={dimWords}
+                                    globalLineOffset={offset}
+                                    scrollDirection={scrollDirection}
+                                />
+                            );
+                        })}
                     </h2>
                 </div>
             </div>
@@ -272,9 +286,11 @@ function BenefitCard({ benefit, index, isHovered, setHovered, scrollDirection }:
 
             {/* 3. The isolated card outline: Lightweight inset shadow approach */}
             <div
-                className="absolute inset-px pointer-events-none opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-10"
+                className="absolute inset-px pointer-events-none opacity-100 group-hover/card:opacity-100 transition-opacity duration-500 z-10"
                 style={{
-                    boxShadow: `inset 0 0 0 1px ${benefit.color}60, inset 0 0 20px ${benefit.color}20`
+                    boxShadow: isHovered
+                        ? `inset 0 0 0 1px ${benefit.color}60, inset 0 0 20px ${benefit.color}20`
+                        : `inset 0 0 0 1px rgba(255,255,255,0.03)`
                 }}
             />
 
@@ -286,13 +302,22 @@ function BenefitCard({ benefit, index, isHovered, setHovered, scrollDirection }:
                 }}
             />
 
+            {/* Corner Alignment Marks (Positioned to center inside a global grid cell)
+
+                The global grid is 50px (mobile), 75px (tablet), 100px (desktop).
+                To sit "inside the center of a cell", we offset them down and inwards.
+                Given a 100px grid on desktop, 50px offset places it dead center of the first available top-left cell.
+            */}
+            <div className="absolute bottom-[25px] right-[25px] md:bottom-[37.5px] md:right-[37.5px] lg:bottom-[50px] lg:right-[50px] w-1 h-1 bg-white/[0.25] pointer-events-none z-10 transition-colors duration-500 group-hover/card:bg-[#f5a524] translate-x-1/2 translate-y-1/2" />
+
             {/* Technical Header */}
             <div className="flex justify-between items-start relative z-10">
                 <div className="flex flex-col gap-2">
                     <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: "#f5a524" }}>
                         <span className="opacity-60">//</span> 0{index + 1}
                     </span>
-                    <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-white group-hover/card:text-white transition-colors duration-300">
+                    <div className="h-px bg-white/[0.15] w-24 my-2" />
+                    <h3 className="font-nohemi font-medium text-2xl lg:text-3xl text-transparent bg-clip-text bg-gradient-to-b from-white from-[40%] to-zinc-700 group-hover/card:to-white transition-all duration-300">
                         {benefit.title}
                     </h3>
                 </div>
@@ -303,7 +328,7 @@ function BenefitCard({ benefit, index, isHovered, setHovered, scrollDirection }:
             </div>
 
             {/* Annotation copy */}
-            <p className="font-body type-functional-light text-sm md:text-base text-zinc-300 opacity-80 leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-white group-hover/card:opacity-100 transition-all duration-500">
+            <p className="font-body type-functional-light text-sm md:text-base text-zinc-400 opacity-70 leading-relaxed max-w-sm whitespace-pre-line relative z-10 group-hover/card:text-zinc-200 group-hover/card:opacity-100 transition-all duration-500">
                 {benefit.description}
             </p>
         </div>

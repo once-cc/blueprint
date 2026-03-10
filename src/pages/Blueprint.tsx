@@ -168,6 +168,10 @@ export default function Blueprint() {
           >
             <div className="absolute inset-0 bg-background/60 md:bg-background/40 z-10 pointer-events-none" /> {/* Dimming overlay for text legibility */}
 
+            {/* Top gradient mask blending video to background at top for mobile */}
+            {/* The from-45% via-65% ensures the solid black background reaches far enough down to completely obscure the hard video edge before fading */}
+            <div className="absolute top-0 left-0 right-0 h-[65vh] md:h-[30vh] bg-gradient-to-b from-background from-[45%] via-background/80 via-[65%] to-transparent z-10 pointer-events-none md:hidden" />
+
             <video
               ref={videoRef}
               src={heroVideo}
