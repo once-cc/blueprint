@@ -99,19 +99,19 @@ export const FrameworkMobileCard = ({ index, step, isLast }: FrameworkMobileCard
                             <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/20 rounded-br-[inherit]" />
                         </motion.div>
 
-                        {/* BACKGROUND IMAGE */}
-                        <motion.div
-                            className="absolute inset-0"
-                            {...(isInView ? fadeIn(0) : { initial: { opacity: 0 } })}
-                        >
+                        {/* BACKGROUND IMAGE — no fade; card-level motion handles reveal */}
+                        <div className="absolute inset-0">
                             <img
-                                src={step.imageUrl}
+                                src={step.mobileImageUrl}
+                                srcSet={`${step.mobileImageUrl} 1170w, ${step.imageUrl} 5504w`}
+                                sizes="100vw"
                                 alt={step.title}
-                                loading="lazy"
                                 decoding="async"
+                                width={1170}
+                                height={653}
                                 className="w-full h-full object-cover"
                             />
-                        </motion.div>
+                        </div>
 
                         {/* GRADIENT SCRIMS */}
                         <div className="absolute inset-0 bg-black/30 mix-blend-multiply" />

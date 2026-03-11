@@ -235,6 +235,23 @@ const Card = React.memo(({ item, index, x, isMobile, windowWidth }: { item: Capa
     }
   };
 
+  // Content panel variant — shadow lifts on enter, sinks flat on exit
+  const contentPanelContainer = {
+    hidden: {
+      opacity: 0.85,
+      boxShadow: "inset 0 0 0 1px rgba(255,255,255,0), 0 0px 0px rgba(0,0,0,0)"
+    },
+    visible: {
+      opacity: 1,
+      boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.03), 0 3px 8px rgba(0,0,0,0.6)",
+      transition: {
+        staggerChildren: 0.04,
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
   const staggerItem = {
     hidden: { opacity: 0.7, y: 2 },
     visible: {
@@ -247,7 +264,7 @@ const Card = React.memo(({ item, index, x, isMobile, windowWidth }: { item: Capa
   return (
     <motion.div
       ref={cardRef}
-      className="flex-shrink-0 w-[680px] md:w-[750px] relative flex items-stretch overflow-hidden bg-[#1C1C1E] border border-white/5 rounded-[24px] select-none px-8 pb-8 pt-3 [content-visibility:auto] [contain-intrinsic-size:680px_350px] md:[contain-intrinsic-size:750px_350px]"
+      className="flex-shrink-0 w-[680px] md:w-[750px] relative flex items-stretch overflow-hidden bg-[#1C1C1E] border border-white/5 rounded-[24px] select-none px-8 py-6 [content-visibility:auto] [contain-intrinsic-size:680px_350px] md:[contain-intrinsic-size:750px_350px]"
       style={{
         z,
         rotateY,
@@ -320,8 +337,12 @@ const Card = React.memo(({ item, index, x, isMobile, windowWidth }: { item: Capa
             </div>
             {item.image ? (
               <img
-                src={item.image}
+                src={item.mobileImage}
+                srcSet={`${item.mobileImage} 900w, ${item.image} 3375w`}
+                sizes="(max-width: 767px) 300px, 350px"
                 alt={item.systemName}
+                width={900}
+                height={1200}
                 className="absolute inset-0 w-full h-full object-cover"
                 draggable={false}
               />
@@ -338,7 +359,7 @@ const Card = React.memo(({ item, index, x, isMobile, windowWidth }: { item: Capa
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "0px -40% 0px -40%", once: false, amount: "some" }}
-          variants={staggerContainer}
+          variants={contentPanelContainer}
           style={{ transform: "translateZ(20px)" }}
         >
           <ArtifactMetadataSpine item={item} isEnhanced={item.isEnhancedArtifact} staggerItem={staggerItem} />

@@ -1,13 +1,46 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { GridSection } from "@/components/ui/grid-section";
 import { TextRevealParagraph } from "@/components/ui/TextRevealParagraph";
+import { processSteps } from "@/data/blueprint";
 const noiseTexture = "/noise/noise.png";
+
+// ═══════════════════════════════════════════════════════════════
+// Preload next-section (Framework) images when Scrollytell enters
+// viewport. On mobile, preloads the small 1170px variants; desktop
+// gets the full 5504px originals. Fires once via IntersectionObserver.
+// ═══════════════════════════════════════════════════════════════
+function usePreloadFrameworkImages(ref: React.RefObject<HTMLElement | null>) {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    const isMobile = window.innerWidth < 768;
+                    processSteps.forEach((step) => {
+                        const img = new Image();
+                        img.src = isMobile ? step.mobileImageUrl : step.imageUrl;
+                    });
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: "200px 0px 200px 0px" }
+        );
+
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [ref]);
+}
 
 export function ScrollytellSection() {
     const containerRef = useRef<HTMLElement>(null);
     const { scrollY } = useScroll();
     const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+
+    // Preload framework images early so they're cached before user reaches them
+    usePreloadFrameworkImages(containerRef);
 
     useMotionValueEvent(scrollY, "change", (current) => {
         const diff = current - scrollY.getPrevious()!;

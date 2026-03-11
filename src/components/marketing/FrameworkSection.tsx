@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { processSteps } from "@/data/blueprint";
 import { FrameworkDesktopCard } from "@/components/marketing/FrameworkDesktopCard";
 import { FrameworkMobileCard } from "@/components/marketing/FrameworkMobileCard";
@@ -48,27 +48,6 @@ function FrameworkMobile() {
 export function FrameworkSection() {
     const sectionRef = useRef<HTMLDivElement>(null);
 
-    // Preload framework images when section approaches viewport
-    useEffect(() => {
-        const el = sectionRef.current;
-        if (!el) return;
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    processSteps.forEach((step) => {
-                        const img = new Image();
-                        img.src = step.imageUrl;
-                    });
-                    observer.disconnect();
-                }
-            },
-            { rootMargin: "100% 0px 100% 0px" }
-        );
-
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
     return (
         // The z-0 stacking context restriction was removed so the global light rays (z-1) 
         // can flow between the section background and the cards. The cards are explicitly z-10.

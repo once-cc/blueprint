@@ -6,6 +6,7 @@ export interface CapabilityShowcase {
   description: string;
   features: string[];
   image: string;
+  mobileImage: string;
   glowColor?: string;
   isEnhancedArtifact?: boolean;
   artifactCapability?: { title: string, name: string };
@@ -22,6 +23,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "Every client gets a dedicated, secure portal. A single source of truth for assets, deliverables, and communication that elevates the standard of service and eliminates email chaos.",
     features: ["Real-time stage tracking", "Asset management", "Secure credential vault"],
     image: "/carousel-images/portfolio.webp",
+    mobileImage: "/carousel-images/portfolio-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -42,6 +44,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "A centralized command centre that aggregates every client signal, message, and milestone into a single sorted feed, allowing operators to prioritize action over administration.",
     features: ["Urgency-sorted signals", "Cross-portal aggregation", "Live status markers"],
     image: "/carousel-images/bk.webp",
+    mobileImage: "/carousel-images/bk-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -62,6 +65,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "The welcome dashboard sets the tone from day one. Clients see exactly where their project stands, what's expected of them, and what happens next — reducing friction and anxiety.",
     features: ["Milestone progression", "Analog time/location sync", "Clear next actions"],
     image: "/carousel-images/portal.webp",
+    mobileImage: "/carousel-images/portal-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -82,6 +86,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "A scheduling interface built specifically for high-ticket service delivery, integrating strategic milestones directly into the operational calendar alongside key performance metrics.",
     features: ["Capacity KPIs", "Service-tier color coding", "Integrated booking"],
     image: "/carousel-images/consultant.webp",
+    mobileImage: "/carousel-images/consultant-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -102,6 +107,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "Our infrastructure includes pre-built, variable-driven email templates and automation sequences that trigger based on client lifecycle stages, ensuring nothing falls through the cracks.",
     features: ["Dynamic merge variables", "Live client preview", "Stage-based triggers"],
     image: "/carousel-images/podcast.webp",
+    mobileImage: "/carousel-images/podcast-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -122,6 +128,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "The technology is just the vehicle; the strategic framework is the engine. Every piece of infrastructure we deploy is rooted in a tested process for digital excellence and growth.",
     features: ["Clarify & Research", "Architect & Align", "Form & Test"],
     image: "/carousel-images/roofer.webp",
+    mobileImage: "/carousel-images/roofer-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -142,6 +149,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "A frictionless booking interface that integrates directly with service tiers, availability logic, and payment gateways — turning interest into confirmed engagements without manual follow-up.",
     features: ["Service-tier selection", "Availability sync", "Deposit capture"],
     image: "/carousel-images/scheduling.webp",
+    mobileImage: "/carousel-images/scheduling-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -162,6 +170,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "A performance analytics layer that surfaces conversion funnels, engagement heatmaps, and ROI attribution across every client touchpoint — giving operators the clarity to iterate with precision.",
     features: ["Funnel analytics", "Engagement heatmaps", "ROI attribution"],
     image: "/carousel-images/legal.webp",
+    mobileImage: "/carousel-images/legal-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",
@@ -182,6 +191,7 @@ export const capabilityShowcase: CapabilityShowcase[] = [
     description: "Purpose-built landing pages designed around conversion psychology and technical performance. Every element — from load speed to CTA placement — is architecturally optimized for results.",
     features: ["A/B testing ready", "Speed-optimized builds", "Conversion-first layouts"],
     image: "/carousel-images/re.webp",
+    mobileImage: "/carousel-images/re-mobile.webp",
     isEnhancedArtifact: true,
     artifactCapability: {
       title: "CAPABILITY",

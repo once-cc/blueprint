@@ -12,8 +12,11 @@ import { BenefitStackSection } from "@/components/marketing/BenefitStackSection"
 import { VisionIntent } from "@/components/marketing/VisionIntent";
 import { FooterReveal } from "@/components/marketing/FooterReveal";
 const heroVideo = "/hero2.webm";
+const heroVideoMobile = "/hero2-mobile.webm";
 const heroPoster = "/hero-static.webp";
+const heroPosterMobile = "/hero-static-mobile.webp";
 const footerBg = "/footer.webp";
+const footerBgMobile = "/footer-mobile.webp";
 import { GridSection } from "@/components/ui/grid-section";
 import { Crosshair } from "@/components/ui/crosshair";
 import { AnimatedButtonIcon } from "@/components/ui/AnimatedButtonIcon";
@@ -31,6 +34,8 @@ export default function Blueprint() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [forceReveal, setForceReveal] = useState(false);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [showFooterRails, setShowFooterRails] = useState(false);
+  const testimonialsRef = useRef<HTMLElement>(null);
 
   // Footer pinning state
   const [footerHeight, setFooterHeight] = useState(0);
@@ -93,6 +98,24 @@ export default function Blueprint() {
     if (videoRef.current && videoRef.current.readyState >= 3) {
       setIsVideoLoaded(true);
     }
+  }, []);
+
+  // Defer footer grid rails until user scrolls near the testimonials
+  useEffect(() => {
+    if (!testimonialsRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowFooterRails(true);
+          observer.disconnect(); // Only need to fire once
+        }
+      },
+      { rootMargin: '0px 0px 300px 0px' } // Trigger 300px before section enters view
+    );
+
+    observer.observe(testimonialsRef.current);
+    return () => observer.disconnect();
   }, []);
 
   // Performance Optimization: Pause hero video when scrolled out of view natively
@@ -174,8 +197,8 @@ export default function Blueprint() {
 
             <video
               ref={videoRef}
-              src={heroVideo}
-              poster={heroPoster}
+              src={window.innerWidth < 768 ? heroVideoMobile : heroVideo}
+              poster={window.innerWidth < 768 ? heroPosterMobile : heroPoster}
               autoPlay
               muted
               loop
@@ -295,7 +318,7 @@ export default function Blueprint() {
         {/* ═══════════════════════════════════════════════════════════════ */}
 
         {/* Restored top/bottom padding to ensure the footer reveal has enough scroll track to function properly */}
-        <GridSection className="pt-16 pb-20 md:pt-24 md:pb-32 bg-background z-20 relative">
+        <GridSection ref={testimonialsRef} className="pt-16 pb-20 md:pt-24 md:pb-32 bg-background z-20 relative">
           {/* Faint Global Editorial Grid */}
           <div className="absolute inset-0 bg-editorial-grid pointer-events-none" />
 
@@ -346,7 +369,10 @@ export default function Blueprint() {
         className={`fixed bottom-0 left-0 w-full bg-black -z-10 flex flex-col justify-end overflow-hidden transition-opacity duration-1000 ${isReady ? 'opacity-100' : 'opacity-0'}`}
       >
         {/* Architectural Schematic Grid for Footer (Reveals from underneath) */}
-        <div className="absolute inset-0 pointer-events-none flex justify-center h-full w-full z-10">
+        {/* Deferred until user scrolls near testimonials to prevent flashing on initial load */}
+        <div
+          className={`absolute inset-0 pointer-events-none flex justify-center h-full w-full z-10 transition-opacity duration-700 ${showFooterRails ? 'opacity-100' : 'opacity-0'}`}
+        >
           <div className="relative h-full w-full max-w-screen-2xl">
             {/* Vertical Frame Lines */}
             <div className="absolute top-0 bottom-0 left-0 w-px bg-white/5" />
@@ -361,8 +387,12 @@ export default function Blueprint() {
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-50 overflow-hidden">
           <img
-            src={footerBg}
+            src={footerBgMobile}
+            srcSet={`${footerBgMobile} 1170w, ${footerBg} 5504w`}
+            sizes="100vw"
             alt="Footer Background"
+            width={1170}
+            height={653}
             className="w-full h-full object-cover object-center"
           />
         </div>
