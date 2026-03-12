@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { BlueprintDiscovery, SALES_PERSONALITIES } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { Label } from '@/components/ui/label';
+import { ConfiguratorModuleTitle } from '@/components/ui/Typography';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
@@ -106,15 +107,15 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
             transition={{ delay: 0.2 }}
             className="space-y-3"
           >
-            <Label className="text-sm font-medium flex items-center gap-2 text-foreground">
+            <ConfiguratorModuleTitle className="mb-3 flex items-center gap-2">
               Primary CTA Button Label <span className="text-destructive">*</span>
               {discovery.ctaPrimaryLabel?.trim() && <CheckCircle2 className="w-4 h-4 text-accent" />}
-            </Label>
+            </ConfiguratorModuleTitle>
             <Input
               value={discovery.ctaPrimaryLabel || ''}
               onChange={(e) => onUpdate({ ctaPrimaryLabel: e.target.value })}
               placeholder="e.g., Book a Call, Get Started, Shop Now"
-              className="max-w-md text-sm"
+              className="max-w-md text-sm bg-card/95 dark:bg-zinc-950/90 border-border/40 dark:border-border/50 rounded-xl px-4 py-3 h-auto"
             />
           </motion.div>
 
@@ -125,15 +126,15 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
             transition={{ delay: 0.3 }}
             className="space-y-3"
           >
-            <Label className="text-sm font-medium text-foreground">
+            <ConfiguratorModuleTitle className="mb-3 flex items-center gap-2">
               CTA Strategy Notes
-              <span className="text-muted-foreground font-normal ml-2">(Optional)</span>
-            </Label>
+              <span className="text-muted-foreground font-normal normal-case tracking-normal ml-2">(Optional)</span>
+            </ConfiguratorModuleTitle>
             <Textarea
               value={discovery.ctaStrategyNotes || ''}
               onChange={(e) => onUpdate({ ctaStrategyNotes: e.target.value })}
               placeholder="Any specific thoughts on your conversion strategy..."
-              className="min-h-[100px] resize-none"
+              className="cfg-input min-h-[100px] resize-none text-sm bg-card/95 dark:bg-zinc-950/90 rounded-xl px-4 py-3 ring-0 ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           </motion.div>
         </div>

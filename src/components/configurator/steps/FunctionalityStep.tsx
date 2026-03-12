@@ -146,10 +146,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
         <div className="space-y-10">
           {/* Pages Grid */}
           <div>
-            <Label className="mb-4 text-sm font-medium flex items-center gap-2 text-foreground">
+            <ConfiguratorModuleTitle className="mb-4 flex items-center gap-2">
               Pages Required <span className="text-destructive">*</span>
               {selectedPages.length > 0 && <CheckCircle2 className="w-4 h-4 text-accent" />}
-            </Label>
+            </ConfiguratorModuleTitle>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {PAGE_OPTIONS.map((page, index) => {
                 const Icon = pageIcons[page] || Home;
@@ -196,7 +196,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
             className="space-y-4"
           >
             <div className="space-y-1">
-              <ConfiguratorModuleTitle className="text-foreground block text-center">
+              <ConfiguratorModuleTitle className="mb-4 block text-center">
                 Delivery Focus Areas
               </ConfiguratorModuleTitle>
               <ConfiguratorBody className="text-center">
@@ -293,6 +293,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                     onSelect={(id) => onUpdate({ timeline: id as BlueprintDeliver['timeline'] })}
                     variant="compact"
                     indicator="check"
+                    inlineDescription
                     index={index}
                   />
                 ))}
@@ -319,6 +320,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                     onSelect={(id) => onUpdate({ budget: id as BlueprintDeliver['budget'] })}
                     variant="compact"
                     indicator="check"
+                    inlineDescription
                     index={index}
                   />
                 ))}

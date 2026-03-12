@@ -3,9 +3,10 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { BlueprintDesign, BrandAsset, BrandAssetType } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { Label } from '@/components/ui/label';
+import { ConfiguratorModuleTitle } from '@/components/ui/Typography';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Minimize2, Film, Building2, Crown, Sparkles, Cpu, CheckCircle2, AlertCircle, Image as ImageIcon, LayoutGrid, List } from 'lucide-react';
+import { Minimize2, Film, Building2, Crown, Sparkles, Cpu, CheckCircle2, AlertCircle, Image as ImageIcon, LayoutGrid, List, Camera, PenTool, Package, Clapperboard, Circle } from 'lucide-react';
 import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation } from '../ui/animationConfig';
 import { BrandAssetListItem } from '../ui/BrandAssetListItem';
 import { BrandAssetGridItem } from '../ui/BrandAssetGridItem';
@@ -29,11 +30,11 @@ const visualStyles = [
 
 
 const imageryStyles = [
-  { value: 'photography', label: 'Photography', description: 'Real photos, human, authentic' },
-  { value: 'illustrations', label: 'Illustrations', description: 'Custom artwork, unique style' },
-  { value: 'product', label: 'Product Focus', description: 'Clean product shots, detail oriented' },
-  { value: 'cinematic', label: 'Cinematic', description: 'Film-like quality, moody lighting' },
-  { value: 'minimal', label: 'Minimal / Abstract', description: 'Simple shapes, clean forms' },
+  { value: 'photography', label: 'Photography', description: 'Real photos, human, authentic', icon: Camera },
+  { value: 'illustrations', label: 'Illustrations', description: 'Custom artwork, unique style', icon: PenTool },
+  { value: 'product', label: 'Product Focus', description: 'Clean product shots, detail oriented', icon: Package },
+  { value: 'cinematic', label: 'Cinematic', description: 'Film-like quality, moody lighting', icon: Clapperboard },
+  { value: 'minimal', label: 'Minimal / Abstract', description: 'Simple shapes, clean forms', icon: Circle },
 ] as const;
 
 export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
@@ -162,10 +163,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
-            <Label className="text-sm font-medium flex items-center gap-2 text-foreground">
+            <ConfiguratorModuleTitle className="mb-4 flex items-center gap-2">
               Overall Aesthetic <span className="text-destructive">*</span>
               {design.visualStyle && <CheckCircle2 className="w-4 h-4 text-accent" />}
-            </Label>
+            </ConfiguratorModuleTitle>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {visualStyles.map((style, index) => {
                 const Icon = style.icon;
@@ -196,9 +197,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
             transition={{ delay: 0.3 }}
             className="space-y-4"
           >
-            <Label className="text-sm font-medium text-foreground">Imagery Style</Label>
+            <ConfiguratorModuleTitle className="mb-4 block">Imagery Style</ConfiguratorModuleTitle>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {imageryStyles.map((style, index) => {
+                const Icon = style.icon;
                 const isSelected = design.imageryStyle === style.value;
 
                 return (
@@ -207,9 +209,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                     value={style.value}
                     label={style.label}
                     description={style.description}
+                    icon={<Icon className="w-5 h-5" />}
                     isSelected={isSelected}
                     onSelect={() => onUpdate({ imageryStyle: style.value })}
-                    variant="compact"
+                    variant="default"
                     indicator="check"
                     index={index}
                   />
@@ -227,7 +230,7 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <Label className="text-sm font-medium text-foreground uppercase tracking-wider">Brand Imagery <span className="text-muted-foreground font-normal normal-case">(Optional)</span></Label>
+                <ConfiguratorModuleTitle className="flex items-center gap-2">Brand Imagery <span className="text-muted-foreground font-normal normal-case tracking-normal">(Optional)</span></ConfiguratorModuleTitle>
                 <p className="text-xs text-muted-foreground mt-1">Upload approved brand images to be used in your build.</p>
               </div>
 

@@ -322,10 +322,10 @@ export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
 
                 {/* Font Weight Preference */}
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                  <ConfiguratorModuleTitle className="mb-4 flex items-center gap-2">
                     Font Weight Preference
                     {design.fontWeight && <CheckCircle2 className="w-4 h-4 text-accent" />}
-                  </Label>
+                  </ConfiguratorModuleTitle>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3" role="radiogroup" aria-label="Font Weight Preference">
                     {fontWeights.map((weight, index) => {
                       const isSelected = design.fontWeight === weight.value;

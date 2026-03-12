@@ -20,6 +20,7 @@ export interface ConfiguratorOptionProps {
 
   variant?: ConfiguratorOptionVariant;
   indicator?: ConfiguratorOptionIndicator;
+  inlineDescription?: boolean;
   index?: number;
 }
 
@@ -33,6 +34,7 @@ export function ConfiguratorOption({
   onSelect,
   variant = 'default',
   indicator = 'check',
+  inlineDescription = false,
   index = 0,
 }: ConfiguratorOptionProps) {
 
@@ -139,7 +141,7 @@ export function ConfiguratorOption({
         {/* Content Body */}
         <div className={cn(
           "flex-1 min-w-0 flex",
-          isCompact ? "flex-col gap-0.5" : "flex-col justify-center"
+          inlineDescription ? "flex-row items-baseline gap-2" : isCompact ? "flex-col gap-0.5" : "flex-col justify-center"
         )}>
           <motion.h3
             animate={getContentShift(isSelected)}
@@ -158,7 +160,8 @@ export function ConfiguratorOption({
               // Colors
               isSelected && (isChip || isMinimal || isCompact) ? 'text-accent' : 'text-foreground/90',
               !isSelected && (isChip || isMinimal) && 'text-muted-foreground group-hover:text-foreground',
-              isDisabled && 'text-muted-foreground'
+              isDisabled && 'text-muted-foreground',
+              inlineDescription && 'shrink-0'
             )}
           >
             {label}
@@ -172,9 +175,11 @@ export function ConfiguratorOption({
                 'text-muted-foreground transition-colors',
                 variant === 'default' && 'text-sm mt-1',
                 isCompact && 'text-xs',
-                isSelected && isCompact && 'text-accent/80'
+                isSelected && isCompact && 'text-accent/80',
+                inlineDescription && 'mt-0 text-xs'
               )}
             >
+              {inlineDescription && <span className={cn("mx-2", isSelected ? "text-accent/60" : "text-muted-foreground/40")}>•</span>}
               <span>{description}</span>
             </motion.p>
           )}

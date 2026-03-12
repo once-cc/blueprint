@@ -88,7 +88,7 @@ export function ConfiguratorDropdown({
     <div className={cn("space-y-2", className)}>
       {/* Label */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="text-[11px] sm:text-xs font-raela font-medium uppercase tracking-[0.2em] text-foreground/80">{label}</span>
         {required && !hasSelection && (
           <span className="text-destructive ml-1">*</span>
         )}
@@ -108,16 +108,17 @@ export function ConfiguratorDropdown({
         <PopoverTrigger asChild>
           <motion.button
             type="button"
-            whileHover={{ scale: 1.005, y: -1 }}
             whileTap={{ scale: 0.995 }}
             transition={springConfig}
             className={cn(
               'w-full flex items-center justify-between p-4 rounded-xl text-left',
-              'transition-all duration-[220ms] ease-out cfg-surface',
-              'border bg-card dark:bg-zinc-950',
+              'bg-card/95 dark:bg-zinc-950/90',
+              'shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)]',
+              'transition-[box-shadow,transform,border-color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+              'border',
               hasSelection
-                ? 'border-accent/50 cfg-surface-selected'
-                : 'border-border/40 dark:border-border/50 hover:border-accent/40 hover:bg-accent/5'
+                ? 'border-accent/50'
+                : 'border-[hsl(220_12%_12%_/_0.6)] hover:border-accent/40'
             )}
           >
             <div className="flex flex-col items-start gap-1 min-w-0 flex-1">
