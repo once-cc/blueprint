@@ -241,7 +241,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             className="space-y-6"
           >
             {/* Arc Selector */}
-            <ConfiguratorCardSurface className="relative max-w-lg mx-auto overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="relative max-w-lg mx-auto overflow-hidden">
               <ConfiguratorCardHeader title="Color Logic" metaLabel="SYS.RELATION" delay={0.1} />
               <div className="w-full h-full flex flex-col items-center pt-16 pb-6 px-6">
                 <div className="relative w-[384px] h-[180px] overflow-visible">
@@ -339,7 +339,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.15 }}
             className="space-y-4"
           >
-            <ConfiguratorCardSurface className="max-w-lg mx-auto relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="max-w-lg mx-auto relative overflow-hidden">
               <ConfiguratorCardHeader title="Base Hue" metaLabel="SYS.BASE_HUE" delay={0.15} />
               <div className="w-full h-full pt-18 sm:pt-16 pb-4 sm:pb-6 px-5 sm:px-6">
                 {/* Desktop: original horizontal layout */}
@@ -481,7 +481,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             transition={{ delay: 0.2 }}
             className="space-y-3 sm:space-y-4"
           >
-            <ConfiguratorCardSurface className="max-w-3xl mx-auto relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="max-w-3xl mx-auto relative overflow-hidden">
               <ConfiguratorCardHeader
                 title="Generated Palette"
                 metaLabel="SYS.PALETTE"
@@ -753,7 +753,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
             <div className="space-y-8">
               {/* Energy Slider */}
               <div className="w-full text-center">
-                <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+                <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
                   <ConfiguratorCardHeader title="Energy" metaLabel="SYS.ENERGY" delay={0.3} />
                   <div className="w-full h-full pt-16 pb-4 px-8">
                     <VoiceAxisSlider
@@ -769,7 +769,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
 
               {/* Contrast Slider */}
               <div className="w-full text-center">
-                <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+                <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
                   <ConfiguratorCardHeader title="Contrast" metaLabel="SYS.CONTRAST" delay={0.35} />
                   <div className="w-full h-full pt-16 pb-4 px-8">
                     <VoiceAxisSlider

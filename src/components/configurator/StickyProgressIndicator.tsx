@@ -29,7 +29,7 @@ export function StickyProgressIndicator({
       className="fixed bottom-6 right-6 z-50"
     >
       <motion.div 
-        className="relative flex items-center justify-center bg-card/80 backdrop-blur-md rounded-full shadow-lg border border-border/50"
+        className="relative flex items-center justify-center bg-card/95 rounded-full shadow-lg border border-border/50"
         animate={isComplete ? { scale: [1, 1.15, 1] } : { scale: 1 }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >

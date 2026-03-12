@@ -14,7 +14,7 @@ import { StepLayout } from './StepLayout';
 import { ConfiguratorCardHeader } from './ui/ConfiguratorCardHeader';
 import { VideoLogo } from '@/components/ui/VideoLogo';
 import { Crosshair } from '@/components/ui/crosshair';
-import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { ConfiguratorAct } from '@/types/blueprint';
 import { useNavigate } from 'react-router-dom';
 import { preloadTypographyFonts } from '@/utils/fontPreloader';
@@ -64,6 +64,7 @@ export function BlueprintConfigurator() {
   const [showDreamTooltip, setShowDreamTooltip] = useState(false);
   const [isDreamIntentEditing, setIsDreamIntentEditing] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const [splashTimedOut, setSplashTimedOut] = useState(false);
   const navigate = useNavigate();
   const { scrollTo } = useLenisScroll();
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -72,6 +73,16 @@ export function BlueprintConfigurator() {
   useEffect(() => {
     preloadTypographyFonts();
   }, []);
+
+  // Escape hatch: if splash is still showing after 8s, surface a retry option
+  useEffect(() => {
+    if (!isLoading && blueprint) {
+      setSplashTimedOut(false);
+      return;
+    }
+    const timer = setTimeout(() => setSplashTimedOut(true), 8000);
+    return () => clearTimeout(timer);
+  }, [isLoading, blueprint]);
 
   // Show tooltip on step 1 after a brief delay
   useEffect(() => {
@@ -291,6 +302,32 @@ export function BlueprintConfigurator() {
                 />
                 <VideoLogo size="lg" />
               </div>
+
+              {/* Timeout escape hatch — surfaces after 8s of unresolved loading */}
+              <AnimatePresence>
+                {splashTimedOut && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 12 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-10 flex flex-col items-center gap-4"
+                  >
+                    <p className="text-sm text-muted-foreground/70 text-center max-w-[260px] leading-relaxed">
+                      Taking longer than expected.
+                      <br />
+                      <span className="text-muted-foreground/40">This is usually a connection issue.</span>
+                    </p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium text-white/80 border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-accent/30 transition-all duration-300 active:scale-95"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      Tap to Retry
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </motion.div>
         )}
@@ -413,7 +450,7 @@ export function BlueprintConfigurator() {
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="relative bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm rounded-xl border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] overflow-hidden"
+                className="relative bg-card/95 dark:bg-zinc-950/90 rounded-xl border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] overflow-hidden"
               >
                 {/* Warm gold radial glow from bottom */}
                 <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />

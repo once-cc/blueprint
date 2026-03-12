@@ -32,7 +32,7 @@ export function ConfiguratorCardSurface({
 
   const baseClasses = cn(
     // Base surface - Machined Inset Plate Effect
-    'relative bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm rounded-xl',
+    'relative bg-card/95 dark:bg-zinc-950/90 rounded-xl',
     'shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)]',
 
     // Border - quiet, theme-aware (Precision 1px)
@@ -55,7 +55,7 @@ export function ConfiguratorCardSurface({
   );
 
   const hoverAnimation = isHoverable && !disabled
-    ? { y: -1, transition: { duration: 0.22, ease: 'easeOut' } }
+    ? { y: -4, scale: 1.01, transition: { duration: 0.22, ease: 'easeOut' } }
     : undefined;
 
   const tapAnimation = isHoverable && !disabled

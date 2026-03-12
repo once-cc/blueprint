@@ -9,6 +9,7 @@ import { Minimize2, Film, Building2, Crown, Sparkles, Cpu, CheckCircle2, AlertCi
 import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation } from '../ui/animationConfig';
 import { BrandAssetListItem } from '../ui/BrandAssetListItem';
 import { BrandAssetGridItem } from '../ui/BrandAssetGridItem';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 
 interface VisualStyleStepProps {
   design: BlueprintDesign;
@@ -171,47 +172,18 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                 const isSelected = design.visualStyle === style.value;
 
                 return (
-                  <motion.button
+                  <ConfiguratorOption
                     key={style.value}
-                    type="button"
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ ...springConfig, delay: 0.05 * index }}
-                    whileHover={{ ...cardHover, transition: springConfig }}
-                    whileTap={{ ...cardTap, transition: springConfig }}
-                    onClick={() => onUpdate({ visualStyle: style.value })}
-                    className={cn(
-                      'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm text-left group',
-                      isSelected
-                        ? 'border-accent/50 cfg-surface-selected shadow-[0_0_20px_hsl(var(--accent)/0.2)]'
-                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
-                    )}
-                  >
-                    <motion.div
-                      animate={{ ...getContentShift(isSelected), ...getIconAnimation(isSelected) }}
-                      transition={springConfig}
-                      className={cn(
-                        'w-7 h-7 rounded-md flex items-center justify-center mb-2 transition-colors',
-                        isSelected ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground group-hover:text-foreground'
-                      )}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </motion.div>
-                    <motion.h4
-                      animate={getContentShift(isSelected)}
-                      transition={springConfig}
-                      className="font-medium text-foreground text-sm mb-1"
-                    >
-                      {style.label}
-                    </motion.h4>
-                    <motion.p
-                      animate={getContentShift(isSelected)}
-                      transition={springConfig}
-                      className="text-xs text-muted-foreground"
-                    >
-                      {style.description}
-                    </motion.p>
-                  </motion.button>
+                    value={style.value}
+                    label={style.label}
+                    description={style.description}
+                    icon={<Icon className="w-5 h-5" />}
+                    isSelected={isSelected}
+                    onSelect={() => onUpdate({ visualStyle: style.value })}
+                    variant="default"
+                    indicator="check"
+                    index={index}
+                  />
                 );
               })}
             </div>
@@ -230,37 +202,17 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                 const isSelected = design.imageryStyle === style.value;
 
                 return (
-                  <motion.button
+                  <ConfiguratorOption
                     key={style.value}
-                    type="button"
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ ...springConfig, delay: 0.05 * index }}
-                    whileHover={{ ...cardHover, transition: springConfig }}
-                    whileTap={{ ...cardTap, transition: springConfig }}
-                    onClick={() => onUpdate({ imageryStyle: style.value })}
-                    className={cn(
-                      'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm text-left group',
-                      isSelected
-                        ? 'border-accent/50 cfg-surface-selected shadow-[0_0_20px_hsl(var(--accent)/0.2)]'
-                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
-                    )}
-                  >
-                    <motion.h4
-                      animate={getContentShift(isSelected)}
-                      transition={springConfig}
-                      className="font-medium text-foreground text-sm mb-1"
-                    >
-                      {style.label}
-                    </motion.h4>
-                    <motion.p
-                      animate={getContentShift(isSelected)}
-                      transition={springConfig}
-                      className="text-xs text-muted-foreground hidden sm:block"
-                    >
-                      {style.description}
-                    </motion.p>
-                  </motion.button>
+                    value={style.value}
+                    label={style.label}
+                    description={style.description}
+                    isSelected={isSelected}
+                    onSelect={() => onUpdate({ imageryStyle: style.value })}
+                    variant="compact"
+                    indicator="check"
+                    index={index}
+                  />
                 );
               })}
             </div>
@@ -317,8 +269,8 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                   {/* Upload Zone */}
                   <div
                     className={cn(
-                      "relative border border-dashed rounded-xl py-10 px-6 flex flex-col items-center justify-center transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm cursor-pointer overflow-hidden",
-                      isDragging ? "border-accent bg-accent/5" : "border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90"
+                      "relative border border-dashed rounded-xl py-10 px-6 flex flex-col items-center justify-center transition-[box-shadow,border-color] duration-[220ms] ease-out cfg-surface bg-card/95 dark:bg-zinc-950/90 cursor-pointer overflow-hidden",
+                      isDragging ? "border-accent bg-accent/5" : "border-border/40 dark:border-border/50 hover:border-border"
                     )}
                     onDragOver={handleDragOver}
                     onDragEnter={handleDragOver}

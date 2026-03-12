@@ -3,15 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BlueprintDesign } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { springConfig } from '../ui/animationConfig';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
+import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
 import { UploadCloud, FileText, AlertCircle, Trash2, CheckCircle2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ConfiguratorModuleTitle, ConfiguratorHelper } from '@/components/ui/Typography';
 
-interface TypographyMotionStepProps {
+interface TypographyStepProps {
   design: BlueprintDesign;
   onUpdate: (updates: Partial<BlueprintDesign>) => void;
   onBack: () => void;
@@ -29,8 +29,8 @@ export type WeightPrefTargets = {
   bold: { h1: number; h2: number; h3: number; h4: number; body: number };
 };
 
-export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionStepProps>(
-  function TypographyMotionStep({
+export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
+  function TypographyStep({
     design,
     onUpdate,
     onBack,
@@ -325,38 +325,24 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                     Font Weight Preference
                     {design.fontWeight && <CheckCircle2 className="w-4 h-4 text-accent" />}
                   </Label>
-                  <RadioGroup
-                    value={design.fontWeight}
-                    onValueChange={(value) => onUpdate({ fontWeight: value as BlueprintDesign['fontWeight'] })}
-                    className="grid grid-cols-2 md:grid-cols-4 gap-3"
-                  >
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3" role="radiogroup" aria-label="Font Weight Preference">
                     {fontWeights.map((weight, index) => {
                       const isSelected = design.fontWeight === weight.value;
                       return (
-                        <motion.div
+                        <ConfiguratorCardSurface
                           key={weight.value}
-                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{ ...springConfig, delay: 0.03 * index }}
-                          whileHover={{ scale: 1.02, transition: springConfig }}
-                          whileTap={{ scale: 0.98, transition: springConfig }}
+                          as="button"
+                          onClick={() => onUpdate({ fontWeight: weight.value as BlueprintDesign['fontWeight'] })}
+                          isSelected={isSelected}
+                          animateEntry={true}
+                          entryDelay={0.03 * index}
+                          className="flex items-center justify-center gap-2 p-4 text-center group cursor-pointer"
                         >
-                          <Label
-                            htmlFor={weight.value}
-                            className={cn(
-                              'flex items-center justify-center gap-2 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm cursor-pointer text-center group',
-                              isSelected
-                                ? 'border-accent/50 cfg-surface-selected text-foreground'
-                                : 'border-border/40 dark:border-border/50 text-muted-foreground hover:text-foreground hover:border-border hover:bg-card/90'
-                            )}
-                          >
-                            <RadioGroupItem value={weight.value} id={weight.value} className="sr-only" />
-                            <motion.span animate={{ x: isSelected ? 2 : 0 }} transition={springConfig} className="text-sm font-medium">{weight.label}</motion.span>
-                          </Label>
-                        </motion.div>
+                          <motion.span animate={{ x: isSelected ? 2 : 0 }} transition={springConfig} className={cn("text-sm font-medium transition-colors", isSelected ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground')}>{weight.label}</motion.span>
+                        </ConfiguratorCardSurface>
                       );
                     })}
-                  </RadioGroup>
+                  </div>
                 </div>
               </motion.div>
             ) : (
@@ -371,8 +357,8 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                 {/* Upload Zone */}
                 <div
                   className={cn(
-                    "relative border border-dashed rounded-xl py-10 px-6 flex flex-col items-center justify-center transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm cursor-pointer overflow-hidden",
-                    isDragging ? "border-accent bg-accent/5" : "border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90"
+                    "relative border border-dashed rounded-xl py-10 px-6 flex flex-col items-center justify-center transition-all duration-[220ms] ease-out cfg-surface bg-card/95 dark:bg-zinc-950/90 cursor-pointer overflow-hidden",
+                    isDragging ? "border-accent bg-accent/5" : "border-border/40 dark:border-border/50 hover:border-border"
                   )}
                   onDragOver={handleDragOver}
                   onDragEnter={handleDragOver}
@@ -409,7 +395,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                     <ConfiguratorModuleTitle className="text-foreground/80 block">Uploaded Files</ConfiguratorModuleTitle>
                     <div className="grid gap-3">
                       {files.map(file => (
-                        <div key={file.id} className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90 overflow-x-auto min-w-0">
+                        <div key={file.id} className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/95 dark:bg-zinc-950/90 border-border/40 dark:border-border/50 hover:border-border overflow-x-auto min-w-0">
                           <div className="flex items-center gap-3 shrink-0">
                             <div className="w-8 h-8 rounded-md bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                               <FileText className="w-4 h-4 text-muted-foreground" />
@@ -485,7 +471,7 @@ export const TypographyMotionStep = forwardRef<HTMLDivElement, TypographyMotionS
                                   ease: [0.22, 1, 0.36, 1],
                                 }}
                               >
-                                <div className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90 overflow-x-auto min-w-0">
+                                <div className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/95 dark:bg-zinc-950/90 border-border/40 dark:border-border/50 hover:border-border overflow-x-auto min-w-0">
                                   <div className="flex flex-col shrink-0">
                                     <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2 whitespace-nowrap">
                                       {labels[roleKey]}

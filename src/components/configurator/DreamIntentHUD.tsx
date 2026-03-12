@@ -88,7 +88,7 @@ export function DreamIntentHUD({
           onClick={() => setIsEditing(true)}
           className={`
             flex items-center rounded-full
-            bg-background/80 backdrop-blur-md border border-border/50
+            bg-background/95 border border-border/50
             hover:bg-muted/50 transition-colors duration-300
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background
             ${isMobile ? 'gap-1.5 px-3 py-1.5' : 'gap-2 px-4 py-2'}
@@ -133,7 +133,7 @@ export function DreamIntentHUD({
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="relative bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm rounded-xl border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] overflow-hidden"
+            className="relative bg-card/95 dark:bg-zinc-950/90 rounded-xl border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] overflow-hidden"
           >
             {/* Warm gold radial glow from bottom */}
             <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />

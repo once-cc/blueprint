@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { forwardRef } from 'react';
 import { PrimaryPurpose } from '@/types/blueprint';
 import { PURPOSE_OPTIONS } from '../data/foundationsData';
-import { PurposeCard } from '../ui/PurposeCard';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
 import { MotionConfiguratorQuestion, MotionConfiguratorBody, MotionConfiguratorHelper } from '@/components/ui/Typography';
 
@@ -55,14 +55,15 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.05 }}
               >
-                <PurposeCard
+                <ConfiguratorOption
                   value={purpose.value}
                   label={purpose.label}
                   description={purpose.description}
                   icon={purpose.icon}
                   isSelected={selected === purpose.value}
                   onSelect={() => onSelect(purpose.value)}
-                  size="default"
+                  variant="default"
+                  indicator="border"
                 />
               </motion.div>
             ))}

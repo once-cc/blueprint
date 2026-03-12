@@ -47,7 +47,7 @@ export function BrandAssetGridItem({
                 layout="position"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="relative aspect-square rounded-xl transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90 overflow-hidden group"
+                className="relative aspect-square rounded-xl transition-all duration-[220ms] ease-out cfg-surface bg-card/95 dark:bg-zinc-950/90 border border-border/40 dark:border-border/50 hover:border-border overflow-hidden group"
             >
                 {/* Thumbnail */}
                 <img
@@ -69,7 +69,7 @@ export function BrandAssetGridItem({
 
                 {/* Drag Handle (Top Left) */}
                 <div
-                    className="absolute top-2 left-2 flex items-center justify-center w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none z-10"
+                    className="absolute top-2 left-2 flex items-center justify-center w-7 h-7 rounded-md bg-black/60 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none z-10"
                     onPointerDown={(e) => controls.start(e)}
                 >
                     <GripVertical className="w-4 h-4 pointer-events-none" />
@@ -82,7 +82,7 @@ export function BrandAssetGridItem({
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onTogglePrimary(asset.id); }}
                         className={cn(
-                            "flex items-center justify-center w-7 h-7 rounded-md backdrop-blur-sm transition-colors",
+                            "flex items-center justify-center w-7 h-7 rounded-md transition-colors",
                             asset.isPrimary
                                 ? "bg-accent/80 text-accent-foreground"
                                 : "bg-black/40 hover:bg-black/60 text-white"
@@ -94,7 +94,7 @@ export function BrandAssetGridItem({
                     <Button
                         variant="destructive"
                         size="icon"
-                        className="w-7 h-7 bg-red-500/80 hover:bg-red-500 text-white border-0 backdrop-blur-sm"
+                        className="w-7 h-7 bg-red-500/80 hover:bg-red-500 text-white border-0"
                         onClick={(e) => {
                             e.stopPropagation();
                             onRemove(asset.id);
@@ -113,7 +113,7 @@ export function BrandAssetGridItem({
                         >
                             <SelectTrigger
                                 className={cn(
-                                    "w-full h-8 text-xs bg-black/40 border-white/20 text-white hover:bg-black/60 backdrop-blur-md",
+                                    "w-full h-8 text-xs bg-black/60 border-white/20 text-white hover:bg-black/70",
                                     asset.type === 'unassigned' && "text-white/50"
                                 )}
                                 onClick={(e) => e.stopPropagation()}
@@ -147,14 +147,14 @@ export function BrandAssetGridItem({
                             onMouseDown={(e) => e.stopPropagation()}
                             onTouchStart={(e) => e.stopPropagation()}
                             placeholder="Add usage notes (optional)"
-                            className="min-h-[50px] h-[50px] text-xs resize-none w-full bg-black/40 border-white/20 text-white placeholder-white/50 focus-visible:ring-white/30 backdrop-blur-md"
+                            className="min-h-[50px] h-[50px] text-xs resize-none w-full bg-black/60 border-white/20 text-white placeholder-white/50 focus-visible:ring-white/30"
                         />
                     </div>
                 </div>
 
                 {/* Filename Badge (visible when not hovered) */}
                 <div className="absolute inset-x-2 bottom-2 opacity-100 group-hover:opacity-0 transition-opacity duration-300 flex justify-center pointer-events-none">
-                    <div className="bg-black/60 backdrop-blur-md rounded-full px-3 py-1 text-[10px] text-white/90 truncate max-w-full drop-shadow-md">
+                    <div className="bg-black/70 rounded-full px-3 py-1 text-[10px] text-white/90 truncate max-w-full drop-shadow-md">
                         {asset.filename}
                     </div>
                 </div>

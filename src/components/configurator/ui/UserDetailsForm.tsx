@@ -22,7 +22,7 @@ export function UserDetailsForm({ details, errors, onChange }: UserDetailsFormPr
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative p-6 rounded-2xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)]"
+            className="relative p-6 rounded-2xl overflow-hidden bg-card/95 dark:bg-zinc-950/90 border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)]"
         >
             {/* Top-down light */}
             <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.04),transparent_40%)]" />

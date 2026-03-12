@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation, checkSpring } from '../ui/animationConfig';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
 import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 
 interface ConversionGoalsLayerProps {
   availableGoals: ConversionGoalOption[];
@@ -93,64 +94,17 @@ export const ConversionGoalsLayer = forwardRef<HTMLDivElement, ConversionGoalsLa
               const isSelected = selected.includes(goal.value);
 
               return (
-                <motion.button
+                <ConfiguratorOption
                   key={goal.value}
-                  type="button"
-                  onClick={() => handleToggle(goal.value)}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ ...springConfig, delay: 0.2 + index * 0.03 }}
-                  className={cn(
-                    'group relative w-full text-left p-4 rounded-xl border transition-all duration-300',
-                    isSelected
-                      ? 'border-accent bg-accent/10 shadow-[0_0_20px_hsl(var(--accent)/0.15)]'
-                      : 'border-border/40 bg-card/50 hover:border-border hover:bg-card/80'
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    {/* Checkbox */}
-                    <motion.div
-                      animate={getIconAnimation(isSelected)}
-                      transition={springConfig}
-                      className={cn(
-                        'flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all',
-                        isSelected
-                          ? 'border-accent bg-accent'
-                          : 'border-muted-foreground/30 group-hover:border-muted-foreground/50'
-                      )}
-                    >
-                      {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={checkSpring}
-                        >
-                          <Check className="w-3 h-3 text-accent-foreground" />
-                        </motion.div>
-                      )}
-                    </motion.div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <motion.h3
-                        animate={{ x: isSelected ? 2 : 0 }}
-                        transition={springConfig}
-                        className="font-medium text-sm text-foreground"
-                      >
-                        {goal.label}
-                      </motion.h3>
-                      <motion.p
-                        animate={{ x: isSelected ? 2 : 0 }}
-                        transition={{ ...springConfig, delay: 0.02 }}
-                        className="text-xs text-muted-foreground mt-0.5"
-                      >
-                        {goal.description}
-                      </motion.p>
-                    </div>
-                  </div>
-                </motion.button>
+                  value={goal.value}
+                  label={goal.label}
+                  description={goal.description}
+                  isSelected={isSelected}
+                  onSelect={() => handleToggle(goal.value)}
+                  variant="compact"
+                  indicator="check"
+                  index={index}
+                />
               );
             })}
           </div>

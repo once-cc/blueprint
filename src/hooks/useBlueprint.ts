@@ -51,7 +51,6 @@ export function useBlueprint() {
       const storedId = localStorage.getItem(STORAGE_KEY);
       const storedToken = localStorage.getItem(SESSION_TOKEN_KEY);
       const storedDreamIntent = localStorage.getItem(DREAM_INTENT_KEY);
-      const authUser = (await supabase.auth.getUser()).data.user;
 
       // FALLBACK: If we have ID but no token, clear ALL storage and start fresh
       if (storedId && !storedToken) {
@@ -144,27 +143,52 @@ export function useBlueprint() {
       }
 
       // Create new blueprint via RPC (bypasses RLS read-back issue)
-      const { data, error } = await supabase
-        .rpc('create_blueprint')
-        .single();
+      // Wrapped in a 6-second timeout with one automatic retry to prevent
+      // permanent splash hangs on spotty mobile connections.
+      const createBlueprintWithTimeout = () =>
+        Promise.race([
+          supabase.rpc('create_blueprint').single(),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('create_blueprint timed out')), 6000)
+          ),
+        ]);
 
-      if (data && !error) {
-        localStorage.setItem(STORAGE_KEY, data.id);
-        localStorage.setItem(SESSION_TOKEN_KEY, data.session_token);
+      let rpcData: any = null;
+      let rpcError: any = null;
+
+      try {
+        const result = await createBlueprintWithTimeout();
+        rpcData = result.data;
+        rpcError = result.error;
+      } catch {
+        // First attempt failed or timed out — retry once
+        try {
+          const retryResult = await createBlueprintWithTimeout();
+          rpcData = retryResult.data;
+          rpcError = retryResult.error;
+        } catch {
+          rpcError = { message: 'Blueprint creation timed out after retry' };
+        }
+      }
+
+      if (rpcData && !rpcError) {
+        localStorage.setItem(STORAGE_KEY, rpcData.id);
+        localStorage.setItem(SESSION_TOKEN_KEY, rpcData.session_token);
 
         setBlueprint({
-          id: data.id,
+          id: rpcData.id,
           status: 'draft',
           dreamIntent: storedDreamIntent ?? undefined,
-          discovery: (data.discovery as BlueprintDiscovery) || {},
-          design: (data.design as BlueprintDesign) || {},
-          deliver: (data.deliver as BlueprintDeliver) || {},
-          currentStep: data.current_step,
-          createdAt: new Date(data.created_at),
-          updatedAt: new Date(data.updated_at),
+          discovery: (rpcData.discovery as BlueprintDiscovery) || {},
+          design: (rpcData.design as BlueprintDesign) || {},
+          deliver: (rpcData.deliver as BlueprintDeliver) || {},
+          currentStep: rpcData.current_step,
+          createdAt: new Date(rpcData.created_at),
+          updatedAt: new Date(rpcData.updated_at),
         });
         setSessionStatus({ hasExisting: false, confirmed: true });
       } else {
+        console.error('[Blueprint] create_blueprint failed:', rpcError);
         toast({
           title: 'Error',
           description: 'Failed to initialize blueprint. Please refresh.',

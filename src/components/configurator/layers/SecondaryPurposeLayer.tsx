@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { forwardRef } from 'react';
 import { PrimaryPurpose } from '@/types/blueprint';
 import { PURPOSE_OPTIONS } from '../data/foundationsData';
-import { PurposeCard } from '../ui/PurposeCard';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
@@ -98,14 +98,15 @@ export const SecondaryPurposeLayer = forwardRef<HTMLDivElement, SecondaryPurpose
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.05 }}
               >
-                <PurposeCard
+                <ConfiguratorOption
                   value={purpose.value}
                   label={purpose.label}
                   description={purpose.description}
                   icon={purpose.icon}
                   isSelected={selected.includes(purpose.value)}
                   onSelect={() => handleToggle(purpose.value)}
-                  size="compact"
+                  variant="compact"
+                  indicator="check"
                 />
               </motion.div>
             ))}

@@ -10,12 +10,12 @@ import { CTAEnergyStep } from './steps/CTAEnergyStep';
 const VisualStyleStep = lazy(() => import('./steps/VisualStyleStep').then(m => ({ default: m.VisualStyleStep })));
 const CreativeRiskStep = lazy(() => import('./steps/CreativeRiskStep').then(m => ({ default: m.CreativeRiskStep })));
 const ColorPaletteStep = lazy(() => import('./steps/ColorPaletteStep').then(m => ({ default: m.ColorPaletteStep })));
-const TypographyMotionStep = lazy(() => import('./steps/TypographyMotionStep').then(m => ({ default: m.TypographyMotionStep })));
+const TypographyStep = lazy(() => import('./steps/TypographyStep').then(m => ({ default: m.TypographyStep })));
 
 // Act III - Lazy Loaded
 const FunctionalityStep = lazy(() => import('./steps/FunctionalityStep').then(m => ({ default: m.FunctionalityStep })));
 const ReferencesStep = lazy(() => import('./steps/ReferencesStep').then(m => ({ default: m.ReferencesStep })));
-const ReviewStep = lazy(() => import('./steps/ReviewStep').then(m => ({ default: m.ReviewStep })));
+const ReviewGenerate = lazy(() => import('./steps/ReviewGenerate').then(m => ({ default: m.ReviewGenerate })));
 
 export interface StepRendererProps {
     act: ConfiguratorAct;
@@ -102,7 +102,7 @@ export function StepRenderer({
         case 5:
             return (
                 <Suspense fallback={<div className="min-h-screen" />}>
-                    <TypographyMotionStep
+                    <TypographyStep
                         ref={setRef(5)}
                         design={blueprint.design}
                         onUpdate={onUpdateDesign}
@@ -165,7 +165,7 @@ export function StepRenderer({
         case 10:
             return (
                 <Suspense fallback={<div className="min-h-screen" />}>
-                    <ReviewStep
+                    <ReviewGenerate
                         ref={setRef(10)}
                         blueprint={blueprint}
                         references={blueprint.references as unknown as BlueprintReference[] || []}

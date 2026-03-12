@@ -130,14 +130,14 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 className={cn(
-                  'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border backdrop-blur-sm bg-gradient-to-br',
+                  'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-gradient-to-br',
                   currentLevel.gradient,
                   currentLevel.borderColor
                 )}
               >
                 <div className="flex items-start gap-3">
                   <div className={cn(
-                    'w-10 h-10 rounded-lg flex items-center justify-center bg-background/50 backdrop-blur-sm',
+                    'w-10 h-10 rounded-lg flex items-center justify-center bg-background/80',
                     currentLevel.borderColor,
                     'border'
                   )}>
@@ -161,7 +161,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             </AnimatePresence>
 
             {/* VoiceAxisSlider */}
-            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Creative Risk" metaLabel="SYS.RISK" delay={0.1} />
               <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
@@ -180,7 +180,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-border/40 dark:border-border/50 bg-card/80 backdrop-blur-sm"
+            className="p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-border/40 dark:border-border/50 bg-card/95 dark:bg-zinc-950/90"
           >
             <ConfiguratorModuleTitle className="text-foreground/80 mb-4 block">What This Means</ConfiguratorModuleTitle>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">

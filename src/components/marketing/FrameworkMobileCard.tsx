@@ -75,7 +75,7 @@ export const FrameworkMobileCard = ({ index, step, isLast }: FrameworkMobileCard
             className={`relative w-full ${!isLast ? "h-[150vh] -mb-[50vh]" : ""}`}
             style={isLast ? { height: "calc(100vh + max(50vh - 310px, 5vh))", marginBottom: "calc(-1 * max(50vh - 310px, 5vh))" } : {}}
         >
-            <div className="sticky top-0 h-[100vh] w-full px-4 flex flex-col items-center justify-center -translate-y-[2vh]" style={{ zIndex: index }}>
+            <div className="sticky top-0 h-[100vh] w-full px-4 flex flex-col items-center justify-center -translate-y-[2vh]" style={{ zIndex: index, willChange: "transform" }}>
                 <motion.div
                     style={{ scale: groupScale, opacity: groupOpacity, willChange: "transform, opacity" }}
                     className="w-full relative ring-1 ring-black/50 rounded-xl"
@@ -85,6 +85,7 @@ export const FrameworkMobileCard = ({ index, step, isLast }: FrameworkMobileCard
                     <div
                         ref={contentRef}
                         className="w-full bg-card border border-white/10 rounded-xl relative overflow-hidden h-[620px] max-h-[82vh]"
+                        style={{ willChange: "transform" }}
                     >
                         {/* Structural Ticks */}
                         <motion.div
@@ -114,8 +115,8 @@ export const FrameworkMobileCard = ({ index, step, isLast }: FrameworkMobileCard
                         </div>
 
                         {/* GRADIENT SCRIMS */}
-                        <div className="absolute inset-0 bg-black/30 mix-blend-multiply" />
-                        <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] pointer-events-none" />
+                        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.8)_120%)] pointer-events-none" />
 
                         {/* EDITORIAL OVERLAYS */}
                         <div
@@ -235,11 +236,13 @@ export const FrameworkMobileCard = ({ index, step, isLast }: FrameworkMobileCard
                                                         scale: [0.8, 1.2, 0.8],
                                                         opacity: [0.5, 1, 0.5],
                                                     } : { scale: 0.8, opacity: 0.5 }}
-                                                    transition={{
+                                                    transition={isInView ? {
                                                         duration: 2.5,
                                                         repeat: Infinity,
                                                         ease: "easeInOut",
                                                         delay: idx * 0.4,
+                                                    } : {
+                                                        duration: 0.5
                                                     }}
                                                     className="w-1.5 h-1.5 bg-[#d4a853] rounded-full shadow-[0_0_8px_#d4a853]"
                                                 />

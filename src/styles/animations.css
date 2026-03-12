@@ -451,9 +451,7 @@ html.theme-transitioning *::after {
    Glassmorphism Form Controls (#3)
    ======================================== */
 .cfg-input {
-  background: hsl(var(--card) / 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: hsl(var(--card) / 0.92);
   border: 1px solid hsl(var(--border) / 0.3);
   border-radius: 0.75rem;
   transition: border-color 220ms ease-out, box-shadow 220ms ease-out;

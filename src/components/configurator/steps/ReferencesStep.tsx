@@ -498,10 +498,10 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               className={cn(
-                'relative flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed transition-all duration-[220ms] ease-out cfg-surface backdrop-blur-sm',
+                'relative flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed transition-all duration-[220ms] ease-out cfg-surface',
                 isDragging
                   ? 'border-accent/50 bg-accent/10 cfg-surface-selected'
-                  : 'border-border/40 hover:border-accent/50 bg-card/80 dark:border-border/50 hover:bg-card/90'
+                  : 'border-border/40 hover:border-accent/50 bg-card/80 dark:bg-zinc-950/90 dark:border-border/50'
               )}
             >
               <input
@@ -538,7 +538,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="flex flex-col items-center justify-center p-8 rounded-xl border-2 transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm border-border/40 dark:border-border/50 hover:border-border"
+              className="flex flex-col items-center justify-center p-8 rounded-xl border-2 transition-all duration-[220ms] ease-out cfg-surface bg-card/95 dark:bg-zinc-950/90 border-border/40 dark:border-border/50 hover:border-border"
             >
               <LinkIcon className="w-8 h-8 text-muted-foreground mb-3" />
               <ConfiguratorModuleTitle className="text-foreground/80 mb-3 block">Add Website Link</ConfiguratorModuleTitle>

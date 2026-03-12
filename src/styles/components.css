@@ -17,7 +17,7 @@
 
   /* Card styles */
   .profile-card {
-    @apply bg-card border border-border/50 backdrop-blur-sm;
+    @apply bg-card border border-border/50;
   }
 
   /* CTA button variants */

@@ -84,7 +84,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.1 }}
             className="w-full text-center"
           >
-            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Tone Balance" metaLabel="SYS.TONE" delay={0.1} />
               <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
@@ -105,7 +105,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.2 }}
             className="w-full text-center"
           >
-            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Brand Presence" metaLabel="SYS.PRESENCE" delay={0.2} />
               <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
@@ -126,7 +126,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.3 }}
             className="w-full text-center"
           >
-            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Brand Personality" metaLabel="SYS.PERSONALITY" delay={0.3} />
               <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider
@@ -147,7 +147,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
             transition={{ delay: 0.4 }}
             className="w-full text-center"
           >
-            <ConfiguratorCardSurface className="w-full relative overflow-hidden">
+            <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Emotional Outcome" metaLabel="SYS.EMOTION" delay={0.4} />
               <div className="w-full h-full pt-16 pb-4 px-8">
                 <VoiceAxisSlider

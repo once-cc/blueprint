@@ -37,7 +37,7 @@ export function FooterReveal({ onCtaClick, scrollProgress }: { onCtaClick: () =>
                 style={{ opacity: subcopyOpacity, y: subcopyY }}
                 className="text-xl text-muted-foreground"
             >
-                A complimentary plan for your next site — before you invest in the build.
+                A complimentary plan for your next website or platform — before you invest in the build.
             </motion.p>
 
             {/* Static CTA Container */}

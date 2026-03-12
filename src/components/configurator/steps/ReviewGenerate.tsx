@@ -16,7 +16,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { riskToZone } from './CreativeRiskStep';
 import { ConfiguratorModuleTitle, ConfiguratorBody } from '@/components/ui/Typography';
 
-interface ReviewStepProps {
+interface ReviewGenerateProps {
   blueprint: Blueprint;
   references: BlueprintReference[];
   onUpdateUserDetails: (data: Partial<UserDetailsData>) => void;
@@ -81,8 +81,8 @@ const NotProvided = () => (
   <span className="text-xs text-muted-foreground/50 italic">Not provided</span>
 );
 
-export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
-  function ReviewStep({
+export const ReviewGenerate = forwardRef<HTMLDivElement, ReviewGenerateProps>(
+  function ReviewGenerate({
     blueprint,
     references,
     onUpdateUserDetails,
@@ -339,7 +339,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                       return (
                         <div
                           key={step.step}
-                          className="relative p-4 rounded-xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] transition-all duration-[220ms] ease-out group hover:border-accent/30"
+                          className="relative p-4 rounded-xl overflow-hidden bg-card/95 dark:bg-zinc-950/90 border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] transition-all duration-[220ms] ease-out group hover:border-accent/30"
                         >
                           {/* Bottom gold glow */}
                           <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />
@@ -389,7 +389,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
                       return (
                         <div
                           key={step.step}
-                          className="relative rounded-xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] transition-all duration-[220ms] ease-out group hover:border-accent/30"
+                          className="relative rounded-xl overflow-hidden bg-card/95 dark:bg-zinc-950/90 border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] transition-all duration-[220ms] ease-out group hover:border-accent/30"
                         >
                           {/* Bottom gold glow */}
                           <div className="absolute inset-x-0 -bottom-1/2 h-full z-0 pointer-events-none bg-[radial-gradient(80%_40%_at_50%_100%,hsl(37_91%_55%_/_0.05),transparent_70%)] rounded-[inherit]" />
@@ -486,7 +486,7 @@ export const ReviewStep = forwardRef<HTMLDivElement, ReviewStepProps>(
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               onClick={onReviseVision}
-              className="relative p-5 rounded-xl overflow-hidden bg-card/90 dark:bg-zinc-950/80 backdrop-blur-sm border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] text-center cursor-pointer transition-all duration-[220ms] ease-out hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5"
+              className="relative p-5 rounded-xl overflow-hidden bg-card/95 dark:bg-zinc-950/90 border border-[hsl(220_12%_12%_/_0.6)] shadow-[inset_0_0_0_1px_hsl(220_12%_20%_/_0.25),inset_0_2px_15px_rgba(0,0,0,0.5)] text-center cursor-pointer transition-all duration-[220ms] ease-out hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5"
             >
               {/* Top-down light */}
               <div className="absolute inset-0 z-0 pointer-events-none rounded-[inherit] bg-[linear-gradient(to_bottom,hsl(45_10%_92%_/_0.04),transparent_40%)]" />

@@ -12,7 +12,7 @@ import {
   Bot, BarChart, Globe, Languages, FormInput, Rocket, CheckCircle2,
   Compass, Palette, TrendingUp
 } from 'lucide-react';
-import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation } from '../ui/animationConfig';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
 import { ConfiguratorModuleTitle, ConfiguratorBody } from '@/components/ui/Typography';
 
@@ -155,36 +155,17 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                 const Icon = pageIcons[page] || Home;
                 const isSelected = selectedPages.includes(page);
                 return (
-                  <motion.button
+                  <ConfiguratorOption
                     key={page}
-                    type="button"
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ ...springConfig, delay: index * 0.03 }}
-                    whileHover={{ ...cardHover, transition: springConfig }}
-                    whileTap={{ ...cardTap, transition: springConfig }}
-                    onClick={() => togglePage(page)}
-                    className={cn(
-                      'flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm group',
-                      isSelected
-                        ? 'border-accent/50 cfg-surface-selected text-accent shadow-[0_0_20px_hsl(var(--accent)/0.15)]'
-                        : 'border-border/40 dark:border-border/50 text-muted-foreground hover:text-foreground hover:border-border hover:bg-card/90'
-                    )}
-                  >
-                    <motion.div
-                      animate={getIconAnimation(isSelected)}
-                      transition={springConfig}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </motion.div>
-                    <motion.span
-                      animate={getContentShift(isSelected)}
-                      transition={springConfig}
-                      className="text-xs font-medium"
-                    >
-                      {page}
-                    </motion.span>
-                  </motion.button>
+                    value={page}
+                    label={page}
+                    icon={<Icon className="w-5 h-5 flex-shrink-0" />}
+                    isSelected={isSelected}
+                    onSelect={() => togglePage(page)}
+                    variant="chip"
+                    indicator="none"
+                    index={index}
+                  />
                 );
               })}
             </div>
@@ -230,78 +211,45 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                 const isAcknowledged = acknowledgedDomains.has(domain.id);
 
                 return (
-                  <motion.button
+                  <ConfiguratorOption
                     key={domain.id}
-                    type="button"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 * index }}
-                    whileHover={{
-                      scale: 1.02,
-                      transition: { duration: 0.2 }
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleDomainClick(domain.id)}
-                    className={cn(
-                      'p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm text-left group',
-                      isAcknowledged
-                        ? 'border-accent/50 cfg-surface-selected shadow-[0_0_12px_hsl(var(--accent)/0.08)]'
-                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
-                    )}
-                  >
-                    {/* Header with Icon */}
-                    <div className="flex items-start gap-3 mb-3">
-                      <motion.div
-                        animate={{
-                          scale: isAcknowledged ? 1.1 : 1,
-                          rotate: isAcknowledged ? 5 : 0
-                        }}
-                        transition={{ duration: 0.2 }}
-                        className={cn(
-                          'p-2 rounded-lg transition-colors',
-                          isAcknowledged
-                            ? 'bg-accent/10 text-accent'
-                            : 'bg-muted/50 text-muted-foreground'
-                        )}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </motion.div>
-                      <h4 className={cn(
-                        "text-sm font-medium transition-colors flex-1",
-                        isAcknowledged ? 'text-accent' : 'text-foreground'
-                      )}>
-                        {domain.title}
-                      </h4>
-                    </div>
-
-                    {/* Domain Items */}
-                    <ul className="space-y-1.5 ml-1">
-                      {domain.items.map((item, itemIndex) => (
-                        <motion.li
-                          key={item}
-                          initial={{ opacity: 0, x: -5 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * index + 0.05 * itemIndex }}
-                          className="flex items-center gap-2 text-xs text-muted-foreground"
-                        >
-                          <motion.span
-                            animate={{
-                              opacity: isAcknowledged ? 1 : 0.6,
-                              x: isAcknowledged ? 2 : 0
-                            }}
-                            transition={{ duration: 0.2 }}
-                            className={cn(
-                              'transition-colors',
-                              isAcknowledged && 'text-accent/70'
-                            )}
+                    value={domain.id}
+                    label={domain.title}
+                    description={(
+                      <ul className="space-y-1 ml-1 mt-1">
+                        {domain.items.map((item, itemIndex) => (
+                          <motion.li
+                            key={item}
+                            initial={{ opacity: 0, x: -5 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * index + 0.05 * itemIndex }}
+                            className="flex items-center gap-1.5 text-xs text-muted-foreground"
                           >
-                            •
-                          </motion.span>
-                          {item}
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </motion.button>
+                            <motion.span
+                              animate={{
+                                opacity: isAcknowledged ? 1 : 0.6,
+                                x: isAcknowledged ? 2 : 0
+                              }}
+                              transition={{ duration: 0.2 }}
+                              className={cn(
+                                'transition-colors',
+                                isAcknowledged && 'text-accent/70'
+                              )}
+                            >
+                              •
+                            </motion.span>
+                            {item}
+                          </motion.li>
+                        ))}
+                      </ul>
+                    )}
+                    icon={<Icon className="w-4 h-4" />}
+                    isSelected={isAcknowledged}
+                    onSelect={() => handleDomainClick(domain.id)}
+                    variant="default"
+                    indicator="check"
+                    index={index}
+                  />
                 );
               })}
             </div>
@@ -335,23 +283,18 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                 onValueChange={(value) => onUpdate({ timeline: value as BlueprintDeliver['timeline'] })}
                 className="space-y-2"
               >
-                {timelineOptions.map((option) => (
-                  <div
+                {timelineOptions.map((option, index) => (
+                  <ConfiguratorOption
                     key={option.id}
-                    className={cn(
-                      'flex items-center gap-3 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm cursor-pointer group',
-                      deliver.timeline === option.id
-                        ? 'border-accent/50 cfg-surface-selected'
-                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
-                    )}
-                    onClick={() => onUpdate({ timeline: option.id as BlueprintDeliver['timeline'] })}
-                  >
-                    <RadioGroupItem value={option.id} id={`timeline-${option.id}`} />
-                    <div className="flex-1">
-                      <span className="text-sm font-medium text-foreground">{option.label}</span>
-                      <span className="text-xs text-muted-foreground ml-2">({option.description})</span>
-                    </div>
-                  </div>
+                    value={option.id}
+                    label={option.label}
+                    description={option.description}
+                    isSelected={deliver.timeline === option.id}
+                    onSelect={(id) => onUpdate({ timeline: id as BlueprintDeliver['timeline'] })}
+                    variant="compact"
+                    indicator="check"
+                    index={index}
+                  />
                 ))}
               </RadioGroup>
             </div>
@@ -366,23 +309,18 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                 onValueChange={(value) => onUpdate({ budget: value as BlueprintDeliver['budget'] })}
                 className="space-y-2"
               >
-                {budgetOptions.map((option) => (
-                  <div
+                {budgetOptions.map((option, index) => (
+                  <ConfiguratorOption
                     key={option.id}
-                    className={cn(
-                      'flex items-center gap-3 p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border bg-card/80 backdrop-blur-sm cursor-pointer group',
-                      deliver.budget === option.id
-                        ? 'border-accent/50 cfg-surface-selected'
-                        : 'border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90'
-                    )}
-                    onClick={() => onUpdate({ budget: option.id as BlueprintDeliver['budget'] })}
-                  >
-                    <RadioGroupItem value={option.id} id={`budget-${option.id}`} />
-                    <div className="flex-1">
-                      <span className="text-sm font-medium text-foreground">{option.label}</span>
-                      <span className="text-xs text-muted-foreground ml-2">({option.description})</span>
-                    </div>
-                  </div>
+                    value={option.id}
+                    label={option.label}
+                    description={option.description}
+                    isSelected={deliver.budget === option.id}
+                    onSelect={(id) => onUpdate({ budget: id as BlueprintDeliver['budget'] })}
+                    variant="compact"
+                    indicator="check"
+                    index={index}
+                  />
                 ))}
               </RadioGroup>
             </div>

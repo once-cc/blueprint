@@ -148,7 +148,7 @@ export function ProgressRail({ currentStep, onStepClick, className = '' }: Progr
                           >
                             <div className={cn(
                               'px-4 py-3 rounded-xl whitespace-nowrap',
-                              'bg-card/95 backdrop-blur-xl border border-border/50',
+                              'bg-card/95 border border-border/50',
                               'shadow-2xl'
                             )}>
                               <div className="flex items-center gap-2 mb-0.5">
@@ -205,7 +205,7 @@ export function ProgressRail({ currentStep, onStepClick, className = '' }: Progr
       {/* Mobile Progress Bar (Premium 3-Phase Design) */}
       <div className="md:hidden">
         {/* Glassmorphic Container Wrapper */}
-        <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl px-4 py-3 shadow-2xl relative overflow-hidden">
+        <div className="bg-zinc-950/90 border border-white/5 rounded-2xl px-4 py-3 shadow-2xl relative overflow-hidden">
 
           {/* Subtle Ambient Glow Behind Container */}
           <div className="absolute inset-0 bg-gradient-to-t from-accent/5 to-transparent opacity-50 pointer-events-none" />

@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { ServiceBucket } from '../data/serviceBucketsData';
 import { springConfig } from './animationConfig';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ConfiguratorCardSurface } from './ConfiguratorCardSurface';
 
 interface ServiceBucketCardProps {
   bucket: ServiceBucket;
@@ -47,17 +48,12 @@ export function ServiceBucketCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ ...springConfig, delay: index * 0.05 }}
-      className={cn(
-        'rounded-xl overflow-hidden cfg-surface',
-        'border transition-all duration-[220ms] ease-out',
-        selected
-          ? 'border-accent/50 bg-accent/5 cfg-surface-selected'
-          : 'border-border/40 dark:border-border/50 bg-card/80'
-      )}
+    <ConfiguratorCardSurface
+      as="div"
+      isSelected={selected}
+      animateEntry={true}
+      entryDelay={index * 0.05}
+      className={cn("overflow-hidden group", selected ? "bg-accent/5" : "")}
     >
       {/* Main Row */}
       <div
@@ -229,6 +225,6 @@ export function ServiceBucketCard({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </ConfiguratorCardSurface>
   );
 }

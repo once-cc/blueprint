@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { springConfig, cardHover, cardTap, getContentShift } from '../ui/animationConfig';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
 import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 
 interface AdvancedObjectivesLayerProps {
   questions: AdvancedQuestion[];
@@ -131,29 +132,16 @@ export function AdvancedObjectivesLayer({
                   const isSelected = answers[question.key] === option.value;
 
                   return (
-                    <motion.button
+                    <ConfiguratorOption
                       key={option.value}
-                      type="button"
-                      onClick={() => onChange(question.key, option.value)}
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      whileHover={{ ...cardHover, transition: springConfig }}
-                      whileTap={{ ...cardTap, transition: springConfig }}
-                      transition={{ ...springConfig, delay: 0.25 + qIndex * 0.1 + oIndex * 0.03 }}
-                      className={cn(
-                        'px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-200',
-                        isSelected
-                          ? 'border-accent bg-accent/20 text-accent shadow-[0_0_15px_hsl(var(--accent)/0.2)]'
-                          : 'border-border/40 bg-card/50 text-muted-foreground hover:border-border hover:bg-card/80 hover:text-foreground'
-                      )}
-                    >
-                      <motion.span
-                        animate={getContentShift(isSelected)}
-                        transition={springConfig}
-                      >
-                        {option.label}
-                      </motion.span>
-                    </motion.button>
+                      value={option.value}
+                      label={option.label}
+                      isSelected={isSelected}
+                      onSelect={() => onChange(question.key, option.value)}
+                      variant="minimal"
+                      indicator="none"
+                      index={qIndex * 3 + oIndex}
+                    />
                   );
                 })}
               </div>

@@ -44,7 +44,7 @@ export function ReferenceGridItem({
                 layout="position"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="relative aspect-square rounded-xl transition-all duration-[220ms] ease-out cfg-surface bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/50 hover:border-border hover:bg-card/90 overflow-hidden group"
+                className="relative aspect-square rounded-xl transition-all duration-[220ms] ease-out cfg-surface bg-card/95 dark:bg-zinc-950/90 border border-border/40 dark:border-border/50 hover:border-border overflow-hidden group"
             >
                 {/* Thumbnail */}
                 {refItem.type === 'image' ? (
@@ -69,7 +69,7 @@ export function ReferenceGridItem({
 
                 {/* Drag Handle (Top Left) */}
                 <div
-                    className="absolute top-2 left-2 flex items-center justify-center w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none z-10"
+                    className="absolute top-2 left-2 flex items-center justify-center w-7 h-7 rounded-md bg-black/60 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none z-10"
                     onPointerDown={(e) => controls.start(e)}
                 >
                     <GripVertical className="w-4 h-4 pointer-events-none" />
@@ -81,7 +81,7 @@ export function ReferenceGridItem({
                         <Button
                             variant="secondary"
                             size="icon"
-                            className="w-7 h-7 bg-black/40 hover:bg-black/60 text-white border-0 backdrop-blur-sm"
+                            className="w-7 h-7 bg-black/60 hover:bg-black/70 text-white border-0"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onLightboxOpen(refItem);
@@ -96,7 +96,7 @@ export function ReferenceGridItem({
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="flex items-center justify-center w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors"
+                            className="flex items-center justify-center w-7 h-7 rounded-md bg-black/60 hover:bg-black/70 text-white transition-colors"
                         >
                             <ExternalLink className="w-3 h-3" />
                         </a>
@@ -104,7 +104,7 @@ export function ReferenceGridItem({
                     <Button
                         variant="destructive"
                         size="icon"
-                        className="w-7 h-7 bg-red-500/80 hover:bg-red-500 text-white border-0 backdrop-blur-sm"
+                        className="w-7 h-7 bg-red-500/80 hover:bg-red-500 text-white border-0"
                         onClick={(e) => {
                             e.stopPropagation();
                             onRemove(refItem);
@@ -122,7 +122,7 @@ export function ReferenceGridItem({
                             onValueChange={(value) => onUpdateRole(refItem, value as ReferenceRole)}
                         >
                             <SelectTrigger
-                                className="w-full h-8 text-xs bg-black/40 border-white/20 text-white hover:bg-black/60 backdrop-blur-md"
+                                className="w-full h-8 text-xs bg-black/60 border-white/20 text-white hover:bg-black/70"
                                 onClick={(e) => e.stopPropagation()}
                                 onPointerDown={(e) => e.stopPropagation()}
                             >
@@ -158,7 +158,7 @@ export function ReferenceGridItem({
                             onMouseDown={(e) => e.stopPropagation()}
                             onTouchStart={(e) => e.stopPropagation()}
                             placeholder="Add notes..."
-                            className="min-h-[50px] h-[50px] text-xs resize-none w-full bg-black/40 border-white/20 text-white placeholder-white/50 focus-visible:ring-white/30 backdrop-blur-md"
+                            className="min-h-[50px] h-[50px] text-xs resize-none w-full bg-black/60 border-white/20 text-white placeholder-white/50 focus-visible:ring-white/30"
                         />
                         {/* Auto-save indicator */}
                         <AnimatePresence mode="wait">
@@ -190,7 +190,7 @@ export function ReferenceGridItem({
 
                 {/* Filename Badge (visible when not hovered) */}
                 <div className="absolute inset-x-2 bottom-2 opacity-100 group-hover:opacity-0 transition-opacity duration-300 flex justify-center pointer-events-none">
-                    <div className="bg-black/60 backdrop-blur-md rounded-full px-3 py-1 text-[10px] text-white/90 truncate max-w-full drop-shadow-md">
+                    <div className="bg-black/70 rounded-full px-3 py-1 text-[10px] text-white/90 truncate max-w-full drop-shadow-md">
                         {refItem.filename || refItem.url}
                     </div>
                 </div>

@@ -114,7 +114,7 @@ export function ConfiguratorDropdown({
             className={cn(
               'w-full flex items-center justify-between p-4 rounded-xl text-left',
               'transition-all duration-[220ms] ease-out cfg-surface',
-              'border bg-card/80 backdrop-blur-sm',
+              'border bg-card dark:bg-zinc-950',
               hasSelection
                 ? 'border-accent/50 cfg-surface-selected'
                 : 'border-border/40 dark:border-border/50 hover:border-accent/40 hover:bg-accent/5'
@@ -147,7 +147,7 @@ export function ConfiguratorDropdown({
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0 border-border/50 bg-card/95 backdrop-blur-md cfg-surface-elevated rounded-xl"
+          className="w-[var(--radix-popover-trigger-width)] p-0 border border-border/50 bg-card dark:bg-zinc-950 cfg-surface-elevated rounded-xl shadow-xl overflow-hidden"
           align="start"
           sideOffset={8}
         >
