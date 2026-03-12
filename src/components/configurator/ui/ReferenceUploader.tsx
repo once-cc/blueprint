@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
+import { getBlueprintClientWithToken } from '@/lib/blueprintClient';
 import { useToast } from '@/hooks/use-toast';
 
 interface Reference {
@@ -25,6 +26,12 @@ interface ReferenceUploaderProps {
 // Get session token from localStorage for blueprint access
 function getSessionToken(): string | null {
   return localStorage.getItem('blueprint_session_token');
+}
+
+// Get token-scoped Supabase client for DB operations (RLS requires x-blueprint-token header)
+function getDbClient() {
+  const token = getSessionToken();
+  return token ? getBlueprintClientWithToken(token) : supabase;
 }
 
 export function ReferenceUploader({
@@ -104,8 +111,8 @@ export function ReferenceUploader({
           continue;
         }
 
-        // Save to database with session token header
-        const { data: refData, error: refError } = await supabase
+        // Save to database with token-scoped client (RLS requires x-blueprint-token)
+        const { data: refData, error: refError } = await getDbClient()
           .from('blueprint_references')
           .insert({
             blueprint_id: blueprintId,
@@ -169,7 +176,7 @@ export function ReferenceUploader({
       return;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await getDbClient()
       .from('blueprint_references')
       .insert({
         blueprint_id: blueprintId,
@@ -209,7 +216,7 @@ export function ReferenceUploader({
         .remove([ref.storagePath]);
     }
 
-    await supabase
+    await getDbClient()
       .from('blueprint_references')
       .delete()
       .eq('id', refId);
@@ -218,7 +225,7 @@ export function ReferenceUploader({
   };
 
   const handleUpdateNotes = async (refId: string, notes: string) => {
-    await supabase
+    await getDbClient()
       .from('blueprint_references')
       .update({ notes })
       .eq('id', refId);

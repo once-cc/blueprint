@@ -93,7 +93,12 @@ export const useBlueprintStorage = (
                 updated_at: new Date().toISOString(),
             };
 
-            const blueprintClient = getBlueprintClientWithToken(currentBlueprint.id);
+            const sessionToken = localStorage.getItem(SESSION_TOKEN_KEY);
+            if (!sessionToken) {
+                console.error('[Blueprint] No session token found, cannot sync');
+                return;
+            }
+            const blueprintClient = getBlueprintClientWithToken(sessionToken);
 
             const { error } = await blueprintClient
                 .from('blueprints')
