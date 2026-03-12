@@ -48,7 +48,9 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
 
           {/* Purpose Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {PURPOSE_OPTIONS.map((purpose, index) => (
+            {PURPOSE_OPTIONS.map((purpose, index) => {
+              const Icon = purpose.icon;
+              return (
               <motion.div
                 key={purpose.value}
                 initial={{ opacity: 0, y: 20 }}
@@ -59,14 +61,15 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
                   value={purpose.value}
                   label={purpose.label}
                   description={purpose.description}
-                  icon={purpose.icon}
+                  icon={<Icon className="w-6 h-6" />}
                   isSelected={selected === purpose.value}
                   onSelect={() => onSelect(purpose.value)}
                   variant="default"
                   indicator="border"
                 />
               </motion.div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Hint */}
