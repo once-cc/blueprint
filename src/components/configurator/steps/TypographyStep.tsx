@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { springConfig } from '../ui/animationConfig';
 import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
 import { ConfiguratorCardSurface } from '../ui/ConfiguratorCardSurface';
+import { ConfiguratorOption } from '../ui/ConfiguratorOption';
 import { UploadCloud, FileText, AlertCircle, Trash2, CheckCircle2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ConfiguratorModuleTitle, ConfiguratorHelper } from '@/components/ui/Typography';
@@ -329,17 +330,16 @@ export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
                     {fontWeights.map((weight, index) => {
                       const isSelected = design.fontWeight === weight.value;
                       return (
-                        <ConfiguratorCardSurface
+                        <ConfiguratorOption
                           key={weight.value}
-                          as="button"
-                          onClick={() => onUpdate({ fontWeight: weight.value as BlueprintDesign['fontWeight'] })}
+                          value={weight.value}
+                          label={weight.label}
                           isSelected={isSelected}
-                          animateEntry={true}
-                          entryDelay={0.03 * index}
-                          className="flex items-center justify-center gap-2 p-4 text-center group cursor-pointer"
-                        >
-                          <motion.span animate={{ x: isSelected ? 2 : 0 }} transition={springConfig} className={cn("text-sm font-medium transition-colors", isSelected ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground')}>{weight.label}</motion.span>
-                        </ConfiguratorCardSurface>
+                          onSelect={() => onUpdate({ fontWeight: weight.value as BlueprintDesign['fontWeight'] })}
+                          variant="compact"
+                          indicator="check"
+                          index={index}
+                        />
                       );
                     })}
                   </div>

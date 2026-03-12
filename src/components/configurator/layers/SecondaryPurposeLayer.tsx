@@ -90,27 +90,22 @@ export const SecondaryPurposeLayer = forwardRef<HTMLDivElement, SecondaryPurpose
           </div>
 
           {/* Purpose Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {availableOptions.map((purpose, index) => {
               const Icon = purpose.icon;
               return (
-              <motion.div
-                key={purpose.value}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.05 }}
-              >
                 <ConfiguratorOption
+                  key={purpose.value}
                   value={purpose.value}
                   label={purpose.label}
                   description={purpose.description}
                   icon={<Icon className="w-5 h-5" />}
                   isSelected={selected.includes(purpose.value)}
                   onSelect={() => handleToggle(purpose.value)}
-                  variant="compact"
+                  variant="default"
                   indicator="check"
+                  index={index}
                 />
-              </motion.div>
               );
             })}
           </div>

@@ -13,11 +13,11 @@ export interface ConfiguratorOptionProps {
   label: string;
   description?: string;
   icon?: ReactNode;
-  
+
   isSelected: boolean;
   isDisabled?: boolean;
   onSelect: (value: string) => void;
-  
+
   variant?: ConfiguratorOptionVariant;
   indicator?: ConfiguratorOptionIndicator;
   index?: number;
@@ -35,18 +35,18 @@ export function ConfiguratorOption({
   indicator = 'check',
   index = 0,
 }: ConfiguratorOptionProps) {
-  
+
   // Style Mappings based on Variant
   const isChip = variant === 'chip';
   const isCompact = variant === 'compact';
   const isMinimal = variant === 'minimal';
-  
+
   const layoutClasses = cn(
     'relative w-full text-left flex',
     isChip && 'flex flex-row items-center justify-center px-5 py-3.5 w-auto',
-    isCompact && 'p-4 gap-3 items-start',
+    isCompact && 'px-5 py-4 gap-3 items-start',
     isMinimal && 'p-2 px-4 gap-2 items-center',
-    variant === 'default' && 'flex-col p-6 items-start gap-4',
+    variant === 'default' && 'flex-col p-5 items-start gap-5',
     isDisabled && 'opacity-40 cursor-not-allowed hover:scale-100'
   );
 
@@ -74,51 +74,39 @@ export function ConfiguratorOption({
         </motion.div>
       )}
 
-      {/* Border Indicator (Purpose Card style) */}
-      {isSelected && indicator === 'border' && (
-        <motion.div
-          layoutId="purpose-indicator"
-          className="absolute inset-0 rounded-[inherit] border-2 border-accent pointer-events-none"
-          initial={false}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        />
-      )}
 
       {/* Inline Left Icon/Checkbox Wrapper (Compact & Chip & Default) */}
       <div className={cn(
         "flex w-full",
-        (isCompact || isMinimal || isChip) ? "items-center" : "flex-col",
+        (isCompact || isMinimal || isChip) ? "items-center" : "flex-col gap-4",
         isChip && "justify-center gap-2.5",
         isCompact && "gap-3",
         isMinimal && "gap-2"
       )}>
-        
+
         {/* Dynamic Icon / Inline Checkbox */}
         <motion.div
-          animate={{ 
-            scale: isSelected && !isChip && !isCompact ? 1.1 : 1, 
-            rotate: isSelected && !isChip && !isCompact && icon ? 5 : 0 
+          animate={{
+            scale: isSelected && !isChip && !isCompact ? 1.1 : 1,
           }}
           transition={springConfig}
           className={cn(
             'flex-shrink-0 flex items-center justify-center transition-colors',
-            
+
             // Default Icon Box Styling
-            variant === 'default' && icon && 'w-12 h-12 rounded-lg bg-muted/50 text-muted-foreground group-hover:text-foreground group-hover:bg-muted',
+            variant === 'default' && icon && 'w-8 h-8 rounded-md bg-muted/50 text-muted-foreground',
+            variant === 'default' && icon && !isSelected && 'group-hover:text-foreground group-hover:bg-muted',
             variant === 'default' && icon && isSelected && 'bg-accent/20 text-accent',
-            
-            // Compact Inline Checkbox Styling
-            isCompact && indicator === 'check' && 'w-5 h-5 rounded border-2 border-muted-foreground/30 group-hover:border-muted-foreground/50',
-            isCompact && indicator === 'check' && isSelected && 'border-accent bg-accent'
+            // Compact/Minimal Inline Checkbox Styling
+            (isCompact || isMinimal) && indicator === 'check' && 'w-5 h-5 rounded border-2 border-muted-foreground/30 group-hover:border-muted-foreground/50',
+            (isCompact || isMinimal) && indicator === 'check' && isSelected && 'border-accent bg-accent'
           )}
         >
           {/* Render provided icon */}
-          {icon && variant === 'default' && (
-            <div className="w-6 h-6">{icon}</div>
-          )}
+          {icon && variant === 'default' && icon}
 
-          {/* Render inline compact check */}
-          {isSelected && isCompact && indicator === 'check' && (
+          {/* Render inline compact/minimal check */}
+          {isSelected && (isCompact || isMinimal) && indicator === 'check' && (
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={checkSpring}>
               <Check className="w-3 h-3 text-accent-foreground" />
             </motion.div>
@@ -134,16 +122,24 @@ export function ConfiguratorOption({
           {/* Render provided icon for chip */}
           {icon && isChip && (
             <div className={cn(
-               "w-4 h-4 mr-1 transition-colors",
-               isSelected ? "text-accent" : "text-muted-foreground group-hover:text-foreground"
+              "w-4 h-4 mr-1 transition-colors",
+              isSelected ? "text-accent" : "text-muted-foreground group-hover:text-foreground"
             )}>{icon}</div>
           )}
         </motion.div>
 
+        {/* Compact icon rendered outside checkbox, between checkbox and label */}
+        {icon && isCompact && (
+          <div className={cn(
+            "w-4 h-4 flex-shrink-0 transition-colors",
+            isSelected ? "text-accent" : "text-muted-foreground group-hover:text-foreground"
+          )}>{icon}</div>
+        )}
+
         {/* Content Body */}
         <div className={cn(
           "flex-1 min-w-0 flex",
-          isCompact ? "flex-row items-baseline gap-2.5" : "flex-col justify-center"
+          isCompact ? "flex-col gap-0.5" : "flex-col justify-center"
         )}>
           <motion.h3
             animate={getContentShift(isSelected)}
@@ -165,27 +161,25 @@ export function ConfiguratorOption({
               isDisabled && 'text-muted-foreground'
             )}
           >
-             {label}
+            {label}
           </motion.h3>
-          
+
           {description && (
             <motion.p
               animate={getContentShift(isSelected)}
               transition={{ ...springConfig, delay: 0.02 }}
               className={cn(
                 'text-muted-foreground transition-colors',
-                isCompact ? 'flex flex-row items-baseline gap-2.5' : '',
                 variant === 'default' && 'text-sm mt-1',
                 isCompact && 'text-xs',
                 isSelected && isCompact && 'text-accent/80'
               )}
             >
-              {isCompact && <span className="opacity-30 select-none">&bull;</span>}
               <span>{description}</span>
             </motion.p>
           )}
         </div>
-        
+
         {/* Trailing Indicators (Compact Multi-select ring) */}
         {isSelected && indicator === 'ring' && isCompact && (
           <motion.div

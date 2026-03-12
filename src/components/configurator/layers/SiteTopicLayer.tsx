@@ -1,17 +1,13 @@
 import { useState, useMemo, forwardRef } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronsUpDown, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { PenLine, ArrowLeft } from 'lucide-react';
 import { SITE_TOPIC_OPTIONS } from '../data/foundationsData';
 import { AnimationDirection, getLayerVariants } from '../utils/layerAnimations';
 import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
+import { ConfiguratorDropdown, DropdownItem } from '../ui/ConfiguratorDropdown';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import React from 'react';
 
 interface SiteTopicLayerProps {
   selected?: string;
@@ -25,48 +21,52 @@ export const SiteTopicLayer = forwardRef<HTMLDivElement, SiteTopicLayerProps>(
     onSelect,
     direction,
   }: SiteTopicLayerProps, ref) {
-    const [open, setOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [customValue, setCustomValue] = useState('');
     const [showCustomInput, setShowCustomInput] = useState(false);
+    const [customValue, setCustomValue] = useState('');
 
     const variants = getLayerVariants(direction);
 
-    // Filter options based on search
-    const filteredOptions = useMemo(() => {
-      if (!searchQuery.trim()) return SITE_TOPIC_OPTIONS;
-      const query = searchQuery.toLowerCase();
-      return SITE_TOPIC_OPTIONS.filter(
-        (option) => option.label.toLowerCase().includes(query)
-      );
-    }, [searchQuery]);
+    // Map site topic options to DropdownItem format
+    const dropdownItems: DropdownItem[] = useMemo(() => {
+      const items: DropdownItem[] = SITE_TOPIC_OPTIONS.map((option) => ({
+        value: option.value,
+        label: option.label,
+        icon: option.icon,
+      }));
 
-    // Get display label for selected value
-    const getDisplayLabel = () => {
-      if (!selected) return 'Select or enter your topic...';
-      const found = SITE_TOPIC_OPTIONS.find((o) => o.value === selected);
-      return found ? found.label : selected;
-    };
+      // Add "Other (enter custom)" option
+      items.push({
+        value: '__custom__',
+        label: 'Other (enter custom)',
+        icon: React.createElement(PenLine, { className: 'w-4 h-4' }),
+      });
 
-    const handleSelectOption = (value: string) => {
-      onSelect(value);
-      setOpen(false);
-      setSearchQuery('');
-      setShowCustomInput(false);
+      return items;
+    }, []);
+
+    // Check if the selected value is a custom one (not in predefined list)
+    const isCustomSelected = selected && !SITE_TOPIC_OPTIONS.find(o => o.value === selected);
+
+    const handleDropdownChange = (value: string | string[]) => {
+      const val = Array.isArray(value) ? value[0] : value;
+      if (val === '__custom__') {
+        setShowCustomInput(true);
+      } else {
+        setShowCustomInput(false);
+        onSelect(val);
+      }
     };
 
     const handleCustomSubmit = () => {
       if (customValue.trim()) {
         onSelect(customValue.trim());
-        setOpen(false);
         setShowCustomInput(false);
         setCustomValue('');
       }
     };
 
-    const handleShowCustom = () => {
-      setShowCustomInput(true);
-    };
+    // Determine dropdown value
+    const dropdownValue = isCustomSelected ? null : (selected || null);
 
     return (
       <motion.div
@@ -89,129 +89,65 @@ export const SiteTopicLayer = forwardRef<HTMLDivElement, SiteTopicLayerProps>(
             </MotionConfiguratorBody>
           </div>
 
-          {/* Searchable Combobox */}
-          <div className="flex justify-center">
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className={cn(
-                    'w-full max-w-md justify-between h-12 text-left font-normal',
-                    'border-border/50 hover:border-accent/50 transition-colors',
-                    !selected && 'text-muted-foreground'
-                  )}
-                >
-                  <span className="truncate">{getDisplayLabel()}</span>
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-[var(--radix-popover-trigger-width)] max-w-md p-0"
-                align="start"
+          {/* Dropdown */}
+          <div className="max-w-md mx-auto w-full px-6 md:px-0">
+            <ConfiguratorDropdown
+              label="Industry / Topic"
+              required
+              value={dropdownValue}
+              onChange={handleDropdownChange}
+              items={dropdownItems}
+              placeholder="Select or enter your topic..."
+              hideUnselectedHelperText
+            />
+
+            {/* Custom input (shown when "Other" is selected) */}
+            {showCustomInput && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mt-4 space-y-3"
               >
-                <div className="flex flex-col">
-                  {/* Search input */}
-                  <div className="flex items-center border-b border-border/50 px-3">
-                    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                    <Input
-                      placeholder="Search topics..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-11"
-                    />
-                  </div>
-
-                  {/* Options list */}
-                  <div className="max-h-[240px] overflow-y-auto p-1">
-                    {filteredOptions.length > 0 ? (
-                      filteredOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => handleSelectOption(option.value)}
-                          className={cn(
-                            'relative flex w-full cursor-pointer select-none items-center rounded-md py-2.5 px-3 text-sm outline-none transition-colors',
-                            'hover:bg-accent/10 hover:text-accent',
-                            selected === option.value && 'bg-accent/10 text-accent'
-                          )}
-                        >
-                          <Check
-                            className={cn(
-                              'mr-2 h-4 w-4 shrink-0',
-                              selected === option.value ? 'opacity-100 text-accent' : 'opacity-0'
-                            )}
-                          />
-                          <span>{option.label}</span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="py-4 text-center text-sm text-muted-foreground">
-                        No matching topics found
-                      </div>
-                    )}
-
-                    {/* Divider */}
-                    <div className="my-1 h-px bg-border/50" />
-
-                    {/* Custom input option */}
-                    {showCustomInput ? (
-                      <div className="p-2 space-y-2">
-                        <Input
-                          placeholder="Enter your topic..."
-                          value={customValue}
-                          onChange={(e) => setCustomValue(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleCustomSubmit();
-                            }
-                          }}
-                          className="h-10"
-                          autoFocus
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setShowCustomInput(false);
-                              setCustomValue('');
-                            }}
-                            className="flex-1"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            onClick={handleCustomSubmit}
-                            disabled={!customValue.trim()}
-                            className="flex-1"
-                          >
-                            Confirm
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleShowCustom}
-                        className={cn(
-                          'relative flex w-full cursor-pointer select-none items-center rounded-md py-2.5 px-3 text-sm outline-none transition-colors',
-                          'text-muted-foreground hover:bg-accent/10 hover:text-accent'
-                        )}
-                      >
-                        <span className="mr-2 text-xs">✎</span>
-                        <span>Other (enter custom)</span>
-                      </button>
-                    )}
-                  </div>
+                <Input
+                  placeholder="Enter your topic..."
+                  value={customValue}
+                  onChange={(e) => setCustomValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleCustomSubmit();
+                    }
+                  }}
+                  className="h-12"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowCustomInput(false);
+                      setCustomValue('');
+                    }}
+                    className="flex-1 relative overflow-hidden group gap-2 bg-transparent text-muted-foreground hover:text-accent-foreground hover:bg-transparent shadow-none border-0 transition-colors duration-300"
+                  >
+                    <span className="absolute inset-0 bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                    <ArrowLeft className="w-4 h-4 relative z-10" />
+                    <span className="relative z-10">Cancel</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleCustomSubmit}
+                    disabled={!customValue.trim()}
+                    className="flex-1"
+                  >
+                    Confirm
+                  </Button>
                 </div>
-              </PopoverContent>
-            </Popover>
+              </motion.div>
+            )}
           </div>
 
           {/* Selection confirmation (subtle) */}
@@ -222,7 +158,9 @@ export const SiteTopicLayer = forwardRef<HTMLDivElement, SiteTopicLayerProps>(
               className="text-center"
             >
               <p className="text-xs text-muted-foreground">
-                Selected: <span className="text-foreground font-medium">{getDisplayLabel()}</span>
+                Selected: <span className="text-foreground font-medium">
+                  {SITE_TOPIC_OPTIONS.find(o => o.value === selected)?.label || selected}
+                </span>
               </p>
             </motion.div>
           )}

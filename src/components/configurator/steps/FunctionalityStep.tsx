@@ -150,7 +150,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
               Pages Required <span className="text-destructive">*</span>
               {selectedPages.length > 0 && <CheckCircle2 className="w-4 h-4 text-accent" />}
             </Label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {PAGE_OPTIONS.map((page, index) => {
                 const Icon = pageIcons[page] || Home;
                 const isSelected = selectedPages.includes(page);
@@ -159,11 +159,11 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                     key={page}
                     value={page}
                     label={page}
-                    icon={<Icon className="w-5 h-5 flex-shrink-0" />}
+                    icon={<Icon className="w-4 h-4" />}
                     isSelected={isSelected}
                     onSelect={() => togglePage(page)}
-                    variant="chip"
-                    indicator="none"
+                    variant="compact"
+                    indicator="check"
                     index={index}
                   />
                 );

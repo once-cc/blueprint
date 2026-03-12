@@ -3,12 +3,36 @@ import {
   ConversionGoalValue, 
   AdvancedObjectiveKey 
 } from '@/types/blueprint';
+import React from 'react';
 import { 
   DollarSign, 
   Users, 
   Megaphone, 
   Settings, 
   MessageSquare,
+  Camera,
+  Palette,
+  Heart,
+  Building2,
+  Hammer,
+  ShoppingCart,
+  Code2,
+  GraduationCap,
+  Briefcase,
+  UserCircle,
+  Target,
+  Phone,
+  Mail,
+  Layout,
+  Award,
+  UserPlus,
+  Lock,
+  Wrench,
+  BookOpen,
+  FileText,
+  Bell,
+  MessageCircle,
+  RefreshCw,
   LucideIcon
 } from 'lucide-react';
 
@@ -17,19 +41,20 @@ import {
 export interface SiteTopicOption {
   value: string;
   label: string;
+  icon?: React.ReactNode;
 }
 
 export const SITE_TOPIC_OPTIONS: SiteTopicOption[] = [
-  { value: 'photography', label: 'Photography' },
-  { value: 'design_creative', label: 'Design / Creative Studio' },
-  { value: 'health_wellness', label: 'Health & Wellness' },
-  { value: 'real_estate', label: 'Real Estate' },
-  { value: 'construction_trades', label: 'Construction / Trades' },
-  { value: 'ecommerce', label: 'E-commerce' },
-  { value: 'saas_software', label: 'SaaS / Software' },
-  { value: 'education', label: 'Education' },
-  { value: 'consulting_services', label: 'Consulting / Professional Services' },
-  { value: 'personal_brand', label: 'Personal Brand' },
+  { value: 'photography', label: 'Photography', icon: React.createElement(Camera, { className: 'w-4 h-4' }) },
+  { value: 'design_creative', label: 'Design / Creative Studio', icon: React.createElement(Palette, { className: 'w-4 h-4' }) },
+  { value: 'health_wellness', label: 'Health & Wellness', icon: React.createElement(Heart, { className: 'w-4 h-4' }) },
+  { value: 'real_estate', label: 'Real Estate', icon: React.createElement(Building2, { className: 'w-4 h-4' }) },
+  { value: 'construction_trades', label: 'Construction / Trades', icon: React.createElement(Hammer, { className: 'w-4 h-4' }) },
+  { value: 'ecommerce', label: 'E-commerce', icon: React.createElement(ShoppingCart, { className: 'w-4 h-4' }) },
+  { value: 'saas_software', label: 'SaaS / Software', icon: React.createElement(Code2, { className: 'w-4 h-4' }) },
+  { value: 'education', label: 'Education', icon: React.createElement(GraduationCap, { className: 'w-4 h-4' }) },
+  { value: 'consulting_services', label: 'Consulting / Professional Services', icon: React.createElement(Briefcase, { className: 'w-4 h-4' }) },
+  { value: 'personal_brand', label: 'Personal Brand', icon: React.createElement(UserCircle, { className: 'w-4 h-4' }) },
 ];
 
 // ============= Purpose Options (Layer 1 & 2) =============
@@ -80,33 +105,34 @@ export interface ConversionGoalOption {
   value: ConversionGoalValue;
   label: string;
   description: string;
+  icon?: React.ReactNode;
 }
 
 export const CONVERSION_GOALS_BY_PURPOSE: Record<PrimaryPurpose, ConversionGoalOption[]> = {
   monetization: [
-    { value: 'sell_products', label: 'Sell products online', description: 'E-commerce or digital product sales' },
-    { value: 'sell_services', label: 'Sell services', description: 'Service packages or retainers' },
-    { value: 'subscriptions', label: 'Subscription or membership', description: 'Recurring revenue model' },
+    { value: 'sell_products', label: 'Sell products online', description: 'E-commerce or digital product sales', icon: React.createElement(ShoppingCart, { className: 'w-4 h-4' }) },
+    { value: 'sell_services', label: 'Sell services', description: 'Service packages or retainers', icon: React.createElement(Briefcase, { className: 'w-4 h-4' }) },
+    { value: 'subscriptions', label: 'Subscription or membership', description: 'Recurring revenue model', icon: React.createElement(RefreshCw, { className: 'w-4 h-4' }) },
   ],
   lead_contact: [
-    { value: 'capture_leads', label: 'Capture leads', description: 'Forms, downloads, or email signups' },
-    { value: 'book_calls', label: 'Book calls or appointments', description: 'Discovery calls or consultations' },
-    { value: 'get_inquiries', label: 'Get direct inquiries', description: 'Contact form or quote requests' },
+    { value: 'capture_leads', label: 'Capture leads', description: 'Forms, downloads, or email signups', icon: React.createElement(Target, { className: 'w-4 h-4' }) },
+    { value: 'book_calls', label: 'Book calls or appointments', description: 'Discovery calls or consultations', icon: React.createElement(Phone, { className: 'w-4 h-4' }) },
+    { value: 'get_inquiries', label: 'Get direct inquiries', description: 'Contact form or quote requests', icon: React.createElement(Mail, { className: 'w-4 h-4' }) },
   ],
   promotion: [
-    { value: 'showcase_portfolio', label: 'Showcase portfolio', description: 'Display work and case studies' },
-    { value: 'build_authority', label: 'Build authority', description: 'Thought leadership and expertise' },
-    { value: 'attract_talent', label: 'Attract talent', description: 'Hiring and recruitment' },
+    { value: 'showcase_portfolio', label: 'Showcase portfolio', description: 'Display work and case studies', icon: React.createElement(Layout, { className: 'w-4 h-4' }) },
+    { value: 'build_authority', label: 'Build authority', description: 'Thought leadership and expertise', icon: React.createElement(Award, { className: 'w-4 h-4' }) },
+    { value: 'attract_talent', label: 'Attract talent', description: 'Hiring and recruitment', icon: React.createElement(UserPlus, { className: 'w-4 h-4' }) },
   ],
   operations: [
-    { value: 'client_portal', label: 'Client portal', description: 'Client access and collaboration' },
-    { value: 'internal_tools', label: 'Internal tools', description: 'Team dashboards or workflows' },
-    { value: 'documentation', label: 'Documentation hub', description: 'Knowledge base or help center' },
+    { value: 'client_portal', label: 'Client portal', description: 'Client access and collaboration', icon: React.createElement(Lock, { className: 'w-4 h-4' }) },
+    { value: 'internal_tools', label: 'Internal tools', description: 'Team dashboards or workflows', icon: React.createElement(Wrench, { className: 'w-4 h-4' }) },
+    { value: 'documentation', label: 'Documentation hub', description: 'Knowledge base or help center', icon: React.createElement(BookOpen, { className: 'w-4 h-4' }) },
   ],
   content_community: [
-    { value: 'publish_content', label: 'Publish content', description: 'Blog, articles, or media' },
-    { value: 'build_audience', label: 'Build audience', description: 'Newsletter or follower growth' },
-    { value: 'foster_community', label: 'Foster community', description: 'Forums, groups, or interaction' },
+    { value: 'publish_content', label: 'Publish content', description: 'Blog, articles, or media', icon: React.createElement(FileText, { className: 'w-4 h-4' }) },
+    { value: 'build_audience', label: 'Build audience', description: 'Newsletter or follower growth', icon: React.createElement(Bell, { className: 'w-4 h-4' }) },
+    { value: 'foster_community', label: 'Foster community', description: 'Forums, groups, or interaction', icon: React.createElement(MessageCircle, { className: 'w-4 h-4' }) },
   ],
 };
 

@@ -35,7 +35,7 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              What is the primary purpose of your digital platform?
+              What is the primary purpose of this asset?
             </MotionConfiguratorQuestion>
             <MotionConfiguratorBody
               initial={{ opacity: 0, y: 10 }}
@@ -51,23 +51,18 @@ export const PrimaryPurposeLayer = forwardRef<HTMLDivElement, PrimaryPurposeLaye
             {PURPOSE_OPTIONS.map((purpose, index) => {
               const Icon = purpose.icon;
               return (
-              <motion.div
-                key={purpose.value}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.05 }}
-              >
                 <ConfiguratorOption
+                  key={purpose.value}
                   value={purpose.value}
                   label={purpose.label}
                   description={purpose.description}
-                  icon={<Icon className="w-6 h-6" />}
+                  icon={<Icon className="w-5 h-5" />}
                   isSelected={selected === purpose.value}
                   onSelect={() => onSelect(purpose.value)}
                   variant="default"
-                  indicator="border"
+                  indicator="check"
+                  index={index}
                 />
-              </motion.div>
               );
             })}
           </div>

@@ -3,8 +3,6 @@ import { AdvancedObjectives, AdvancedObjectiveKey } from '@/types/blueprint';
 import { AdvancedQuestion } from '../data/foundationsData';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { springConfig, cardHover, cardTap, getContentShift } from '../ui/animationConfig';
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
 import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
 import { ConfiguratorOption } from '../ui/ConfiguratorOption';
@@ -127,7 +125,7 @@ export function AdvancedObjectivesLayer({
                 {question.question}
               </h3>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {question.options.map((option, oIndex) => {
                   const isSelected = answers[question.key] === option.value;
 
@@ -139,7 +137,7 @@ export function AdvancedObjectivesLayer({
                       isSelected={isSelected}
                       onSelect={() => onChange(question.key, option.value)}
                       variant="minimal"
-                      indicator="none"
+                      indicator="check"
                       index={qIndex * 3 + oIndex}
                     />
                   );

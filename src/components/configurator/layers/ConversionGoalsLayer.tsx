@@ -3,9 +3,9 @@ import { forwardRef } from 'react';
 import { ConversionGoalValue } from '@/types/blueprint';
 import { ConversionGoalOption, ALL_CONVERSION_GOALS } from '../data/foundationsData';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { springConfig, cardHover, cardTap, getContentShift, getIconAnimation, checkSpring } from '../ui/animationConfig';
+
 import { AnimationDirection, getLayerVariants, layerTransition } from '../utils/layerAnimations';
 import { MotionConfiguratorQuestion, MotionConfiguratorBody } from '@/components/ui/Typography';
 import { ConfiguratorOption } from '../ui/ConfiguratorOption';
@@ -89,7 +89,7 @@ export const ConversionGoalsLayer = forwardRef<HTMLDivElement, ConversionGoalsLa
           )}
 
           {/* Goal Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {goalsToShow.map((goal, index) => {
               const isSelected = selected.includes(goal.value);
 
@@ -99,9 +99,10 @@ export const ConversionGoalsLayer = forwardRef<HTMLDivElement, ConversionGoalsLa
                   value={goal.value}
                   label={goal.label}
                   description={goal.description}
+                  icon={goal.icon}
                   isSelected={isSelected}
                   onSelect={() => handleToggle(goal.value)}
-                  variant="compact"
+                  variant="default"
                   indicator="check"
                   index={index}
                 />
