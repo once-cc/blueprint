@@ -234,10 +234,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
       >
         <div className="space-y-12">
           {/* Colour Relationship Selector - Arc/Wheel Style */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <div
             className="space-y-6"
           >
             {/* Arc Selector */}
@@ -330,13 +327,10 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                 </div>
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
+          </div>
 
           {/* Interactive Color Wheel for Base Hue */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
+          <div
             className="space-y-4"
           >
             <ConfiguratorCardSurface isHoverable={false} className="max-w-lg mx-auto relative overflow-hidden">
@@ -474,11 +468,8 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                 </div>
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          </div>
+          <div
             className="space-y-3 sm:space-y-4"
           >
             <ConfiguratorCardSurface isHoverable={false} className="max-w-3xl mx-auto relative overflow-hidden">
@@ -741,13 +732,10 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                 </p>
               </motion.div>
             )}
-          </motion.div>
+          </div>
 
           {/* Refinement Sliders */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+          <div
             className="space-y-8"
           >
             <div className="space-y-8">
@@ -783,7 +771,7 @@ export const ColorPaletteStep = forwardRef<HTMLDivElement, ColorPaletteStepProps
                 </ConfiguratorCardSurface>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </StepLayout>
     );

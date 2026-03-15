@@ -50,12 +50,18 @@ Deno.serve(async (req: Request) => {
         const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
         // ── Fetch Blueprints ───────────────────────────────
-        const { data: blueprints, error, count } = await supabase
+        let query = supabase
             .from("blueprints")
             .select("*", { count: "exact" })
             .is("archived_at", null)
             .eq("status", "submitted")
-            .order("submitted_at", { ascending: false })
+            .order("submitted_at", { ascending: false });
+
+        if (params.blueprint_id) {
+            query = query.eq("id", params.blueprint_id);
+        }
+
+        const { data: blueprints, error, count } = await query
             .range(offset, offset + pageSize - 1);
 
         if (error) {
@@ -80,6 +86,11 @@ Deno.serve(async (req: Request) => {
                     .order("created_at", { ascending: false })
                     .limit(20);
 
+                // Map specific blueprint summary fields
+                const discovery = typeof bp.discovery === "object" && bp.discovery !== null ? bp.discovery as Record<string, unknown> : {};
+                const design = typeof bp.design === "object" && bp.design !== null ? bp.design as Record<string, unknown> : {};
+                const deliver = typeof bp.deliver === "object" && bp.deliver !== null ? bp.deliver as Record<string, unknown> : {};
+
                 return {
                     id: bp.id,
                     status: bp.status,
@@ -95,6 +106,20 @@ Deno.serve(async (req: Request) => {
                     clarity_call_requested_at: bp.clarity_call_requested_at,
                     created_at: bp.created_at,
                     submitted_at: bp.submitted_at,
+                    blueprintSummary: {
+                        siteTopic: discovery.siteTopic || "",
+                        primaryPurpose: discovery.primaryPurpose || "",
+                        archetype: discovery.salesPersonality || "",
+                        timeline: deliver.timeline || "",
+                        budget: deliver.budget || "",
+                        riskTolerance: deliver.riskTolerance || 0,
+                    },
+                    artifacts: {
+                        latest: {
+                            pdf: { version: 1, url: bp.pdf_url || "" }
+                        },
+                        versions: []
+                    },
                     email_sequences: (emails || []).map((e) => ({
                         id: e.id,
                         type: e.email_type,

@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import { motion } from 'framer-motion';
 import { BlueprintDiscovery, SALES_PERSONALITIES } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { Label } from '@/components/ui/label';
@@ -84,11 +83,7 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
       >
         <div className="space-y-10">
           {/* Sales Personality Dropdown */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
+          <div>
             <ConfiguratorDropdown
               label="Sales Personality"
               required
@@ -98,13 +93,10 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               maxHeight={400}
               hideUnselectedHelperText
             />
-          </motion.div>
+          </div>
 
           {/* Primary CTA Label */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          <div
             className="space-y-3"
           >
             <ConfiguratorModuleTitle className="mb-3 flex items-center gap-2">
@@ -117,13 +109,10 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               placeholder="e.g., Book a Call, Get Started, Shop Now"
               className="max-w-md text-sm bg-card/95 dark:bg-zinc-950/90 border-border/40 dark:border-border/50 rounded-xl px-4 py-3 h-auto"
             />
-          </motion.div>
+          </div>
 
           {/* CTA Strategy Notes */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+          <div
             className="space-y-3"
           >
             <ConfiguratorModuleTitle className="mb-3 flex items-center gap-2">
@@ -136,7 +125,7 @@ export const CTAEnergyStep = forwardRef<HTMLDivElement, CTAEnergyStepProps>(
               placeholder="Any specific thoughts on your conversion strategy..."
               className="cfg-input min-h-[100px] resize-none text-sm bg-card/95 dark:bg-zinc-950/90 rounded-xl px-4 py-3 ring-0 ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-          </motion.div>
+          </div>
         </div>
       </StepLayout>
     );

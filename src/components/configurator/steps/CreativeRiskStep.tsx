@@ -115,13 +115,8 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
         onNext={onNext}
       >
         <div className="space-y-8">
-          {/* Risk Slider */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            {/* Current Level Display */}
+          {/* Current Level Display */}
+          <div>
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentLevel.label}
@@ -159,8 +154,10 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 </div>
               </motion.div>
             </AnimatePresence>
+          </div>
 
-            {/* VoiceAxisSlider */}
+          {/* VoiceAxisSlider */}
+          <div>
             <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
               <ConfiguratorCardHeader title="Creative Risk" metaLabel="SYS.RISK" delay={0.1} />
               <div className="w-full h-full pt-16 pb-4 px-8">
@@ -173,13 +170,10 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 />
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
+          </div>
 
           {/* What This Means */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+          <div
             className="p-4 rounded-xl transition-all duration-[220ms] ease-out cfg-surface border border-border/40 dark:border-border/50 bg-card/95 dark:bg-zinc-950/90"
           >
             <ConfiguratorModuleTitle className="text-foreground/80 mb-4 block">What This Means</ConfiguratorModuleTitle>
@@ -237,7 +231,7 @@ export const CreativeRiskStep = forwardRef<HTMLDivElement, CreativeRiskStepProps
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </StepLayout>
     );

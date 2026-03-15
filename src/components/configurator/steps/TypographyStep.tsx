@@ -52,7 +52,8 @@ export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
 
       let styleContent = '';
       files.forEach((font) => {
-        const format = font.filename.toLowerCase().endsWith('.woff2') ? 'woff2' : 'woff';
+        const ext = font.filename.toLowerCase().split('.').pop();
+        const format = ext === 'woff2' ? 'woff2' : ext === 'woff' ? 'woff' : ext === 'otf' ? 'opentype' : 'truetype';
         styleContent += `
         @font-face {
           font-family: 'BlueprintCustom-${font.id}';
@@ -92,10 +93,11 @@ export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
       setUploadError(null);
 
       const fileArray = Array.from(fileList);
-      const validFiles = fileArray.filter(f => f.name.toLowerCase().endsWith('.woff2') || f.name.toLowerCase().endsWith('.woff'));
+      const FONT_EXTENSIONS = ['.woff2', '.woff', '.ttf', '.otf'];
+      const validFiles = fileArray.filter(f => FONT_EXTENSIONS.some(ext => f.name.toLowerCase().endsWith(ext)));
 
       if (fileArray.length !== validFiles.length) {
-        setUploadError("Invalid format: Please upload WOFF or WOFF2 files only.");
+        setUploadError("Invalid format: Please upload TTF, OTF, WOFF, or WOFF2 files.");
         if (validFiles.length === 0) return;
       }
 
@@ -368,7 +370,7 @@ export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
                   <input
                     type="file"
                     multiple
-                    accept=".woff,.woff2"
+                    accept=".woff,.woff2,.ttf,.otf"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     onChange={handleFileInput}
                   />
@@ -378,7 +380,7 @@ export const TypographyStep = forwardRef<HTMLDivElement, TypographyStepProps>(
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-foreground/90">Click to upload or drag and drop</p>
-                      <ConfiguratorHelper>WOFF or WOFF2 only. Maximum 6 files, up to 3MB each.</ConfiguratorHelper>
+                      <ConfiguratorHelper>TTF, OTF, WOFF, or WOFF2. Maximum 6 files, up to 3MB each.</ConfiguratorHelper>
                     </div>
                     {uploadError && (
                       <div className="mt-2 text-xs font-medium text-red-500/90 flex items-center gap-1.5 bg-red-500/10 px-3 py-1.5 rounded-full">

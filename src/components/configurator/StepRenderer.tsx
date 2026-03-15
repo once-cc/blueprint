@@ -21,6 +21,7 @@ export interface StepRendererProps {
     act: ConfiguratorAct;
     step: number;
     blueprint: Blueprint;
+    references: BlueprintReference[];
     onUpdateDesign: (updates: Partial<BlueprintDesign>) => void;
     onUpdateDiscovery: (updates: Partial<BlueprintDiscovery>) => void;
     onUpdateDeliver: (updates: Partial<BlueprintDeliver>) => void;
@@ -38,6 +39,7 @@ export function StepRenderer({
     act,
     step,
     blueprint,
+    references,
     onUpdateDesign,
     onUpdateDiscovery,
     onUpdateDeliver,
@@ -155,7 +157,7 @@ export function StepRenderer({
                     <ReferencesStep
                         ref={setRef(9)}
                         blueprintId={blueprint.id}
-                        references={blueprint.references as unknown as BlueprintReference[] || []}
+                        references={references}
                         onReferencesChange={onUpdateReferences}
                         onBack={onBack}
                         onNext={onNext}
@@ -168,7 +170,7 @@ export function StepRenderer({
                     <ReviewGenerate
                         ref={setRef(10)}
                         blueprint={blueprint}
-                        references={blueprint.references as unknown as BlueprintReference[] || []}
+                        references={references}
                         onUpdateUserDetails={onUpdateUserDetails}
                         onGoToStep={onGoToStep}
                         onSubmit={onSubmit}

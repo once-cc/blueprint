@@ -14,6 +14,34 @@ import {
   DEBOUNCE_MS
 } from './useBlueprintStorage';
 
+/**
+ * Safely save a blueprint to localStorage as a local draft.
+ * Strips heavy data (font file base64 blobs) to avoid QuotaExceededError,
+ * and wraps the write in try/catch so a full quota never crashes React.
+ */
+function safeLocalDraftSave(blueprint: Blueprint): void {
+  try {
+    // Deep-clone design and strip base64 font data (can be several MB)
+    const liteDesign = { ...blueprint.design };
+    if (liteDesign.customFonts?.files?.length) {
+      liteDesign.customFonts = {
+        ...liteDesign.customFonts,
+        files: liteDesign.customFonts.files.map(f => ({
+          ...f,
+          fileData: '', // Strip heavy base64 payload
+        })),
+      };
+    }
+    localStorage.setItem(
+      LOCAL_DRAFT_KEY,
+      JSON.stringify({ ...blueprint, design: liteDesign })
+    );
+  } catch (e) {
+    // QuotaExceededError or serialization failure — log but never crash
+    console.warn('[useBlueprint] Local draft save failed (quota?):', e);
+  }
+}
+
 
 
 export function useBlueprint() {
@@ -219,7 +247,7 @@ export function useBlueprint() {
       if (!prev) return prev;
       const newDiscovery = { ...prev.discovery, ...updates };
       const newBlueprint = { ...prev, discovery: newDiscovery, updatedAt: new Date() };
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
+      safeLocalDraftSave(newBlueprint);
       saveToDatabase({ discovery: newDiscovery });
       return newBlueprint;
     });
@@ -231,7 +259,7 @@ export function useBlueprint() {
       if (!prev) return prev;
       const newDesign = { ...prev.design, ...updates };
       const newBlueprint = { ...prev, design: newDesign, updatedAt: new Date() };
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
+      safeLocalDraftSave(newBlueprint);
       saveToDatabase({ design: newDesign });
       return newBlueprint;
     });
@@ -243,7 +271,7 @@ export function useBlueprint() {
       if (!prev) return prev;
       const newDeliver = { ...prev.deliver, ...updates };
       const newBlueprint = { ...prev, deliver: newDeliver, updatedAt: new Date() };
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
+      safeLocalDraftSave(newBlueprint);
       saveToDatabase({ deliver: newDeliver });
       return newBlueprint;
     });
@@ -255,7 +283,7 @@ export function useBlueprint() {
     setBlueprint(prev => {
       if (!prev) return prev;
       const newBlueprint = { ...prev, dreamIntent, updatedAt: new Date() };
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
+      safeLocalDraftSave(newBlueprint);
       saveToDatabase({ dreamIntent });
       return newBlueprint;
     });
@@ -266,7 +294,7 @@ export function useBlueprint() {
     setBlueprint(prev => {
       if (!prev) return prev;
       const newBlueprint = { ...prev, currentStep: step, updatedAt: new Date() };
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
+      safeLocalDraftSave(newBlueprint);
       saveToDatabase({ currentStep: step });
       return newBlueprint;
     });
@@ -277,7 +305,7 @@ export function useBlueprint() {
     setBlueprint(prev => {
       if (!prev) return prev;
       const newBlueprint = { ...prev, ...details, updatedAt: new Date() };
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(newBlueprint));
+      safeLocalDraftSave(newBlueprint);
       saveToDatabase(details);
       return newBlueprint;
     });

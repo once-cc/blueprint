@@ -491,9 +491,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
           {/* Upload Area */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* File Upload */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+            <div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -531,13 +529,10 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
                   </ConfiguratorHelper>
                 </>
               )}
-            </motion.div>
+            </div>
 
             {/* Link Input */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+            <div
               className="flex flex-col items-center justify-center p-8 rounded-xl border-2 transition-all duration-[220ms] ease-out cfg-surface bg-card/95 dark:bg-zinc-950/90 border-border/40 dark:border-border/50 hover:border-border"
             >
               <LinkIcon className="w-8 h-8 text-muted-foreground mb-3" />
@@ -558,7 +553,7 @@ export const ReferencesStep = forwardRef<HTMLDivElement, ReferencesStepProps>(
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* References List */}

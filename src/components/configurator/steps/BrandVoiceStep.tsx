@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import { motion } from 'framer-motion';
 import { BlueprintDiscovery } from '@/types/blueprint';
 import { StepLayout } from '../StepLayout';
 import { VoiceAxisSlider } from '../ui/VoiceAxisSlider';
@@ -78,10 +77,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
           {/* Custom controls spacing since authority text was removed */}
 
           {/* Tone Balance Slider */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <div
             className="w-full text-center"
           >
             <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
@@ -96,13 +92,10 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 />
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
+          </div>
 
           {/* Brand Presence Slider */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          <div
             className="w-full text-center"
           >
             <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
@@ -117,13 +110,10 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 />
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
+          </div>
 
           {/* Brand Personality Slider */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+          <div
             className="w-full text-center"
           >
             <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
@@ -138,13 +128,10 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 />
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
+          </div>
 
           {/* Visitor Emotional Outcome */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+          <div
             className="w-full text-center"
           >
             <ConfiguratorCardSurface isHoverable={false} className="w-full relative overflow-hidden">
@@ -159,14 +146,11 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                 />
               </div>
             </ConfiguratorCardSurface>
-          </motion.div>
+          </div>
 
           {/* Summary Preview */}
           {isValid && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+            <div
               className="pt-6 border-t border-border/30 text-center"
             >
               <ConfiguratorModuleTitle className="text-muted-foreground mb-3 inline-block">
@@ -180,7 +164,7 @@ export const BrandVoiceStep = forwardRef<HTMLDivElement, BrandVoiceStepProps>(
                   <>, leaving visitors feeling <span className="text-accent font-medium">{brandVoice.visitorFeeling.energy}</span></>
                 )}.
               </ConfiguratorBody>
-            </motion.div>
+            </div>
           )}
         </div>
       </StepLayout>

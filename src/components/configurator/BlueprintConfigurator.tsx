@@ -425,6 +425,7 @@ export function BlueprintConfigurator() {
                       act={act}
                       step={currentStep}
                       blueprint={blueprint}
+                      references={references}
                       onUpdateDesign={updateDesign}
                       onUpdateDiscovery={updateDiscovery}
                       onUpdateDeliver={updateDeliver}

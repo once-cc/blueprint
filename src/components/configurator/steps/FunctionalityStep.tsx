@@ -172,11 +172,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
           </div>
 
           {/* Features & Integrations Dropdown */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
+          <div>
             <ConfiguratorDropdown
               label="Features & Integrations"
               value={selectedFeatures}
@@ -186,13 +182,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
               multiSelect
               hideUnselectedHelperText
             />
-          </motion.div>
+          </div>
 
           {/* System Domains - Subtle Interactive Framing */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+          <div
             className="space-y-4"
           >
             <div className="space-y-1">
@@ -264,13 +257,10 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                 All domains acknowledged ✓
               </motion.p>
             )}
-          </motion.div>
+          </div>
 
           {/* Timeline & Budget */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+          <div
             className="grid grid-cols-1 md:grid-cols-2 gap-8"
           >
             {/* Timeline */}
@@ -326,7 +316,7 @@ export const FunctionalityStep = forwardRef<HTMLDivElement, FunctionalityStepPro
                 ))}
               </RadioGroup>
             </div>
-          </motion.div>
+          </div>
         </div>
       </StepLayout>
     );

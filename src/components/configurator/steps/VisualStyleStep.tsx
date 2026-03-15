@@ -157,10 +157,7 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
       >
         <div className="space-y-8">
           {/* Overall Aesthetic */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <div
             className="space-y-4"
           >
             <ConfiguratorModuleTitle className="mb-4 flex items-center gap-2">
@@ -188,13 +185,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                 );
               })}
             </div>
-          </motion.div>
+          </div>
 
           {/* Imagery Style */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+          <div
             className="space-y-4"
           >
             <ConfiguratorModuleTitle className="mb-4 block">Imagery Style</ConfiguratorModuleTitle>
@@ -219,13 +213,10 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                 );
               })}
             </div>
-          </motion.div>
+          </div>
 
           {/* Brand Imagery Mode Switch */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+          <div
             className="pt-6 border-t border-border/30 space-y-6"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -401,7 +392,7 @@ export const VisualStyleStep = forwardRef<HTMLDivElement, VisualStyleStepProps>(
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         </div>
       </StepLayout>
     );
