@@ -15,6 +15,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { scoreBlueprint } from "../_shared/scoring.ts";
 import { signForConsole } from "../_shared/hmac.ts";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { renderSummaryCard } from "../_shared/email-summary.ts";
 
 // ── ENV ─────────────────────────────────────────────────────
 
@@ -116,19 +117,16 @@ export async function phase2(
                     ? "Growth"
                     : "Essential";
 
-            // Extract discovery data for summary
-            const discovery = (blueprint.discovery || {}) as Record<string, unknown>;
-            const primaryPurpose = escapeHtml((discovery.primaryPurpose as string) || '');
-            const conversionGoals = (discovery.conversionGoals as string[]) || [];
-            const secondaryPurposes = (discovery.secondaryPurposes as string[]) || [];
-
-            // Build dynamic summary rows (using · separator)
-            const goalsText = primaryPurpose
-                ? [primaryPurpose, ...secondaryPurposes.map(s => escapeHtml(s))].join(' · ')
-                : null;
-            const constraintsText = conversionGoals.length
-                ? conversionGoals.map(g => escapeHtml(g)).join(' · ')
-                : null;
+            // Build summary card from discovery data using shared renderer
+            const discoveryData = (blueprint.discovery || {}) as Record<string, unknown>;
+            const summaryCardHtml = renderSummaryCard({
+                siteTopic: (discoveryData.siteTopic as string) || undefined,
+                primaryPurpose: (discoveryData.primaryPurpose as string) || undefined,
+                secondaryPurposes: (discoveryData.secondaryPurposes as string[]) || undefined,
+                conversionGoals: (discoveryData.conversionGoals as string[]) || undefined,
+                salesPersonality: (discoveryData.salesPersonality as string) || undefined,
+                advancedObjectives: (discoveryData.advancedObjectives as Record<string, string>) || undefined,
+            });
 
             const emailHtml = `
         <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
@@ -160,21 +158,7 @@ export async function phase2(
           </p>
 
           <!-- Blueprint Summary Card -->
-          <div style="padding: 24px; background: #ffffff; border: 1px solid #e5e5e5; margin-bottom: 32px;">
-            <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #888888; margin: 0 0 16px 0;">
-              Blueprint Summary
-            </p>
-            <table style="width: 100%; font-size: 14px; color: #555555; border-collapse: collapse;">
-              ${constraintsText ? `<tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888; vertical-align: top;">Primary Constraints</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right; color: #111111;">${constraintsText}</td>
-              </tr>` : ''}
-              ${goalsText ? `<tr>
-                <td style="padding: 8px 0; color: #888888; vertical-align: top;">Primary Objectives</td>
-                <td style="padding: 8px 0; text-align: right; color: #111111;">${goalsText}</td>
-              </tr>` : ''}
-            </table>
-          </div>
+          ${summaryCardHtml}
 
           <!-- PDF Download CTA -->
           ${pdfUrl ? `<div style="text-align: center; margin-bottom: 40px;">
@@ -278,6 +262,40 @@ export async function phase2(
                 req,
                 { resend_id: emailResult?.id, status: emailRes.status },
             );
+
+            // ── Schedule Nurture Emails 2–5 (if Email 1 succeeded) ──
+            if (emailRes.ok) {
+                try {
+                    const submittedAt = Date.now();
+                    const nurture = [
+                        { email_type: '1hr' as const,  email_number: 2, offset: 1 * 60 * 60 * 1000 },
+                        { email_type: '24hr' as const, email_number: 3, offset: 24 * 60 * 60 * 1000 },
+                        { email_type: '72hr' as const, email_number: 4, offset: 72 * 60 * 60 * 1000 },
+                        { email_type: '7day' as const, email_number: 5, offset: 7 * 24 * 60 * 60 * 1000 },
+                    ];
+
+                    await supabase.from("email_sequences").insert(
+                        nurture.map(n => ({
+                            blueprint_id: blueprintId,
+                            email_type: n.email_type,
+                            email_number: n.email_number,
+                            status: 'pending',
+                            scheduled_for: new Date(submittedAt + n.offset).toISOString(),
+                        }))
+                    );
+
+                    await auditLog(supabase, "nurture_scheduled", blueprintId, req, {
+                        emails_scheduled: 4,
+                        intervals: ['1hr', '24hr', '72hr', '7day'],
+                    });
+                } catch (scheduleErr) {
+                    // Nurture scheduling failure must never break the pipeline
+                    console.error("[submit-blueprint] Nurture scheduling error:", scheduleErr);
+                    await auditLog(supabase, "nurture_schedule_failed", blueprintId, req, {
+                        error: String(scheduleErr),
+                    });
+                }
+            }
         } catch (err) {
             await auditLog(supabase, "email_failed", blueprintId, req, {
                 error: String(err),
@@ -300,6 +318,7 @@ export async function phase2(
                 },
                 tier: scores.complexity_tier,
                 integrity_score: scores.integrity_score,
+                complexity_score: scores.complexity_score,
                 ...(pdfUrl ? { pdf_url: pdfUrl } : {}),
             };
 

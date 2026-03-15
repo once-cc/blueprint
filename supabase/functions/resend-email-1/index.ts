@@ -9,6 +9,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { validateFromConsole } from "../_shared/hmac.ts";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { renderSummaryCard } from "../_shared/email-summary.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -69,18 +70,16 @@ Deno.serve(async (req: Request) => {
     const firstName = escapeHtml(bp.first_name || "there");
     const businessName = escapeHtml(bp.business_name || "Your Project");
 
-    // Extract discovery data for summary
-    const discovery = (bp.discovery || {}) as Record<string, unknown>;
-    const primaryPurpose = escapeHtml((discovery.primaryPurpose as string) || '');
-    const conversionGoals = (discovery.conversionGoals as string[]) || [];
-    const secondaryPurposes = (discovery.secondaryPurposes as string[]) || [];
-
-    const goalsText = primaryPurpose
-      ? [primaryPurpose, ...secondaryPurposes.map(s => escapeHtml(s))].join(' · ')
-      : null;
-    const constraintsText = conversionGoals.length
-      ? conversionGoals.map(g => escapeHtml(g)).join(' · ')
-      : null;
+    // Build summary card from discovery data using shared renderer
+    const discoveryData = (bp.discovery || {}) as Record<string, unknown>;
+    const summaryCardHtml = renderSummaryCard({
+        siteTopic: (discoveryData.siteTopic as string) || undefined,
+        primaryPurpose: (discoveryData.primaryPurpose as string) || undefined,
+        secondaryPurposes: (discoveryData.secondaryPurposes as string[]) || undefined,
+        conversionGoals: (discoveryData.conversionGoals as string[]) || undefined,
+        salesPersonality: (discoveryData.salesPersonality as string) || undefined,
+        advancedObjectives: (discoveryData.advancedObjectives as Record<string, string>) || undefined,
+    });
 
     const emailHtml = `
       <div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 48px 32px; background: #fcfcfc; color: #111111;">
@@ -112,21 +111,7 @@ Deno.serve(async (req: Request) => {
         </p>
 
         <!-- Blueprint Summary Card -->
-        <div style="padding: 24px; background: #ffffff; border: 1px solid #e5e5e5; margin-bottom: 32px;">
-          <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #888888; margin: 0 0 16px 0;">
-            Blueprint Summary
-          </p>
-          <table style="width: 100%; font-size: 14px; color: #555555; border-collapse: collapse;">
-            ${constraintsText ? `<tr>
-              <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #888888; vertical-align: top;">Primary Constraints</td>
-              <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-align: right; color: #111111;">${constraintsText}</td>
-            </tr>` : ''}
-            ${goalsText ? `<tr>
-              <td style="padding: 8px 0; color: #888888; vertical-align: top;">Primary Objectives</td>
-              <td style="padding: 8px 0; text-align: right; color: #111111;">${goalsText}</td>
-            </tr>` : ''}
-          </table>
-        </div>
+        ${summaryCardHtml}
 
         <!-- PDF Download CTA -->
         ${bp.pdf_url ? `<div style="text-align: center; margin-bottom: 40px;">

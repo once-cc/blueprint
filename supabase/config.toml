@@ -1,4 +1,4 @@
-project_id = "nvbjevpuyxizqpqfftpy"
+project_id = "ovfctbpwclkrbfjjzssj"
 
 [functions.generate-and-send-blueprint]
 verify_jwt = false
@@ -30,3 +30,8 @@ verify_jwt = false
 [functions.resend-email-1]
 verify_jwt = false
 
+[functions.submit-blueprint]
+verify_jwt = false
+
+[functions.process-nurture-queue]
+verify_jwt = false
