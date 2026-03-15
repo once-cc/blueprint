@@ -123,11 +123,10 @@ function extractInsightMeta(
     }
 }
 
-// ── Body preview extraction ─────────────────────────────────
+// ── Body text extraction ────────────────────────────────────
 
-function extractBodyPreview(html: string, maxLength = 200): string {
-    // Strip HTML tags
-    const text = html
+function stripHtmlToText(html: string): string {
+    return html
         .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
         .replace(/<[^>]+>/g, " ")
         .replace(/&nbsp;/g, " ")
@@ -138,9 +137,16 @@ function extractBodyPreview(html: string, maxLength = 200): string {
         .replace(/&quot;/g, '"')
         .replace(/\s+/g, " ")
         .trim();
+}
 
+function extractBodyPreview(html: string, maxLength = 200): string {
+    const text = stripHtmlToText(html);
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength).replace(/\s+\S*$/, "") + "…";
+}
+
+function extractBodyFull(html: string): string {
+    return stripHtmlToText(html);
 }
 
 // ── Status mapping ──────────────────────────────────────────
@@ -271,6 +277,7 @@ Deno.serve(async (req: Request) => {
                 // Render system-generated content
                 let subject = "";
                 let bodyPreview = "";
+                let bodyFull = "";
                 let insight: InsightMeta | null = null;
 
                 if (bp && emailNum >= 2 && emailNum <= 5) {
@@ -278,6 +285,7 @@ Deno.serve(async (req: Request) => {
                         const rendered = renderNurtureEmail(bp, emailNum);
                         subject = rendered.subject;
                         bodyPreview = extractBodyPreview(rendered.html);
+                        bodyFull = extractBodyFull(rendered.html);
                         insight = extractInsightMeta(bp, emailNum);
                     } catch (err) {
                         console.warn(
@@ -294,6 +302,9 @@ Deno.serve(async (req: Request) => {
                         bodyPreview: seq.override_body
                             ? extractBodyPreview(seq.override_body)
                             : bodyPreview,
+                        bodyFull: seq.override_body
+                            ? stripHtmlToText(seq.override_body)
+                            : bodyFull,
                         ctaLabel: seq.override_cta_label || undefined,
                         editedBy: seq.override_by || "unknown",
                         editedAt: seq.override_at || seq.created_at,
@@ -310,6 +321,7 @@ Deno.serve(async (req: Request) => {
                     insight,
                     subject,
                     bodyPreview,
+                    bodyFull,
                     manualOverride,
                 };
             });
